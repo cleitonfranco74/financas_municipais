@@ -1,44 +1,320 @@
-== siconfi 2023 OK 4.1s
-{"fin": [1112358.8, 600381.0, 370820.2, 991306.2, 151980.6], "rc": [110396.6, 178621.1, 3769.4, 203.2, 2143.5, 54500.6, 21125.5, 18346.2, 240.0, 324147.0], "fn": {"01": 16482.0, "03": 2436.9, "04": 79167.5, "06": 6316.7, "08": 31874.9, "09": 55565.3, "10": 207900.4, "11": 1158.4, "12": 299980.6, "13": 9402.5, "15": 81810.2, "16": 931.1, "18": 17005.9, "20": 3846.0, "22": 1329.5, "23": 2810.9, "26": 47994.0, "27": 8928.6, "28": 57425.3}, "lrf": [916672.7, 36.4, -23.13, 45067.0, 267195.2, -21224.6, 15712.3]}
-== siconfi 2017 OK 2.8s
-{"fin": [372680.9, 218025.8, 107667.0, 336507.4, 20370.5], "rc": [39693.9, 65910.3, 1631.9, 68.6, 423.4, 19921.3, 6360.4, 2047.0, 0.0, 96970.4], "fn": {"01": 11224.5, "02": 880.3, "03": 1739.8, "04": 41066.3, "06": 109.3, "08": 8350.2, "09": 15260.5, "10": 93431.8, "11": 400.5, "12": 88034.0, "13": 1946.2, "15": 31880.0, "16": 326.3, "18": 2988.0, "20": 1766.1, "22": 881.3, "23": 545.9, "26": 4695.6, "27": 3909.0, "28": 8866.3}, "lrf": [325123.6, 53.02, null, null, 43326.5, 19826.4, -26278.6]}
-== siconfi pequeno 2020 OK 2.8s
-{"fin": [20417.3, 20094.8, 1590.6, 21538.1, 1330.5], "rc": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1569.9], "fn": {"01": 915.1, "04": 4103.1, "08": 958.7, "09": 694.8, "10": 4387.0, "12": 3326.0, "13": 5.0, "15": 2729.0, "17": 1458.6, "20": 104.9, "23": 33.9, "26": 1656.6, "27": 86.3, "28": 423.3}, "lrf": [19608.4, 33.35, null, 1545.7, -392.6, -1395.0, null]}
-== candidatos 2020 OK 2.0s
-{"5108857": 0, "5103957": 0, "5106232": 0, "5100508": 0, "5107578": 0, "5100300": 0, "5101605": 0, "5106109": 0}
-== governadores 2022 OK 0.1s
-{"MT": "UNIÃO", "GO": "UNIÃO"}
-== emprego ERRO 400 Client Error: Bad Request for url: https://apisidra.ibge.gov.br/values/t/6450/n6/in%20n3%2051/v/708/p/last%208/c12762/all
-Traceback (most recent call last):
-  File "/home/runner/work/financas_municipais/financas_municipais/tmp/explorar.py", line 8, in t
-    try: r=f(); o.append(f"== {nome} OK {time.time()-t0:.1f}s\n{json.dumps(r, ensure_ascii=False)[:1500]}")
-           ^^^
-  File "/home/runner/work/financas_municipais/financas_municipais/tmp/explorar.py", line 18, in <lambda>
-    t("emprego", lambda: (A.emprego(ms), {c:m["emp"] for c,m in ms.items()})[1])
-                          ^^^^^^^^^^^^^
-  File "/home/runner/work/financas_municipais/financas_municipais/scripts/atualizar_municipios.py", line 417, in emprego
-    for l in sidra("t/6450/{}/v/708/p/last%208/c12762/all"):
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/financas_municipais/financas_municipais/scripts/atualizar_municipios.py", line 120, in sidra
-    d = get(SIDRA + caminho.format(f"n6/in%20n3%20{cod}"), timeout=240).json()
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/financas_municipais/financas_municipais/scripts/atualizar_municipios.py", line 96, in get
-    r.raise_for_status()
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/requests/models.py", line 1167, in raise_for_status
-    raise HTTPError(http_error_msg, response=self)
-requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: https://apisidra.ibge.gov.br/values/t/6450/n6/in%20n3%2051/v/708/p/last%208/c12762/all
+== t/6450/n6/5107909/v/708/p/last%201/c12762/all
+[
+  {
+    "NC": "Nível Territorial (Código)",
+    "NN": "Nível Territorial",
+    "MC": "Unidade de Medida (Código)",
+    "MN": "Unidade de Medida",
+    "V": "Valor",
+    "D1C": "Município (Código)",
+    "D1N": "Município",
+    "D2C": "Variável (Código)",
+    "D2N": "Variável",
+    "D3C": "Ano (Código)",
+    "D3N": "Ano",
+    "D4C": "Classificação Nacional de Atividades Econômicas (CNAE 2.0) (Código)",
+    "D4N": "Classificação Nacional de Atividades Econômicas (CNAE 2.0)"
+  },
+  {
+    "NC": "6",
+    "NN": "Município",
+    "MC": "45",
+    "MN": "Pessoas",
+    "V": "44782",
+    "D1C": "5107909",
+    "D1N": "Sinop (MT)",
+    "D2C": "708",
+    "D2N": "Pessoal ocupado assalariado",
+    "D3C": "2021",
+    "D3N": "2021",
+    "D4C": "117897",
+    "D4N": "Total"
+  },
+  {
+    "NC": "6",
+    "NN": "Município",
+    "MC": "45",
+    "MN": "Pessoas",
+    "V": "484",
+    "D1C": "5107909",
+    "D1N": "Sinop (MT)",
+    "D2C": "708",
+    "D2N": "Pessoal ocupado assalariado",
+    "D3C": "2021",
+    "D3N": "2021",
+    "D4C": "116830",
+    "D4N": "A Agricultura, pecuária, produção florestal, pesca e aquicultura"
+  },
+  {
+    "NC": "6",
+    "NN": "Município",
+    "MC": "45",
+    "MN": "Pessoas",
+    "V": "281",
+    "D1C": "5107909",
+    "D1N": "Sinop (MT)",
+    "D2C": "708",
+    "D2N": "Pessoal ocupado assalariado",
+    "D3C": "2021",
+    "D3N": "2021",
+    "D4C": "116831",
+    "D4N": "01 Agricultura, pecuária e serviços relacionados"
+  },
+== t/6450/n6/5107909/v/all/p/last%201
+[
+  {
+    "NC": "Nível Territorial (Código)",
+    "NN": "Nível Territorial",
+    "MC": "Unidade de Medida (Código)",
+    "MN": "Unidade de Medida",
+    "V": "Valor",
+    "D1C": "Município (Código)",
+    "D1N": "Município",
+    "D2C": "Variável (Código)",
+    "D2N": "Variável",
+    "D3C": "Ano (Código)",
+    "D3N": "Ano",
+    "D4C": "Classificação Nacional de Atividades Econômicas (CNAE 2.0) (Código)",
+    "D4N": "Classificação Nacional de Atividades Econômicas (CNAE 2.0)"
+  },
+  {
+    "NC": "6",
+    "NN": "Município",
+    "MC": "1020",
+    "MN": "Unidades",
+    "V": "8125",
+    "D1C": "5107909",
+    "D1N": "Sinop (MT)",
+    "D2C": "706",
+    "D2N": "Número de unidades locais",
+    "D3C": "2021",
+    "D3N": "2021",
+    "D4C": "117897",
+    "D4N": "Total"
+  },
+  {
+    "NC": "6",
+    "NN": "Município",
+    "MC": "2",
+    "MN": "Percentual",
+    "V": "100.00",
+    "D1C": "5107909",
+    "D1N": "Sinop (MT)",
+    "D2C": "1000706",
+    "D2N": "Número de unidades locais - percentual do total geral",
+    "D3C": "2021",
+    "D3N": "2021",
+    "D4C": "117897",
+    "D4N": "Total"
+  },
+  {
+    "NC": "6",
+    "NN": "Município",
+    "MC": "45",
+    "MN": "Pessoas",
+    "V": "54981",
+    "D1C": "5107909",
+    "D1N": "Sinop (MT)",
+    "D2C": "707",
+    "D2N": "Pessoal ocupado total",
+    "D3C": "2021",
+    "D3N": "2021",
+    "D4C": "117897",
+    "D4N": "Total"
+  },
+  {
+    "NC": "6",
+    "NN": "Município",
+    "MC": "2",
+    "MN"
+== t/6450/n3/51/v/708/p/all/c12762/117897
+[
+  {
+    "NC": "Nível Territorial (Código)",
+    "NN": "Nível Territorial",
+    "MC": "Unidade de Medida (Código)",
+    "MN": "Unidade de Medida",
+    "V": "Valor",
+    "D1C": "Unidade da Federação (Código)",
+    "D1N": "Unidade da Federação",
+    "D2C": "Variável (Código)",
+    "D2N": "Variável",
+    "D3C": "Ano (Código)",
+    "D3N": "Ano",
+    "D4C": "Classificação Nacional de Atividades Econômicas (CNAE 2.0) (Código)",
+    "D4N": "Classificação Nacional de Atividades Econômicas (CNAE 2.0)"
+  },
+  {
+    "NC": "3",
+    "NN": "Unidade da Federação",
+    "MC": "45",
+    "MN": "Pessoas",
+    "V": "460431",
+    "D1C": "51",
+    "D1N": "Mato Grosso",
+    "D2C": "708",
+    "D2N": "Pessoal ocupado assalariado",
+    "D3C": "2006",
+    "D3N": "2006",
+    "D4C": "117897",
+    "D4N": "Total"
+  },
+  {
+    "NC": "3",
+    "NN": "Unidade da Federação",
+    "MC": "45",
+    "MN": "Pessoas",
+    "V": "508207",
+    "D1C": "51",
+    "D1N": "Mato Grosso",
+    "D2C": "708",
+    "D2N": "Pessoal ocupado assalariado",
+    "D3C": "2007",
+    "D3N": "2007",
+    "D4C": "117897",
+    "D4N": "Total"
+  },
+  {
+    "NC": "3",
+    "NN": "Unidade da Federação",
+    "MC": "45",
+    "MN": "Pessoas",
+    "V": "525436",
+    "D1C": "51",
+    "D1N": "Mato Grosso",
+    "D2C": "708",
+    "D2N": "Pessoal ocupado assalariado",
+    "D3C": "2008",
+    "D3N": "2008",
+    "D4C": "117897",
+    "D4N": "Total"
+  },
+  {
+    "NC": "3",
+    "NN": "Unidade da Federaç
+== t/6450/n6/in%20n3%2051/v/708/p/2021/c12762/all
+Quantidade de valores solicitados: 150447 excedeu o limite: 50000
+== t/6450/n6/5107909/v/708/p/all
+[
+  {
+    "NC": "Nível Territorial (Código)",
+    "NN": "Nível Territorial",
+    "MC": "Unidade de Medida (Código)",
+    "MN": "Unidade de Medida",
+    "V": "Valor",
+    "D1C": "Município (Código)",
+    "D1N": "Município",
+    "D2C": "Variável (Código)",
+    "D2N": "Variável",
+    "D3C": "Ano (Código)",
+    "D3N": "Ano",
+    "D4C": "Classificação Nacional de Atividades Econômicas (CNAE 2.0) (Código)",
+    "D4N": "Classificação Nacional de Atividades Econômicas (CNAE 2.0)"
+  },
+  {
+    "NC": "6",
+    "NN": "Município",
+    "MC": "45",
+    "MN": "Pessoas",
+    "V": "19430",
+    "D1C": "5107909",
+    "D1N": "Sinop (MT)",
+    "D2C": "708",
+    "D2N": "Pessoal ocupado assalariado",
+    "D3C": "2006",
+    "D3N": "2006",
+    "D4C": "117897",
+    "D4N": "Total"
+  },
+  {
+    "NC": "6",
+    "NN": "Município",
+    "MC": "45",
+    "MN": "Pessoas",
+    "V": "21099",
+    "D1C": "5107909",
+    "D1N": "Sinop (MT)",
+    "D2C": "708",
+    "D2N": "Pessoal ocupado assalariado",
+    "D3C": "2007",
+    "D3N": "2007",
+    "D4C": "117897",
+    "D4N": "Total"
+  },
+  {
+    "NC": "6",
+    "NN": "Município",
+    "MC": "45",
+    "MN": "Pessoas",
+    "V": "22890",
+    "D1C": "5107909",
+    "D1N": "Sinop (MT)",
+    "D2C": "708",
+    "D2N": "Pessoal ocupado assalariado",
+    "D3C": "2008",
+    "D3N": "2008",
+    "D4C": "117897",
+    "D4N": "Total"
+  },
+  {
+    "NC": "6",
+    "NN": "Município",
+    "MC": "45",
+    "MN": "Pessoas",
+    "V": "23
+== dca2020 contas
+RO1.1.1.0.00.0.0 | 1.1.1.0.00.0.0 - Impostos | Receitas Brutas Realizadas | 1569912.34
+RO1.1.1.8.00.0.0 | 1.1.1.8.00.0.0 Impostos Específicos de Estados, DF e Municíp | Receitas Brutas Realizadas | 1567112.94
+RO1.1.1.8.01.0.0 | 1.1.1.8.01.0.0 Impostos sobre o Patrimônio para Estados/DF/M | Receitas Brutas Realizadas | 298233.92
+RO1.1.1.8.01.1.0 | 1.1.1.8.01.1.0 Imposto sobre a Propriedade Predial e Territo | Receitas Brutas Realizadas | 10716.51
+RO1.1.1.8.01.4.0 | 1.1.1.8.01.4.0 Imposto sobre Transmissão ¿Inter Vivos¿ de Be | Receitas Brutas Realizadas | 287517.41
+RO1.1.1.8.02.0.0 | 1.1.1.8.02.0.0 Impostos sobre a Produção, Circulação de Merc | Receitas Brutas Realizadas | 1268879.02
+RO1.1.1.8.02.3.0 | 1.1.1.8.02.3.0 Imposto sobre Serviços de Qualquer Natureza | Receitas Brutas Realizadas | 1268879.02
+RO1.1.1.9.00.0.0 | 1.1.1.9.00.0.0 - Outros Impostos | Receitas Brutas Realizadas | 2799.4
+RO1.7.0.0.00.0.0 | 1.7.0.0.00.0.0 - Transferências Correntes | Deduções - FUNDEB | 2276487.87
+RO1.7.0.0.00.0.0 | 1.7.0.0.00.0.0 - Transferências Correntes | Receitas Brutas Realizadas | 20094764.38
+RO1.7.1.0.00.0.0 | 1.7.1.0.00.0.0 - Transferências da União e de suas Entidades | Deduções - FUNDEB | 1334774.42
+RO1.7.1.0.00.0.0 | 1.7.1.0.00.0.0 - Transferências da União e de suas Entidades | Receitas Brutas Realizadas | 11931707.47
+RO1.7.1.8.00.0.0 | 1.7.1.8.00.0.0 Transferências da União - Específicas de Esta | Deduções - FUNDEB | 1334774.42
+RO1.7.1.8.00.0.0 | 1.7.1.8.00.0.0 Transferências da União - Específicas de Esta | Receitas Brutas Realizadas | 11931707.47
+RO1.7.1.8.01.0.0 | 1.7.1.8.01.0.0 Participação na Receita da União | Deduções - FUNDEB | 1334774.42
+RO1.7.1.8.01.0.0 | 1.7.1.8.01.0.0 Participação na Receita da União | Receitas Brutas Realizadas | 7312157.83
+RO1.7.1.8.01.2.0 | 1.7.1.8.01.2.0 Cota-Parte do Fundo de Participação dos Munic | Deduções - FUNDEB | 1323865.73
+RO1.7.1.8.01.2.0 | 1.7.1.8.01.2.0 Cota-Parte do Fundo de Participação dos Munic | Receitas Brutas Realizadas | 7216021.52
+RO1.7.1.8.01.4.0 | 1.7.1.8.01.4.0 Cota-Parte do Fundo de Participação dos Munic | Receitas Brutas Realizadas | 41592.11
+RO1.7.1.8.01.5.0 | 1.7.1.8.01.5.0 Cota-Parte do Imposto Sobre a Propriedade Ter | Deduções - FUNDEB | 10908.69
+RO1.7.1.8.01.5.0 | 1.7.1.8.01.5.0 Cota-Parte do Imposto Sobre a Propriedade Ter | Receitas Brutas Realizadas | 54544.2
+RO1.7.1.8.02.0.0 | 1.7.1.8.02.0.0 Transferência da Compensação Financeira pela  | Receitas Brutas Realizadas | 110025.78
+RO1.7.1.8.02.2.0 | 1.7.1.8.02.2.0 Cota-parte da Compensação Financeira de Recur | Receitas Brutas Realizadas | 3619.78
+RO1.7.1.8.02.6.0 | 1.7.1.8.02.6.0 Cota-Parte do Fundo Especial do Petróleo ¿ FE | Receitas Brutas Realizadas | 106406
+RO1.7.1.8.03.0.0 | 1.7.1.8.03.0.0 Transferência de Recursos do Sistema Único de | Receitas Brutas Realizadas | 1822266.91
+RO1.7.1.8.03.1.0 | 1.7.1.8.03.1.0 - Transferência de Recursos do SUS ¿ Atenção  | Receitas Brutas Realizadas | 1192585.07
+RO1.7.1.8.03.2.0 | 1.7.1.8.03.2
+== cab
+['DT_GERACAO', 'HH_GERACAO', 'ANO_ELEICAO', 'CD_TIPO_ELEICAO', 'NM_TIPO_ELEICAO', 'NR_TURNO', 'CD_ELEICAO', 'DS_ELEICAO', 'DT_ELEICAO', 'TP_ABRANGENCIA', 'SG_UF', 'SG_UE', 'NM_UE', 'CD_CARGO', 'DS_CARGO', 'SQ_CANDIDATO', 'NR_CANDIDATO', 'NM_CANDIDATO', 'NM_URNA_CANDIDATO', 'NM_SOCIAL_CANDIDATO', 'NR_CPF_CANDIDATO', 'DS_EMAIL', 'CD_SITUACAO_CANDIDATURA', 'DS_SITUACAO_CANDIDATURA', 'TP_AGREMIACAO', 'NR_PARTIDO', 'SG_PARTIDO', 'NM_PARTIDO', 'NR_FEDERACAO', 'NM_FEDERACAO', 'SG_FEDERACAO', 'DS_COMPOSICAO_FEDERACAO', 'SQ_COLIGACAO', 'NM_COLIGACAO', 'DS_COMPOSICAO_COLIGACAO', 'SG_UF_NASCIMENTO', 'DT_NASCIMENTO', 'NR_TITULO_ELEITORAL_CANDIDATO', 'CD_GENERO', 'DS_GENERO', 'CD_GRAU_INSTRUCAO', 'DS_GRAU_INSTRUCAO', 'CD_ESTADO_CIVIL', 'DS_ESTADO_CIVIL', 'CD_COR_RACA', 'DS_COR_RACA', 'CD_OCUPACAO', 'DS_OCUPACAO', 'CD_SIT_TOT_TURNO', 'DS_SIT_TOT_TURNO']
+== eleitos
+(141, Counter({'2': 138, '1': 3}), Counter({None: 141}))
+== sit
+Counter({'NÃO ELEITO': 335, 'ELEITO': 141, '#NULO': 15, '2º TURNO': 2})
+== RAW
 
-== censo OK 3.1s
-{"5107909": [33.2, 96.57], "5100102": [3.0, 89.57], "5200050": [34.4, 94.27]}
-== tabnet sim MT OK 1.9s
-{"510010": {"2016": 0, "2017": 2, "2018": 0, "2019": 2, "2020": 0, "2021": 0, "2022": 0, "2023": 0, "2024": 1, "2025": 0, "2026": 6}, "510020": {"2016": 4, "2017": 6, "2018": 5, "2019": 8, "2020": 3, "2021": 12, "2022": 12, "2023": 8, "2024": 8, "2025": 11, "2026": 84}, "510025": {"2016": 17, "2017": 11, "2018": 12, "2019": 11, "2020": 15, "2021": 8, "2022": 9, "2023": 13, "2024": 13, "2025": 11, "2026": 132}}
-== mortalidade OK 8.2s
-{"5107909": {"2016": [32, 2959], "2017": [26, 3046], "2018": [32, 3169], "2019": [30, 3136], "2020": [37, 3351], "2021": [50, 3545], "2022": [31, 3668], "2023": [48, 3559], "2024": [41, 3859], "2025": [31, 2447], "2026": [394, 35407]}, "5100102": {"2016": [0, 77], "2017": [2, 61], "2018": [0, 73], "2019": [2, 58], "2020": [0, 44], "2021": [0, 58], "2022": [0, 60], "2023": [0, 44], "2024": [1, 68], "2025": [0, 42], "2026": [6, 647]}, "5200050": {"2016": [4, 196], "2017": [3, 217], "2018": [3, 237], "2019": [3, 254], "2020": [4, 213], "2021": [2, 262], "2022": [4, 287], "2023": [6, 228], "2024": [5, 290], "2025": [2, 188], "2026": [43, 2572]}}
-== malhas MT OK 0.3s
-141
-== grava malha OK 0.1s
-153837
-== prodes 2024+ OK 156.7s
-{"5100201": {"2024": 17.69, "2025": 4.53, "2026": 7.29}, "5100805": {"2024": 18.56, "2025": 33.93, "2026": 0}, "5101001": {"2024": 23.25, "2025": 6.84, "2026": 2.82}, "5101407": {"2024": 68.07, "2025": 64.53, "2026": 0}, "5101902": {"2024": 47.23, "2025": 26.04, "2026": 27.48}, "5102686": {"2024": 0.54, "2025": 10.75, "2026": 69.58}, "5102702": {"2024": 9.07, "2025": 11.47, "2026": 12.17}, "5103007": {"2024": 8.42, "2025": 9.66, "2026": 3.01}, "5103056": {"2024": 20.67, "2025": 24.42, "2026": 0}, "5103106": {"2024": 42.46, "2025": 39.54, "2026": 14.83}, "5103254": {"2024": 113.1, "2025": 142.48, "2026": 0}, "5103304": {"2024": 8.38, "2025": 18.53, "2026": 3.04}, "5103361": {"2024": 21.81, "2025": 17.34, "2026": 0.09}, "5103403": {"2024": 12.51, "2025": 9.32, "2026": 4.75}, "5103502": {"2024": 7.17, "2025": 20.54, "2026": 4.28}, "5103700": {"2024": 22.59, "2025": 24.79, "2026": 0}, "5103858": {"2024": 12.59, "2025": 40.15, "2026": 0.42}, "5104203": {"2024": 6.14, "2025": 11.92, "2026": 2.78}, "5104542": {"2024": 22.65, "2025": 9.65, "2026": 0}, "5104559": {"2024": 19.58, "2025": 21.23, "2026": 0}, "5105101": {"2024": 52.59, "2025": 43.56, "2026": 0}, "5105150": {"2024": 24.46, "2025": 28.63, "2026": 1.93}, "5105507": {"2024": 19.25, "2025": 5.72, "2026": 0}, "5105580": {"2024": 86.3, "2025": 157.96, "2026": 0}, "5106109": {"2024": 9.24, "2025": 14.08, "2026": 17.06}, "5106158": {"2024": 21.9, "2025": 8.74, "2026": 0}, "5106182": {"2024": 9.23, "2025": 24.29, "2026": 50.24}, "5
-== focos 2024+ OK 24.5s
-{"5107909": {"2024": 80, "2025": 34}, "5103403": {"2024": 607, "2025": 62}, "5106224": {"2024": 257, "2025": 376}}
+"Munic&iacute;pio";"2016";"2017";"2018";"2019";"2020";"2021";"2022";"2023";"2024";"2025";"2026";"Total"
+" MUNICIPIO IGNORADO - MT";1;3;-;-;1;1;2;-;-;-;-;8
+"510010 ACORIZAL";62;77;61;73;58;44;58;60;44;68;42;647
+"510020 AGUA BOA";396;391;468;415;426;450;453;508;473;546;284;4810
+"510025 ALTA FLORESTA";847;886;893;956;894;913;947;996;906;966;555;9759
+"510030 ALTO ARAGUAIA";251;220;204;190;197;182;191;189;158;149;105;2036
+"510035 ALTO BOA VISTA";54;72;101;81;91;96;90;110;92;95;61;943
+"510040 ALTO GARCAS";143;124;146;149;141;148;168;177;151;164;123;1634
+"510050 ALTO PARAGUAI";77;94;96;83;76;94;92;84;107;93;51;947
+"510060 ALTO TAQUARI";167;163;187;186;146;151;164;156;157;137;99;1713
+"510080 APIACAS";139;128;125;95;122;130;156;149;130;144;83;1401
+"510100 ARAGUAIANA";29;38;30;32;43;47;40;28;28;44;21;380
+"510120 ARAGUAINHA";10;6;11;5;8;5;8;13;6;13;4;89
+"510125 ARAPUTANGA";240;267;246;257;255;254;207;232;241;225;136;2560
+"510130 ARENAPOLIS";110;151;139;138;104;189;168;163;166;160;107;1595
+"510140 ARIPUANA";337;362;367;363;389;403;407;417;406;438;283;4172
+"510160 BARAO DE MELGACO";62;76;61;69;56;58;46;55;64;60;25;632
+"510170 BARRA DO BUGRES";541;527;509;527;453;450;425;447;4
+== tab
+{'2016': 2959, '2017': 3046, '2018': 3169, '2019': 3136, '2020': 3351, '2021': 3545, '2022': 3668, '2023': 3559, '2024': 3859, '2025': 2447, '2026': 35407}
