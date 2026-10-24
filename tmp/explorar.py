@@ -10,7 +10,8 @@ for c in ["t/6450/n6/5107909/v/708/p/last%201/c12762/all","t/6450/n6/5107909/v/a
     t(c, lambda: requests.get(S+c, timeout=120).text[:1500])
 # DCA 2020 pequeno
 r=A.get(A.SICONFI+"dca", {"an_exercicio":2020,"id_ente":5100102,"no_anexo":"DCA-Anexo I-C"}, timeout=90).json()["items"]
-t("dca2020 contas", lambda: "\n".join(sorted({f'{i["cod_conta"]} | {i["conta"][:60]} | {i["coluna"]} | {i["valor"]}' for i in r if i["cod_conta"].startswith(("RO1.7","RO2.4","RO1.1.1"))}))
+def lin(i): return " | ".join(str(i.get(k))[:60] for k in ("cod_conta","conta","coluna","valor"))
+t("dca2020 contas", lambda: "\n".join(sorted({lin(i) for i in r if i["cod_conta"].startswith(("RO1.7","RO2.4","RO1.1.1"))})))
 # candidatos 2020
 z=zipfile.ZipFile(io.BytesIO(A.get(A.TSE_CAND.format(2020), timeout=900).content))
 nome=next(n for n in z.namelist() if n.endswith("_2020_MT.csv"))
