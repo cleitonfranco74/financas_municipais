@@ -1,0 +1,87 @@
+== scripts ['assets/js/jquery/jquery-3.3.1.min.js', 'assets/js/map/bootstrap.min.js', 'assets/js/map/popper.min.js', 'assets/js/jquery-ui/jquery-ui.min.js', 'assets/js/jquery-ui/jquery.loading.min.js', 'assets/js/lodash/lodash-4.7.10.min.js', 'assets/js/gridstack/gridstack.js', 'assets/js/gridstack/gridstack.jQueryUI.js', 'assets/js/map/jquery.mCustomScrollbar.concat.min.js', 'assets/js/map/manipulate-cookie.js', 'assets/js/map/rangeslider.js', 'assets/js/map/rangeslider.min.js', 'assets/js/map/scripts.js', '/app/dashboard/deforestation/polyfills.62774204d9672458618b.js', '/app/dashboard/deforestation/vendor.62774204d9672458618b.js', '/app/dashboard/deforestation/app.62774204d9672458618b.js', '/app/dashboard/deforestation/styles.62774204d9672458618b.js']
+https://fonts.googleapis.com/icon?family=Material+Icons
+== hits prodes-legal-amz:yearly_deforestation []
+   2000 feições: 2372007 bytes em 8.8s
+== hits prodes-cerrado-nb:yearly_deforestation []
+   2000 feições: 1311468 bytes em 5.6s
+== sidra 6805 c11558 200 
+{'V': '68530', 'D2N': '2022', 'D4C': '381', 'D4N': 'Domicílios particulares permanentes ocupados'}
+{'V': '12632', 'D2N': '2022', 'D4C': '381', 'D4N': 'Domicílios particulares permanentes ocupados'}
+{'V': '10105', 'D2N': '2022', 'D4C': '381', 'D4N': 'Domicílios particulares permanentes ocupados'}
+{'V': '2527', 'D2N': '2022', 'D4C': '381', 'D4N': 'Domicílios particulares permanentes ocupados'}
+{'V': '18971', 'D2N': '2022', 'D4C': '381', 'D4N': 'Domicílios particulares permanentes ocupados'}
+{'V': '36827', 'D2N': '2022', 'D4C': '381', 'D4N': 'Domicílios particulares permanentes ocupados'}
+{'V': '37', 'D2N': '2022', 'D4C': '381', 'D4N': 'Domicílios particulares permanentes ocupados'}
+{'V': '1', 'D2N': '2022', 'D4C': '381', 'D4N': 'Domicílios particulares permanentes ocupados'}
+{'V': '58', 'D2N': '2022', 'D4C': '381', 'D4N': 'Domicílios particulares permanentes ocupados'}
+{'V': '4', 'D2N': '2022', 'D4C': '381', 'D4N': 'Domicílios particulares permanentes ocupados'}
+== sidra 6805 c61 400 Parâmetro C61 (Classificação) incompatível com a tabela
+== sidra 6805 c1821 400 Parâmetro C1821 (Classificação) incompatível com a tabela
+== sidra 6805 c11557 400 Parâmetro C11557 (Classificação) incompatível com a tabela
+== sidra 6805 c11559 400 Parâmetro C11559 (Classificação) incompatível com a tabela
+== sidra 6805 c12096 400 Parâmetro C12096 (Classificação) incompatível com a tabela
+== sidra 6803 c11557 400 Parâmetro C11557 (Classificação) incompatível com a tabela
+== sidra 6803 c11558 400 Parâmetro C11558 (Classificação) incompatível com a tabela
+== sidra 6803 c12095 400 Parâmetro C12095 (Classificação) incompatível com a tabela
+== sidra 6803 c61 400 Parâmetro C61 (Classificação) incompatível com a tabela
+== sidra 6803 c1822 400 Parâmetro C1822 (Classificação) incompatível com a tabela
+== sidra 6450 c12762 200 
+{'V': '8125', 'D2N': '2021', 'D4C': '706', 'D4N': 'Número de unidades locais'}
+{'V': '54981', 'D2N': '2021', 'D4C': '707', 'D4N': 'Pessoal ocupado total'}
+{'V': '44782', 'D2N': '2021', 'D4C': '708', 'D4N': 'Pessoal ocupado assalariado'}
+{'V': '1525589', 'D2N': '2021', 'D4C': '662', 'D4N': 'Salários e outras remunerações'}
+{'V': '178', 'D2N': '2021', 'D4C': '706', 'D4N': 'Número de unidades locais'}
+{'V': '735', 'D2N': '2021', 'D4C': '707', 'D4N': 'Pessoal ocupado total'}
+{'V': '484', 'D2N': '2021', 'D4C': '708', 'D4N': 'Pessoal ocupado assalariado'}
+{'V': '13283', 'D2N': '2021', 'D4C': '662', 'D4N': 'Salários e outras remunerações'}
+{'V': '140', 'D2N': '2021', 'D4C': '706', 'D4N': 'Número de unidades locais'}
+{'V': '476', 'D2N': '2021', 'D4C': '707', 'D4N': 'Pessoal ocupado total'}
+{'V': '281', 'D2N': '2021', 'D4C': '708', 'D4N': 'Pessoal ocupado assalariado'}
+{'V': '7661', 'D2N': '2021', 'D4C': '662', 'D4N': 'Salários e outras remunerações'}
+{'V': '37', 'D2N': '2021', 'D4C': '706', 'D4N': 'Número de unidades locais'}
+{'V': '89', 'D2N': '2021', 'D4C': '707', 'D4N': 'Pessoal ocupado total'}
+{'V': '28', 'D2N': '2021', 'D4C': '708', 'D4N': 'Pessoal ocupado assalariado'}
+{'V': '813', 'D2N': '2021', 'D4C': '662', 'D4N': 'Salários e outras remunerações'}
+{'V': '-', 'D2N': '2021', 'D4C': '706', 'D4N': 'Número de unidades locais'}
+{'V': '-', 'D2N': '2021', 'D4C': '707', 'D4N': 'Pessoal ocupado total'}
+{'V': '-', 'D2N': '2021', 'D4C': '708', 'D4N': 'Pessoal ocupado assalariado'}
+{'V': '-', 'D2N': '2021', 'D4C': '662', 'D4N': 'Salários e outras remunerações'}
+{'V': '-', 'D2N': '2021', 'D4C': '706', 'D4N': 'Número de unidades locais'}
+{'V': '-', 'D2N': '2021', 'D4C': '707', 'D4N': 'Pessoal ocupado total'}
+{'V': '-', 'D2N': '2021', 'D4C': '708', 'D4N': 'Pessoal ocupado assalariado'}
+{'V': '-', 'D2N': '2021', 'D4C': '662', 'D4N': 'Salários e outras remunerações'}
+== sidra 6450 c12761 400 Parâmetro C12761 (Classificação) incompatível com a tabela
+== sidra 6450 c12763 400 Parâmetro C12763 (Classificação) incompatível com a tabela
+== sidra 6450 c12760 400 Parâmetro C12760 (Classificação) incompatível com a tabela
+== sidra 6450 c12764 400 Parâmetro C12764 (Classificação) incompatível com a tabela
+== sinasc arquivos ['nvmt26.dbf', 'nvmt25.dbf', 'nvmt24.dbf', 'nvmt23.dbf', 'nvmt22.dbf', 'nvmt21.dbf', 'nvmt20.dbf', 'nvmt19.dbf', 'nvmt18.dbf', 'nvmt17.dbf', 'nvmt16.dbf', 'nvmt15.dbf']
+Município
+Região_de_Saúde_(CIR)
+Região_de_Saúde/Município
+Macrorregião_de_Saúde
+Macrorreg_de_Saúde/Município
+Divisão_administ_estadual
+Divisão_admin_estadual/Municíp
+Microrregião_IBGE
+Microrregião_IBGE/Município
+Região_Metropolitana_-_RIDE
+Ano_do_nascimento
+Ano/mês_do_nascimento
+Mês_do_nascimento
+Local_ocorrência
+Idade_da_mãe
+Instrução_da_mãe
+Estado_civil_mãe
+Duração_gestação
+Tipo_de_gravidez
+Grupos_de_Robson
+Adeq_quant_pré-natal*
+Tipo_de_parto
+Consult_pré-natal
+Sexo
+Cor/raça
+Apgar_1º_minuto
+Apgar_5º_minuto
+Peso_ao_nascer
+Anomalia_congênita
+Tipo_anomal_congên
