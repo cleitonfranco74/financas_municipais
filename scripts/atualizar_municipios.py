@@ -36,6 +36,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import html
 import re
 import sys
 import time
@@ -62,6 +63,7 @@ LAVOURAS = {"40124": "soja", "40122": "milho", "40099": "algodao"}
 GOVERNADORES = (2014, 2018, 2022)
 TRABALHADORES = 12         # consultas simultâneas ao Siconfi
 MAX_PARES = 20000          # teto de pares município-ano por execução (a primeira carga tem cerca de 11 mil)
+PRAZO_SICONFI = 190        # minutos; o que faltar fica para a execução seguinte (a primeira carga leva duas ou três)
 
 # Escala esquerda (0) – direita (10). Média ponderada das rodadas de 2018 e 2022 em Bolognesi, Ribeiro,
 # Codato e Silva (2025); partidos extintos ou renomeados antes de 2022 com a média de 2018 (Dados, 2023).
@@ -190,14 +192,14 @@ def agro(ms: dict) -> None:
 # A ordem é a da lista RC_NOMES; cada fonte soma os códigos encontrados.
 RC_NOMES = ("fpm", "icms", "itr", "cfem", "petroleo", "ipva", "conv_uniao", "conv_estado", "especial", "impostos")
 RC_CODIGOS = {
-    "fpm": ("RO1.7.1.1.51.0.0", "RO1.7.2.1.01.02.00", "RO1.7.2.1.01.03.00", "RO1.7.2.1.01.04.00"),
-    "icms": ("RO1.7.2.1.50.0.0", "RO1.7.2.2.01.01.00"),
-    "itr": ("RO1.7.1.1.52.0.0", "RO1.7.2.1.01.05.00"),
-    "cfem": ("RO1.7.1.2.51.0.0", "RO1.7.2.1.22.20.00"),
-    "petroleo": ("RO1.7.1.2.52.0.0", "RO1.7.2.1.22.10.00", "RO1.7.2.1.22.70.00"),
-    "ipva": ("RO1.7.2.1.51.0.0", "RO1.7.2.2.01.02.00"),
-    "conv_uniao": ("RO1.7.1.4.00.0.0", "RO2.4.1.4.00.0.0", "RO1.7.6.1.00.00.00", "RO2.4.7.1.00.00.00"),
-    "conv_estado": ("RO1.7.2.4.00.0.0", "RO2.4.2.2.00.0.0", "RO1.7.6.2.00.00.00", "RO2.4.7.2.00.00.00"),
+    "fpm": ("RO1.7.1.8.01.2.0", "RO1.7.1.8.01.3.0", "RO1.7.1.8.01.4.0", "RO1.7.1.1.51.0.0", "RO1.7.2.1.01.02.00", "RO1.7.2.1.01.03.00", "RO1.7.2.1.01.04.00"),
+    "icms": ("RO1.7.2.8.01.1.0", "RO1.7.2.1.50.0.0", "RO1.7.2.2.01.01.00"),
+    "itr": ("RO1.7.1.8.01.5.0", "RO1.7.1.1.52.0.0", "RO1.7.2.1.01.05.00"),
+    "cfem": ("RO1.7.1.8.02.2.0", "RO1.7.1.2.51.0.0", "RO1.7.2.1.22.20.00"),
+    "petroleo": ("RO1.7.1.8.02.3.0", "RO1.7.1.8.02.6.0", "RO1.7.1.2.52.0.0", "RO1.7.2.1.22.10.00", "RO1.7.2.1.22.70.00"),
+    "ipva": ("RO1.7.2.8.01.2.0", "RO1.7.2.1.51.0.0", "RO1.7.2.2.01.02.00"),
+    "conv_uniao": ("RO1.7.1.8.10.0.0", "RO2.4.1.8.10.0.0", "RO1.7.1.4.00.0.0", "RO2.4.1.4.00.0.0", "RO1.7.6.1.00.00.00", "RO2.4.7.1.00.00.00"),
+    "conv_estado": ("RO1.7.2.8.10.0.0", "RO2.4.2.8.10.0.0", "RO1.7.2.4.00.0.0", "RO2.4.2.2.00.0.0", "RO1.7.6.2.00.00.00", "RO2.4.7.2.00.00.00"),
     "especial": ("RO2.4.1.9.51.0.0", "RO1.7.1.9.51.0.0"),
     "impostos": ("RO1.1.1.0.00.0.0", "RO1.1.1.0.00.00.00"),
 }
@@ -276,15 +278,22 @@ def financas(ms: dict, antes: dict) -> None:
             falta = any(str(a) not in m[k] for k in ("fin", "rc", "lrf"))
             if falta or a >= fim - 1:                   # os dois últimos anos podem ser retificados
                 pendentes.append((c, a))
-    pendentes = pendentes[:MAX_PARES]
+    pendentes = sorted(pendentes, key=lambda p: -p[1])[:MAX_PARES]   # anos recentes primeiro
+    limite = time.monotonic() + PRAZO_SICONFI * 60
+    def tarefa(c, a):
+        return siconfi(c, a) if time.monotonic() < limite else None
     log(f"Siconfi: {len(pendentes)} pares município-ano a consultar.")
-    feitos = erros = 0
+    feitos = erros = adiados = 0
     with ThreadPoolExecutor(TRABALHADORES) as ex:
-        fut = {ex.submit(siconfi, c, a): (c, a) for c, a in pendentes}
+        fut = {ex.submit(tarefa, c, a): (c, a) for c, a in pendentes}
         for f in as_completed(fut):
             c, a = fut[f]
             try:
-                for k, v in f.result().items():
+                r = f.result()
+                if r is None:
+                    adiados += 1
+                    continue
+                for k, v in r.items():
                     ms[c][k][str(a)] = v
             except Exception as e:  # noqa: BLE001
                 erros += 1
@@ -296,7 +305,7 @@ def financas(ms: dict, antes: dict) -> None:
     for m in ms.values():
         for k in chaves:
             m[k] = dict(sorted(m[k].items()))
-    log(f"Siconfi: {feitos} pares, {erros} erros.")
+    log(f"Siconfi: {feitos} pares, {erros} erros, {adiados} adiados para a próxima execução (prazo).")
 
 
 # ---------------------------------------------------------------- TSE
@@ -357,8 +366,8 @@ def eleicoes(ms: dict, antes: dict) -> None:
 
 
 def candidatos(ano: int, mapa: dict[str, int] | None) -> dict:
-    """Do cadastro de candidatos: {ibge: 1 se o prefeito eleito estava concorrendo à reeleição} nas
-    eleições municipais, ou {uf: partido do governador eleito} nas eleições gerais."""
+    """Do cadastro de candidatos: {ibge: identificação do prefeito eleito (nome e data de nascimento)}
+    nas eleições municipais, ou {uf: partido do governador eleito} nas eleições gerais."""
     z = zipfile.ZipFile(io.BytesIO(get(TSE_CAND.format(ano), timeout=900).content))
     out: dict = {}
     for uf in UFS:
@@ -372,7 +381,7 @@ def candidatos(ano: int, mapa: dict[str, int] | None) -> dict:
                 if mapa is not None and l["CD_CARGO"] == "11":
                     ibge = mapa.get(l["SG_UE"].zfill(5))
                     if ibge:
-                        out[ibge] = 1 if l.get("ST_REELEICAO", "N").upper() == "S" else 0
+                        out[ibge] = " ".join(l.get("NM_CANDIDATO", "").upper().split()) + "|" + re.sub(r"\D", "", l.get("DT_NASCIMENTO", ""))
                 elif mapa is None and l["CD_CARGO"] == "3":
                     out[uf] = l["SG_PARTIDO"]
     log(f"TSE candidatos {ano}: {len(out)} registros.")
@@ -380,9 +389,10 @@ def candidatos(ano: int, mapa: dict[str, int] | None) -> dict:
 
 
 def reeleicao_e_governos(ms: dict, antes: dict, gov_antes: dict) -> dict:
-    """Marca em ms[c]["reel"][eleição] os prefeitos eleitos para o segundo mandato e devolve
-    {uf: {ano da eleição: partido do governador}}."""
-    mapa = None
+    """Marca em ms[c]["reel"][eleição] com 1 os prefeitos reeleitos (a mesma pessoa venceu a eleição
+    anterior: começa o segundo mandato) e devolve {uf: {ano da eleição: partido do governador}}.
+    O cadastro do TSE não traz mais o campo de candidatura à reeleição; a comparação usa nome e data de nascimento."""
+    mapa, eleitos = None, {}
     for ano in ELEICOES:
         a = str(ano)
         ja = {c: m["reel"][a] for c, m in antes.items() if a in m.get("reel", {})}
@@ -391,7 +401,12 @@ def reeleicao_e_governos(ms: dict, antes: dict, gov_antes: dict) -> dict:
         else:
             try:
                 mapa = mapa or tse_ibge()
-                res = candidatos(ano, mapa)
+                for e in (ano - 4, ano):
+                    if e not in eleitos:
+                        eleitos[e] = candidatos(e, mapa)
+                ant, atual = eleitos[ano - 4], eleitos[ano]
+                res = {c: int(atual[c] == ant[c]) for c in atual if c in ant}
+                log(f"Reeleição {ano}: {sum(res.values())} de {len(res)} prefeitos reeleitos.")
             except Exception as e:  # noqa: BLE001
                 log(f"TSE candidatos {ano}: falha ({e})")
                 res = ja
@@ -414,12 +429,12 @@ def reeleicao_e_governos(ms: dict, antes: dict, gov_antes: dict) -> dict:
 def emprego(ms: dict) -> None:
     """Pessoal ocupado assalariado (Cempre): [total, na agropecuária] por ano."""
     out: dict = {}
-    for l in sidra("t/6450/{}/v/708/p/last%208/c12762/all"):
-        cat = next((l[k] for k in ("D4N", "D5N") if k in l and l[k] and ("Total" == l[k] or "Agricultura" in l[k])), None)
-        if cat is None:
+    # 117897: total; 116830: seção A da CNAE (agricultura, pecuária, produção florestal, pesca e aquicultura)
+    for l in sidra("t/6450/{}/v/708/p/last%208/c12762/117897,116830"):
+        if l.get("D4C") not in ("117897", "116830"):
             continue
         x = out.setdefault(int(l["D1C"]), {}).setdefault(l["D3C"], [0, 0])
-        x[0 if cat == "Total" else 1] = round(valor(l["V"]) or 0)
+        x[0 if l["D4C"] == "117897" else 1] = round(valor(l["V"]) or 0)
     for c, m in ms.items():
         m["emp"] = {a: v for a, v in sorted(out.get(c, {}).items()) if int(a) >= INICIO}
 
@@ -467,7 +482,7 @@ def tabnet(sistema: str, uf: str, anos: list[int]) -> dict[str, dict[str, int]]:
     pre = re.search(r"<PRE>(.*?)</PRE>", texto, re.S | re.I)
     if not pre:
         raise ValueError(f"TabNet {sistema} {uf}: resposta sem tabela")
-    linhas = [l.strip() for l in pre.group(1).strip().splitlines() if l.strip()]
+    linhas = [l.strip() for l in html.unescape(pre.group(1)).strip().splitlines() if l.strip()]   # "Munic&iacute;pio" tem ";"
     cab = [c.strip('"') for c in linhas[0].split(";")]
     out: dict = {}
     for l in linhas[1:]:
@@ -519,6 +534,7 @@ def main() -> int:
         antes = {m["c"]: m for m in json.loads(SAIDA.read_text(encoding="utf-8"))["municipios"]} if SAIDA.exists() else {}
     except Exception:  # noqa: BLE001
         antes = {}
+    SAIDA.parent.mkdir(exist_ok=True)
     try:
         ms = municipios()
     except Exception as e:  # noqa: BLE001
@@ -575,7 +591,7 @@ def main() -> int:
                      "agro": "soja, milho e algodão (ha colhidos), valor das três lavouras (R$ mil), bovinos (cabeças)",
                      "pib": "PIB e valor adicionado da agropecuária (R$ mil correntes)",
                      "ele": "partido do vencedor, votos, partido do 2º colocado, votos, votos válidos, turno",
-                     "reel": "1 se o prefeito eleito concorreu à reeleição (segundo mandato)",
+                     "reel": "1 se o prefeito eleito foi reeleito (começa o segundo mandato)",
                      "emp": "pessoal ocupado assalariado: total e na agropecuária (Cempre)",
                      "censo": "% de domicílios com esgoto pela rede geral ou pluvial e taxa de alfabetização (15+), Censo 2022",
                      "tmi": "óbitos de menores de 1 ano e nascidos vivos (residência)",
