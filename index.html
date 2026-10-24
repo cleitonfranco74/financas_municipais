@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="author" content="Prof. Dr. Cleiton Franco">
+<title>Finanças Municipais</title>
+<meta name="description" content="Finanças públicas dos municípios da Amazônia Legal, de Goiás e de Mato Grosso do Sul desde 2016: investimentos, orientação política dos prefeitos, agronegócio e eleições acirradas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Spline+Sans+Mono:wght@400;500;600&display=swap">
+<style>
+html,body{margin:0}
+[hidden]{display:none!important}
+:root{
+  color-scheme:dark;
+  --bg:#08090b; --bg-2:#0e1013; --surface:#121418; --surface-2:#1a1d22; --ink:#f4f6f2; --ink-2:#a9afb4; --muted:#72787e;
+  --line:#23272d; --axis:#3a3f46; --accent:#c8f250; --accent-ink:#0b0d06; --accent-soft:rgba(200,242,80,.10);
+  --good:#34d399; --warn:#f5b83d; --crit:#f87171;
+  --ring:rgba(255,255,255,.07); --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 24px 48px -24px rgba(0,0,0,.6);
+  --sans:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Spline Sans Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;padding-inline:16px;padding-block:0 56px;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+header.top{padding-top:clamp(20px,4vw,40px)}
+.wrap{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+header.top{display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(26px,4vw,38px);line-height:1.08;margin:0;font-weight:800;letter-spacing:-.03em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.lead-top{margin:4px 0 0;color:var(--ink-2);max-width:80ch;font-size:15px}
+
+/* filtros e abas */
+.ctl{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end;background:var(--surface);border:1px solid var(--ring);border-radius:16px;padding:14px 16px}
+.ctl .f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctl .f > span{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.ctl select,.ctl input[type=search]{height:40px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:11px;padding:0 11px;font-weight:600;font-size:13.5px;max-width:100%}
+.seg{display:flex;gap:3px;border:1px solid var(--line);border-radius:11px;padding:3px;background:var(--bg);flex-wrap:wrap}
+.seg button{border:0;background:none;color:var(--ink-2);font-weight:700;font-size:12.5px;padding:7px 10px;border-radius:8px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+nav.abas{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:thin}
+nav.abas button{flex:none;border:0;border-bottom:2px solid transparent;background:none;color:var(--ink-2);padding:10px 14px;margin-bottom:-1px;font-weight:700;font-size:14.5px;white-space:nowrap}
+nav.abas button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.status{font-size:12.5px;color:var(--muted)}
+
+/* painéis */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:16px}
+.panel{background:linear-gradient(180deg,var(--surface),var(--bg-2));border:1px solid var(--ring);border-radius:20px;padding:clamp(14px,2.4vw,22px);box-shadow:var(--shadow);min-width:0}
+.panel h2{margin:0;font-size:17px;letter-spacing:-.02em;font-weight:800}
+.panel .sub{margin:4px 0 12px;color:var(--ink-2);font-size:13px}
+.panel .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:12px}
+.kpi{border:1px solid var(--line);border-radius:16px;padding:13px 15px;background:var(--surface)}
+.kpi span{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.kpi b{display:block;font-size:clamp(22px,2.6vw,30px);letter-spacing:-.03em;line-height:1.15;margin:5px 0 3px;white-space:nowrap}
+.kpi small{font-size:12px;color:var(--ink-2)}
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--ink-2);margin-top:8px}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+svg.ch{width:100%;height:auto;display:block;overflow:visible}
+svg.ch .ax{fill:var(--muted);font:11px var(--mono)} svg.ch .gl{stroke:var(--line)} svg.ch .zero{stroke:var(--axis)}
+svg.ch .vl{fill:var(--ink);font:700 11.5px var(--mono)}
+.nota{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.nota b{color:var(--ink-2)}
+.tb{width:100%;border-collapse:collapse;font-size:13px}
+.tb th,.tb td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tb th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.tb td:first-child,.tb th:first-child{text-align:left;white-space:normal}
+.tbwrap{overflow-x:auto}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:700;border:1px solid var(--line)}
+.chip i{width:8px;height:8px;border-radius:50%}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:10px;margin-top:12px}
+.explica{background:var(--surface);border:1px solid var(--ring);border-radius:16px;padding:16px 18px;color:var(--ink-2);font-size:14px;line-height:1.6}
+.explica h3{margin:0 0 6px;color:var(--ink);font-size:15px}
+.explica p{margin:0 0 8px}
+.explica b{color:var(--ink)}
+input[type=range]{width:min(100%,260px);accent-color:var(--accent)}
+.busca{position:relative}
+.bar-el{display:grid;grid-template-columns:44px minmax(0,1fr) 92px;gap:10px;align-items:center;margin:9px 0;font-size:12.5px;color:var(--ink-2)}
+.pb{display:flex;height:18px;border-radius:6px;overflow:hidden;gap:1px;background:var(--surface-2)} .pb i{display:block;height:100%}
+.autor{max-width:1200px;margin:28px auto 0;padding-top:16px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;font-size:12.5px;color:var(--muted)}
+.autor b{color:var(--ink-2);font-weight:600}
+html{--tbh:64px}
+/* barra de navegação fixa */
+.topbar{position:sticky;top:0;z-index:40;margin:0 -16px 8px;background:rgba(8,9,11,.78);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid var(--ring)}
+.topbar .tb-in{max-width:1200px;margin:0 auto;padding-inline:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;height:64px}
+@media (min-width:720px){.topbar .tb-in{padding-inline:28px}}
+.topbar .tb-brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;font-size:17px;letter-spacing:-.02em;color:var(--ink)}
+.topbar nav{display:flex;gap:2px}
+.topbar nav a{text-decoration:none;color:var(--ink-2);font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px}
+.topbar nav a:hover{color:var(--ink)}
+.topbar nav a[aria-current="page"]{color:var(--accent-ink);background:var(--accent)}
+.topbar .tb-cta{display:inline-flex;align-items:center;height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);color:var(--ink);font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap}
+.topbar .tb-cta:hover{border-color:var(--ink-2)}
+@media (max-width:860px){.topbar nav{display:none}}
+.topbar .tb-menu{display:none}
+@media (max-width:860px){.topbar .tb-menu{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:0 16px 10px;max-width:100%}
+  .topbar .tb-menu a{flex:none;text-decoration:none;color:var(--ink-2);font-weight:600;font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid var(--line)}
+  .topbar .tb-menu a[aria-current="page"]{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}}
+
+</style>
+</head>
+<body>
+<header class="topbar"><div class="tb-in">
+  <a class="tb-brand" href="./" aria-label="Finanças Municipais, início"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect x="3" y="3" width="24" height="24" rx="7" fill="var(--accent)"/><path d="M8 21V12l7-4 7 4v9M12 21v-5h6v5" fill="none" stroke="var(--accent-ink)" stroke-width="2" stroke-linejoin="round"/></svg>Finanças Municipais</a>
+  <nav aria-label="Outros sites"><a href="./" aria-current="page">Painel</a><a href="https://cleitonfranco74.github.io/dashboard_financeiro/">Livro-Caixa</a><a href="https://cleitonfranco74.github.io/boibolsa/">Boi na Bolsa</a></nav>
+  <a class="tb-cta" href="https://github.com/cleitonfranco74/financas_municipais">Código</a>
+</div><div class="tb-menu"><a href="./" aria-current="page">Painel</a><a href="https://cleitonfranco74.github.io/dashboard_financeiro/">Livro-Caixa</a><a href="https://cleitonfranco74.github.io/boibolsa/">Boi na Bolsa</a></div></header>
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">Finanças públicas municipais</span>
+    <h1>Prefeituras da <em>Amazônia Legal</em>, de Goiás e de Mato Grosso do Sul</h1>
+    <p class="lead-top">Receitas, despesas e investimentos de cada município desde 2016, a orientação ideológica do partido do prefeito e a expansão da soja, do milho, do algodão e do rebanho bovino. Inclui uma aba de econometria com eleições acirradas.</p>
+  </header>
+  <div class="ctl" id="ctl"><span class="status">Carregando os dados dos municípios…</span></div>
+  <nav class="abas" role="tablist" aria-label="Seções">
+    <button role="tab" data-aba="geral" aria-selected="true">Visão geral</button>
+    <button role="tab" data-aba="agro" aria-selected="false">Agronegócio</button>
+    <button role="tab" data-aba="mun" aria-selected="false">Municípios</button>
+    <button role="tab" data-aba="rdd" aria-selected="false">Eleições acirradas</button>
+    <button role="tab" data-aba="metodo" aria-selected="false">Método e fontes</button>
+  </nav>
+  <main id="conteudo" aria-live="polite"></main>
+  <div data-fb-util="Finanças municipais"></div>
+</div>
+<footer class="autor">
+  <span>Desenvolvido por <b>Prof. Dr. Cleiton Franco</b> · Doutor em Economia · Professor Adjunto da UNEMAT, Câmpus de Sinop</span>
+  <span>© 2026 · Ferramenta educacional: correlações não são, por si, relações de causa e efeito</span>
+</footer>
+<script src="assets/municipios.js" defer></script>
+<script src="assets/feedback.js" data-site="Finanças Municipais" data-cor="#c8f250" defer></script>
+</body>
+</html>
