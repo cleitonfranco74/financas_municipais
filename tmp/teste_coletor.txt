@@ -1,4 +1,94 @@
-== t/6450/n6/5107909/v/708/p/last%201/c12762/all
+== dca2018
+RO1.7.1.8.00.0.0 | 1.7.1.8.00.0.0 Transferências da União - Específicas de Estados, DF e  | 75862735.47
+RO1.7.1.8.01.0.0 | 1.7.1.8.01.0.0 Participação na Receita da União | 45271851.13
+RO1.7.1.8.01.2.0 | 1.7.1.8.01.2.0 Cota-Parte do Fundo de Participação dos Municípios - Co | 38987004.82
+RO1.7.1.8.01.3.0 | 1.7.1.8.01.3.0 Cota-Parte do Fundo de Participação do Municípios ¿ 1%  | 1731075.67
+RO1.7.1.8.01.4.0 | 1.7.1.8.01.4.0 Cota-Parte do Fundo de Participação dos Municípios - 1% | 1688928.48
+RO1.7.1.8.01.5.0 | 1.7.1.8.01.5.0 Cota-Parte do Imposto Sobre a Propriedade Territorial R | 2864842.16
+RO1.7.1.8.02.0.0 | 1.7.1.8.02.0.0 Transferência da Compensação Financeira pela Exploração | 713614.28
+RO1.7.1.8.02.2.0 | 1.7.1.8.02.2.0 Cota-parte da Compensação Financeira de Recursos Minera | 64391.42
+RO1.7.1.8.02.6.0 | 1.7.1.8.02.6.0 Cota-Parte do Fundo Especial do Petróleo ¿ FEP | 649222.86
+RO1.7.1.8.03.0.0 | 1.7.1.8.03.0.0 Transferência de Recursos do Sistema Único de Saúde ¿ S | 22440766.01
+RO1.7.1.8.04.0.0 | 1.7.1.8.04.0.0 Transferências de Recursos do Fundo Nacional de Assistê | 940089.84
+RO1.7.1.8.05.0.0 | 1.7.1.8.05.0.0 Transferências de Recursos do Fundo Nacional do Desenvo | 6101429.74
+RO1.7.1.8.05.1.0 | 1.7.1.8.05.1.0 Transferências do Salário-Educação | 4077518.91
+RO1.7.1.8.05.3.0 | 1.7.1.8.05.3.0 Transferências Diretas do FNDE referentes ao Programa N | 1754962
+RO1.7.1.8.05.9.0 | 1.7.1.8.05.9.0 Outras Transferências Diretas do Fundo Nacional do Dese | 268948.83
+RO1.7.1.8.06.0.0 | 1.7.1.8.06.0.0 Transferência Financeira do ICMS ¿ Desoneração ¿ L.C. N | 270884.88
+RO1.7.1.8.06.1.0 | 1.7.1.8.06.1.0 Transferência Financeira do ICMS ¿ Desoneração ¿ L.C. N | 270884.88
+RO1.7.1.8.10.0.0 | 1.7.1.8.10.0.0 Transferências de Convênios da União e de Suas Entidade | 119625.36
+RO1.7.1.8.10.2.0 | 1.7.1.8.10.2.0 Transferências de Convênios da União Destinadas a Progr | 119625.36
+RO1.7.1.8.99.0.0 | 1.7.1.8.99.0.0 Outras Transferências da União | 4474.23
+RO1.7.2.8.00.0.0 | 1.7.2.8.00.0.0 Transferências dos Estados - Específicas de Estados, DF | 103768053.68
+RO1.7.2.8.01.0.0 | 1.7.2.8.01.0.0 Participação na Receita dos Estados | 99076595.86
+RO1.7.2.8.01.1.0 | 1.7.2.8.01.1.0 Cota-Parte do ICMS | 74165148.98
+RO1.7.2.8.01.2.0 | 1.7.2.8.01.2.0 Cota-Parte do IPVA | 22322846
+RO1.7.2.8.01.3.0 | 1.7.2.8.01.3.0 Cota-Parte do IPI - Municípios | 444087.93
+RO1.7.2.8.01.4.0 | 1.7.2.8.01.4.0 Cota-Parte da Contribuição de Intervenção no Domínio Ec | 367810.89
+RO1.7.2.8.01.5.0 | 1.7.2.8.01.5.0 Outras Participações na Receita dos Estados | 1776702.06
+RO1.7.2.8.03.0.0 | 1.7.2.8.03.0.0 Transferência de Recursos do Estado para Programas de S | 1827713.03
+RO1.7.2.8.10.0.0 | 1.7.2.8.10.0.0 Transferência de Convênios dos Estados e do Distrito Fe | 297550.8
+RO1.7.2.8.10.9.0 | 1.7.2.8.10.9.0 Outras Transferências de Convênio dos Estados | 297550.8
+RO1.7.2.8.99.0.0 | 1.7.2.8.99.0.0 Outras Transferências dos Estados | 2566193.99
+RO2.4.0.0.00.0.0 | 2.4.0.0.00.0.0 - Transferências de Capital | 2067060.22
+RO2.4.1.0.00.0.0 | 2.4.1.0.00.0.0 - Transferências da União e de suas Entidades | 2067060.22
+RO2.4.1.8.00.0.0 | 2.4.1.8.00.0.0 Transferências da União - Específicas de Estados, DF e  | 2067060.22
+RO2.4.1.8.03.0.0 | 2.4.1.8.03.0.0 Transferências de Recursos do Sistema Único de Saúde ¿  | 233550
+RO2.4.1.8.05.0.0 | 2.4.1.8.05.0.0 Transferências de Recursos Destinados a Programas de Ed | 187357.15
+RO2.4.1.8.10.0.0 | 2.4.1.8.10.0.0 Transferência de Convênios da União e de suas Entidades | 1646153.07
+== dca2020
+RO1.7.1.8.00.0.0 | 1.7.1.8.00.0.0 Transferências da União - Específicas de Estados, DF e  | 156083647.72
+RO1.7.1.8.01.0.0 | 1.7.1.8.01.0.0 Participação na Receita da União | 63834688.72
+RO1.7.1.8.01.2.0 | 1.7.1.8.01.2.0 Cota-Parte do Fundo de Participação dos Municípios - Co | 56334218.92
+RO1.7.1.8.01.3.0 | 1.7.1.8.01.3.0 Cota-Parte do Fundo de Participação do Municípios ¿ 1%  | 2536046.2
+RO1.7.1.8.01.4.0 | 1.7.1.8.01.4.0 Cota-Parte do Fundo de Participação dos Municípios - 1% | 2541453.1
+RO1.7.1.8.01.5.0 | 1.7.1.8.01.5.0 Cota-Parte do Imposto Sobre a Propriedade Territorial R | 2422970.5
+RO1.7.1.8.02.0.0 | 1.7.1.8.02.0.0 Transferência da Compensação Financeira pela Exploração | 4104791.59
+RO1.7.1.8.02.1.0 | 1.7.1.8.02.1.0 Cota-parte da Compensação Financeira de Recursos Hídric | 3132882.49
+RO1.7.1.8.02.2.0 | 1.7.1.8.02.2.0 Cota-parte da Compensação Financeira de Recursos Minera | 66134.37
+RO1.7.1.8.02.6.0 | 1.7.1.8.02.6.0 Cota-Parte do Fundo Especial do Petróleo ¿ FEP | 905774.73
+RO1.7.1.8.03.0.0 | 1.7.1.8.03.0.0 Transferência de Recursos do Sistema Único de Saúde ¿ 
+ | 33729300.86
+RO1.7.1.8.03.1.0 | 1.7.1.8.03.1.0 - Transferência de Recursos do SUS ¿ Atenção Básica | 13000825.73
+RO1.7.1.8.03.2.0 | 1.7.1.8.03.2.0 - Transferência de Recursos do SUS ¿ Atenção de Média e | 8331580.89
+RO1.7.1.8.03.3.0 | 1.7.1.8.03.3.0 - Transferência de Recursos do SUS ¿ Vigilância em Saúd | 1813050.05
+RO1.7.1.8.03.4.0 | 1.7.1.8.03.4.0 - Transferência de Recursos do SUS ¿ Assistência Farmac | 873676.44
+RO1.7.1.8.03.5.0 | 1.7.1.8.03.5.0 - Transferência de Recursos do SUS ¿ Gestão do SUS | 124000
+RO1.7.1.8.03.9.0 | 1.7.1.8.03.9.0 - Transferência de Recursos do SUS ¿ Outros Programas F | 9586167.75
+RO1.7.1.8.04.0.0 | 1.7.1.8.04.0.0 Transferências de Recursos do Sistema Único de Saúde ¿  | 231023.14
+RO1.7.1.8.04.1.0 | 1.7.1.8.04.1.0 - Transferências de Recursos do Sistema Único de Saúde  | 17740
+RO1.7.1.8.04.6.0 | 1.7.1.8.04.6.0 - Outras Transferências de Recursos do Sistema Único de | 213283.14
+RO1.7.1.8.05.0.0 | 1.7.1.8.05.0.0 Transferências de Recursos do Fundo Nacional do Desenvo | 6794248.99
+RO1.7.1.8.05.1.0 | 1.7.1.8.05.1.0 Transferências do Salário-Educação | 4426742.17
+RO1.7.1.8.05.3.0 | 1.7.1.8.05.3.0 Transferências Diretas do FNDE referentes ao Programa N | 2194601.2
+RO1.7.1.8.05.4.0 | 1.7.1.8.05.4.0 Transferências Diretas do FNDE referentes ao Programa N | 162674.39
+RO1.7.1.8.05.9.0 | 1.7.1.8.05.9.0 Outras Transferências Diretas do Fundo Nacional do Dese | 10231.23
+RO1.7.1.8.12.0.0 | 1.7.1.8.12.0.0 - Transferências de Recursos do Fundo Nacional de Assis | 2399811.85
+RO1.7.1.8.99.0.0 | 1.7.1.8.99.0.0 Outras Transferências da União | 44989782.57
+RO1.7.2.8.00.0.0 | 1.7.2.8.00.0.0 Transferências dos Estados - Específicas de Estados, DF | 134057793.69
+RO1.7.2.8.01.0.0 | 1.7.2.8.01.0.0 Participação na Receita dos Estados | 128561237.01
+RO1.7.2.8.01.1.0 | 1.7.2.8.01.1.0 Cota-Parte do ICMS | 100887134.07
+RO1.7.2.8.01.2.0 | 1.7.2.8.01.2.0 Cota-Parte do IPVA | 25318999.98
+RO1.7.2.8.01.3.0 | 1.7.2.8.01.3.0 Cota-Parte do IPI - Municípios | 449682.32
+RO1.7.2.8.01.4.0 | 1.7.2.8.01.4.0 Cota-Parte da Contribuição de Intervenção no Domínio Ec | 214894
+RO1.7.2.8.01.5.0 | 1.7.2.8.01.5.0 Outras Participações na Receita dos Estados | 1690526.64
+RO1.7.2.8.03.0.0 | 1.7.2.8.03.0.0 Transferência de Recursos do Estado para Programas de S | 3274696.19
+RO1.7.2.8.07.0.0 | 1.7.2.8.07.0.0 Transferências de Estados destinadas à Assistência Soci | 591537.84
+RO1.7.2.8.10.0.0 | 1.7.2.8.10.0.0 Transferência de Convênios dos Estados e do Distrito Fe | 12287
+RO1.7.2.8.10.9.0 | 1.7.2.8.10.9.0 Outras Transferências de Convênio dos Estados | 12287
+RO1.7.2.8.99.0.0 | 1.7.2.8.99.0.0 Outras Transferências dos Estados | 1618035.65
+RO2.4.0.0.00.0.0 | 2.4.0.0.00.0.0 - Transferências de Capital | 8111041.51
+RO2.4.1.0.00.0.0 | 2.4.1.0.00.0.0 - Transferências da União e de suas Entidades | 7502328.51
+RO2.4.1.8.00.0.0 | 2.4.1.8.00.0.0 Transferências da União - Específicas de Estados, DF e  | 7502328.51
+RO2.4.1.8.10.0.0 | 2.4.1.8.10.0.0 Transferência de Convênios da União e de suas Entidades | 7502328.51
+RO2.4.1.8.10.7.0 | 2.4.1.8.10.7.0 - Transferências de Convênios da União destinadas a Pro | 7252328.51
+RO2.4.1.8.10.9.0 | 2.4.1.8.10.9.0 - Outras Transferências de Convênios da União | 250000
+RO2.4.2.0.00.0.0 | 2.4.2.0.00.0.0 - Transferências dos Estados e do Distrito Federal e de | 608713
+RO2.4.2.8.00.0.0 | 2.4.2.8.00.0.0 Transferências dos Estados, Distrito Federal, e de suas | 608713
+RO2.4.2.8.10.0.0 | 2.4.2.8.10.0.0 Transferências de Convênios dos Estados e do Distrito F | 608713
+RO2.4.2.8.10.7.0 | 2.4.2.8.10.7.0 - Transferências de Convênios dos Estados destinadas a  | 600000
+RO2.4.2.8.10.9.0 | 2.4.2.8.10.9.0 - Outras Transferências de Convênio dos Estados | 8713
+== emp
 [
   {
     "NC": "Nível Territorial (Código)",
@@ -20,301 +110,13 @@
     "NN": "Município",
     "MC": "45",
     "MN": "Pessoas",
-    "V": "44782",
-    "D1C": "5107909",
-    "D1N": "Sinop (MT)",
-    "D2C": "708",
-    "D2N": "Pessoal ocupado assalariado",
-    "D3C": "2021",
-    "D3N": "2021",
-    "D4C": "117897",
-    "D4N": "Total"
-  },
-  {
-    "NC": "6",
-    "NN": "Município",
-    "MC": "45",
-    "MN": "Pessoas",
-    "V": "484",
-    "D1C": "5107909",
-    "D1N": "Sinop (MT)",
-    "D2C": "708",
-    "D2N": "Pessoal ocupado assalariado",
-    "D3C": "2021",
-    "D3N": "2021",
-    "D4C": "116830",
-    "D4N": "A Agricultura, pecuária, produção florestal, pesca e aquicultura"
-  },
-  {
-    "NC": "6",
-    "NN": "Município",
-    "MC": "45",
-    "MN": "Pessoas",
-    "V": "281",
-    "D1C": "5107909",
-    "D1N": "Sinop (MT)",
-    "D2C": "708",
-    "D2N": "Pessoal ocupado assalariado",
-    "D3C": "2021",
-    "D3N": "2021",
-    "D4C": "116831",
-    "D4N": "01 Agricultura, pecuária e serviços relacionados"
-  },
-== t/6450/n6/5107909/v/all/p/last%201
-[
-  {
-    "NC": "Nível Territorial (Código)",
-    "NN": "Nível Territorial",
-    "MC": "Unidade de Medida (Código)",
-    "MN": "Unidade de Medida",
-    "V": "Valor",
-    "D1C": "Município (Código)",
-    "D1N": "Município",
-    "D2C": "Variável (Código)",
-    "D2N": "Variável",
-    "D3C": "Ano (Código)",
-    "D3N": "Ano",
-    "D4C": "Classificação Nacional de Atividades Econômicas (CNAE 2.0) (Código)",
-    "D4N": "Classificação Nacional de Atividades Econômicas (CNAE 2.0)"
-  },
-  {
-    "NC": "6",
-    "NN": "Município",
-    "MC": "1020",
-    "MN": "Unidades",
-    "V": "8125",
-    "D1C": "5107909",
-    "D1N": "Sinop (MT)",
-    "D2C": "706",
-    "D2N": "Número de unidades locais",
-    "D3C": "2021",
-    "D3N": "2021",
-    "D4C": "117897",
-    "D4N": "Total"
-  },
-  {
-    "NC": "6",
-    "NN": "Município",
-    "MC": "2",
-    "MN": "Percentual",
-    "V": "100.00",
-    "D1C": "5107909",
-    "D1N": "Sinop (MT)",
-    "D2C": "1000706",
-    "D2N": "Número de unidades locais - percentual do total geral",
-    "D3C": "2021",
-    "D3N": "2021",
-    "D4C": "117897",
-    "D4N": "Total"
-  },
-  {
-    "NC": "6",
-    "NN": "Município",
-    "MC": "45",
-    "MN": "Pessoas",
-    "V": "54981",
-    "D1C": "5107909",
-    "D1N": "Sinop (MT)",
-    "D2C": "707",
-    "D2N": "Pessoal ocupado total",
-    "D3C": "2021",
-    "D3N": "2021",
-    "D4C": "117897",
-    "D4N": "Total"
-  },
-  {
-    "NC": "6",
-    "NN": "Município",
-    "MC": "2",
-    "MN"
-== t/6450/n3/51/v/708/p/all/c12762/117897
-[
-  {
-    "NC": "Nível Territorial (Código)",
-    "NN": "Nível Territorial",
-    "MC": "Unidade de Medida (Código)",
-    "MN": "Unidade de Medida",
-    "V": "Valor",
-    "D1C": "Unidade da Federação (Código)",
-    "D1N": "Unidade da Federação",
-    "D2C": "Variável (Código)",
-    "D2N": "Variável",
-    "D3C": "Ano (Código)",
-    "D3N": "Ano",
-    "D4C": "Classificação Nacional de Atividades Econômicas (CNAE 2.0) (Código)",
-    "D4N": "Classificação Nacional de Atividades Econômicas (CNAE 2.0)"
-  },
-  {
-    "NC": "3",
-    "NN": "Unidade da Federação",
-    "MC": "45",
-    "MN": "Pessoas",
-    "V": "460431",
-    "D1C": "51",
-    "D1N": "Mato Grosso",
-    "D2C": "708",
-    "D2N": "Pessoal ocupado assalariado",
-    "D3C": "2006",
-    "D3N": "2006",
-    "D4C": "117897",
-    "D4N": "Total"
-  },
-  {
-    "NC": "3",
-    "NN": "Unidade da Federação",
-    "MC": "45",
-    "MN": "Pessoas",
-    "V": "508207",
-    "D1C": "51",
-    "D1N": "Mato Grosso",
-    "D2C": "708",
-    "D2N": "Pessoal ocupado assalariado",
-    "D3C": "2007",
-    "D3N": "2007",
-    "D4C": "117897",
-    "D4N": "Total"
-  },
-  {
-    "NC": "3",
-    "NN": "Unidade da Federação",
-    "MC": "45",
-    "MN": "Pessoas",
-    "V": "525436",
-    "D1C": "51",
-    "D1N": "Mato Grosso",
-    "D2C": "708",
-    "D2N": "Pessoal ocupado assalariado",
-    "D3C": "2008",
-    "D3N": "2008",
-    "D4C": "117897",
-    "D4N": "Total"
-  },
-  {
-    "NC": "3",
-    "NN": "Unidade da Federaç
-== t/6450/n6/in%20n3%2051/v/708/p/2021/c12762/all
-Quantidade de valores solicitados: 150447 excedeu o limite: 50000
-== t/6450/n6/5107909/v/708/p/all
-[
-  {
-    "NC": "Nível Territorial (Código)",
-    "NN": "Nível Territorial",
-    "MC": "Unidade de Medida (Código)",
-    "MN": "Unidade de Medida",
-    "V": "Valor",
-    "D1C": "Município (Código)",
-    "D1N": "Município",
-    "D2C": "Variável (Código)",
-    "D2N": "Variável",
-    "D3C": "Ano (Código)",
-    "D3N": "Ano",
-    "D4C": "Classificação Nacional de Atividades Econômicas (CNAE 2.0) (Código)",
-    "D4N": "Classificação Nacional de Atividades Econômicas (CNAE 2.0)"
-  },
-  {
-    "NC": "6",
-    "NN": "Município",
-    "MC": "45",
-    "MN": "Pessoas",
-    "V": "19430",
-    "D1C": "5107909",
-    "D1N": "Sinop (MT)",
-    "D2C": "708",
-    "D2N": "Pessoal ocupado assalariado",
-    "D3C": "2006",
-    "D3N": "2006",
-    "D4C": "117897",
-    "D4N": "Total"
-  },
-  {
-    "NC": "6",
-    "NN": "Município",
-    "MC": "45",
-    "MN": "Pessoas",
-    "V": "21099",
-    "D1C": "5107909",
-    "D1N": "Sinop (MT)",
-    "D2C": "708",
-    "D2N": "Pessoal ocupado assalariado",
-    "D3C": "2007",
-    "D3N": "2007",
-    "D4C": "117897",
-    "D4N": "Total"
-  },
-  {
-    "NC": "6",
-    "NN": "Município",
-    "MC": "45",
-    "MN": "Pessoas",
-    "V": "22890",
-    "D1C": "5107909",
-    "D1N": "Sinop (MT)",
-    "D2C": "708",
-    "D2N": "Pessoal ocupado assalariado",
-    "D3C": "2008",
-    "D3N": "2008",
-    "D4C": "117897",
-    "D4N": "Total"
-  },
-  {
-    "NC": "6",
-    "NN": "Município",
-    "MC": "45",
-    "MN": "Pessoas",
-    "V": "23
-== dca2020 contas
-RO1.1.1.0.00.0.0 | 1.1.1.0.00.0.0 - Impostos | Receitas Brutas Realizadas | 1569912.34
-RO1.1.1.8.00.0.0 | 1.1.1.8.00.0.0 Impostos Específicos de Estados, DF e Municíp | Receitas Brutas Realizadas | 1567112.94
-RO1.1.1.8.01.0.0 | 1.1.1.8.01.0.0 Impostos sobre o Patrimônio para Estados/DF/M | Receitas Brutas Realizadas | 298233.92
-RO1.1.1.8.01.1.0 | 1.1.1.8.01.1.0 Imposto sobre a Propriedade Predial e Territo | Receitas Brutas Realizadas | 10716.51
-RO1.1.1.8.01.4.0 | 1.1.1.8.01.4.0 Imposto sobre Transmissão ¿Inter Vivos¿ de Be | Receitas Brutas Realizadas | 287517.41
-RO1.1.1.8.02.0.0 | 1.1.1.8.02.0.0 Impostos sobre a Produção, Circulação de Merc | Receitas Brutas Realizadas | 1268879.02
-RO1.1.1.8.02.3.0 | 1.1.1.8.02.3.0 Imposto sobre Serviços de Qualquer Natureza | Receitas Brutas Realizadas | 1268879.02
-RO1.1.1.9.00.0.0 | 1.1.1.9.00.0.0 - Outros Impostos | Receitas Brutas Realizadas | 2799.4
-RO1.7.0.0.00.0.0 | 1.7.0.0.00.0.0 - Transferências Correntes | Deduções - FUNDEB | 2276487.87
-RO1.7.0.0.00.0.0 | 1.7.0.0.00.0.0 - Transferências Correntes | Receitas Brutas Realizadas | 20094764.38
-RO1.7.1.0.00.0.0 | 1.7.1.0.00.0.0 - Transferências da União e de suas Entidades | Deduções - FUNDEB | 1334774.42
-RO1.7.1.0.00.0.0 | 1.7.1.0.00.0.0 - Transferências da União e de suas Entidades | Receitas Brutas Realizadas | 11931707.47
-RO1.7.1.8.00.0.0 | 1.7.1.8.00.0.0 Transferências da União - Específicas de Esta | Deduções - FUNDEB | 1334774.42
-RO1.7.1.8.00.0.0 | 1.7.1.8.00.0.0 Transferências da União - Específicas de Esta | Receitas Brutas Realizadas | 11931707.47
-RO1.7.1.8.01.0.0 | 1.7.1.8.01.0.0 Participação na Receita da União | Deduções - FUNDEB | 1334774.42
-RO1.7.1.8.01.0.0 | 1.7.1.8.01.0.0 Participação na Receita da União | Receitas Brutas Realizadas | 7312157.83
-RO1.7.1.8.01.2.0 | 1.7.1.8.01.2.0 Cota-Parte do Fundo de Participação dos Munic | Deduções - FUNDEB | 1323865.73
-RO1.7.1.8.01.2.0 | 1.7.1.8.01.2.0 Cota-Parte do Fundo de Participação dos Munic | Receitas Brutas Realizadas | 7216021.52
-RO1.7.1.8.01.4.0 | 1.7.1.8.01.4.0 Cota-Parte do Fundo de Participação dos Munic | Receitas Brutas Realizadas | 41592.11
-RO1.7.1.8.01.5.0 | 1.7.1.8.01.5.0 Cota-Parte do Imposto Sobre a Propriedade Ter | Deduções - FUNDEB | 10908.69
-RO1.7.1.8.01.5.0 | 1.7.1.8.01.5.0 Cota-Parte do Imposto Sobre a Propriedade Ter | Receitas Brutas Realizadas | 54544.2
-RO1.7.1.8.02.0.0 | 1.7.1.8.02.0.0 Transferência da Compensação Financeira pela  | Receitas Brutas Realizadas | 110025.78
-RO1.7.1.8.02.2.0 | 1.7.1.8.02.2.0 Cota-parte da Compensação Financeira de Recur | Receitas Brutas Realizadas | 3619.78
-RO1.7.1.8.02.6.0 | 1.7.1.8.02.6.0 Cota-Parte do Fundo Especial do Petróleo ¿ FE | Receitas Brutas Realizadas | 106406
-RO1.7.1.8.03.0.0 | 1.7.1.8.03.0.0 Transferência de Recursos do Sistema Único de | Receitas Brutas Realizadas | 1822266.91
-RO1.7.1.8.03.1.0 | 1.7.1.8.03.1.0 - Transferência de Recursos do SUS ¿ Atenção  | Receitas Brutas Realizadas | 1192585.07
-RO1.7.1.8.03.2.0 | 1.7.1.8.03.2
-== cab
-['DT_GERACAO', 'HH_GERACAO', 'ANO_ELEICAO', 'CD_TIPO_ELEICAO', 'NM_TIPO_ELEICAO', 'NR_TURNO', 'CD_ELEICAO', 'DS_ELEICAO', 'DT_ELEICAO', 'TP_ABRANGENCIA', 'SG_UF', 'SG_UE', 'NM_UE', 'CD_CARGO', 'DS_CARGO', 'SQ_CANDIDATO', 'NR_CANDIDATO', 'NM_CANDIDATO', 'NM_URNA_CANDIDATO', 'NM_SOCIAL_CANDIDATO', 'NR_CPF_CANDIDATO', 'DS_EMAIL', 'CD_SITUACAO_CANDIDATURA', 'DS_SITUACAO_CANDIDATURA', 'TP_AGREMIACAO', 'NR_PARTIDO', 'SG_PARTIDO', 'NM_PARTIDO', 'NR_FEDERACAO', 'NM_FEDERACAO', 'SG_FEDERACAO', 'DS_COMPOSICAO_FEDERACAO', 'SQ_COLIGACAO', 'NM_COLIGACAO', 'DS_COMPOSICAO_COLIGACAO', 'SG_UF_NASCIMENTO', 'DT_NASCIMENTO', 'NR_TITULO_ELEITORAL_CANDIDATO', 'CD_GENERO', 'DS_GENERO', 'CD_GRAU_INSTRUCAO', 'DS_GRAU_INSTRUCAO', 'CD_ESTADO_CIVIL', 'DS_ESTADO_CIVIL', 'CD_COR_RACA', 'DS_COR_RACA', 'CD_OCUPACAO', 'DS_OCUPACAO', 'CD_SIT_TOT_TURNO', 'DS_SIT_TOT_TURNO']
-== eleitos
-(141, Counter({'2': 138, '1': 3}), Counter({None: 141}))
-== sit
-Counter({'NÃO ELEITO': 335, 'ELEITO': 141, '#NULO': 15, '2º TURNO': 2})
+    "V": "382",
+ 
+== cand2008
+200
 == RAW
-
+<b>Nascim p/resid.m&atilde;e por Ano do nascimento segundo Munic&iacute;pio</b><br>
 "Munic&iacute;pio";"2016";"2017";"2018";"2019";"2020";"2021";"2022";"2023";"2024";"2025";"2026";"Total"
-" MUNICIPIO IGNORADO - MT";1;3;-;-;1;1;2;-;-;-;-;8
-"510010 ACORIZAL";62;77;61;73;58;44;58;60;44;68;42;647
-"510020 AGUA BOA";396;391;468;415;426;450;453;508;473;546;284;4810
-"510025 ALTA FLORESTA";847;886;893;956;894;913;947;996;906;966;555;9759
-"510030 ALTO ARAGUAIA";251;220;204;190;197;182;191;189;158;149;105;2036
-"510035 ALTO BOA VISTA";54;72;101;81;91;96;90;110;92;95;61;943
-"510040 ALTO GARCAS";143;124;146;149;141;148;168;177;151;164;123;1634
-"510050 ALTO PARAGUAI";77;94;96;83;76;94;92;84;107;93;51;947
-"510060 ALTO TAQUARI";167;163;187;186;146;151;164;156;157;137;99;1713
-"510080 APIACAS";139;128;125;95;122;130;156;149;130;144;83;1401
-"510100 ARAGUAIANA";29;38;30;32;43;47;40;28;28;44;21;380
-"510120 ARAGUAINHA";10;6;11;5;8;5;8;13;6;13;4;89
-"510125 ARAPUTANGA";240;267;246;257;255;254;207;232;241;225;136;2560
-"510130 ARENAPOLIS";110;151;139;138;104;189;168;163;166;160;107;1595
-"510140 ARIPUANA";337;362;367;363;389;403;407;417;406;438;283;4172
-"510160 BARAO DE MELGACO";62;76;61;69;56;58;46;55;64;60;25;632
-"510170 BARRA DO BUGRES";541;527;509;527;453;450;425;447;4
+"510790 SINOP";2668;2959;3046;3169;3136;3351;3545;3668;3559;3859;2447;35407
 == tab
 {'2016': 2959, '2017': 3046, '2018': 3169, '2019': 3136, '2020': 3351, '2021': 3545, '2022': 3668, '2023': 3559, '2024': 3859, '2025': 2447, '2026': 35407}
