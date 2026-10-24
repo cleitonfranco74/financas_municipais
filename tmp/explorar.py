@@ -1,38 +1,33 @@
-import requests, json, re, io, os, time
-H={"User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124 Safari/537.36"}
-os.chdir("tmp"); o=[]
-def g(u, **k):
-    try: return requests.get(u, headers=H, timeout=k.pop("timeout",120), **k)
-    except Exception as e: return e
-# 1) Painel do TerraBrasilis: endereços de API no JavaScript
-base="https://terrabrasilis.dpi.inpe.br/app/"
-r=g(base+"dashboard/deforestation/biomes/legal_amazon/rates")
-srcs=re.findall(r'src="([^"]+\.js)"', r.text) if not isinstance(r,Exception) else []
-o.append(f"== scripts {srcs}")
-urls=set()
-for s in srcs:
-    js=g(base+s if not s.startswith("http") else s)
-    if isinstance(js,Exception): continue
-    urls |= set(re.findall(r'["\'`](https?://[^"\'`\s]{8,160})["\'`]', js.text)) | set(re.findall(r'["\'`](/[a-z\-]+/api/[^"\'`\s]{0,120})["\'`]', js.text))
-o += sorted(u for u in urls if re.search(r"(?i)api|redis|dashboard|geoserver|download", u))[:120]
-# 2) WFS: tamanho das camadas a partir de 2016
-W="https://terrabrasilis.dpi.inpe.br/geoserver/ows"
-for camada in ("prodes-legal-amz:yearly_deforestation","prodes-cerrado-nb:yearly_deforestation"):
-    r=g(W, params={"service":"WFS","version":"2.0.0","request":"GetFeature","typeNames":camada,"resultType":"hits","CQL_FILTER":"year>=2016"})
-    o.append(f"== hits {camada} {re.findall(r'numberMatched=\"(\\d+)\"', r.text) if not isinstance(r,Exception) else r}")
-    t=time.time(); r=g(W, params={"service":"WFS","version":"2.0.0","request":"GetFeature","typeNames":camada,"count":2000,"CQL_FILTER":"year>=2016","outputFormat":"application/json","propertyName":"year,area_km,geom"}, timeout=300)
-    o.append(f"   2000 feições: {len(r.content) if not isinstance(r,Exception) else r} bytes em {time.time()-t:.1f}s")
-# 3) SIDRA: códigos de classificação candidatos
-for t, cs in ((6805,[11558,61,1821,11557,11559,12096]),(6803,[11557,11558,12095,61,1822]),(6450,[12762,12761,12763,12760,12764])):
-    for c in cs:
-        r=g(f"https://apisidra.ibge.gov.br/values/t/{t}/n6/5107909/p/last%201/c{c}/all", timeout=60)
-        txt=r.text[:200] if not isinstance(r,Exception) else str(r)
-        ok = not isinstance(r,Exception) and r.status_code==200
-        o.append(f"== sidra {t} c{c} {getattr(r,'status_code','x')} {txt if not ok else ''}")
-        if ok: o += [str({k:v for k,v in x.items() if k in ('V','D2N','D4C','D4N')}) for x in r.json()[1:25]]
-# 4) TabNet SINASC
-t=g("http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvmt.def")
-if not isinstance(t,Exception):
-    tt=t.content.decode("latin-1"); arqs=re.findall(r'VALUE="(nvmt\d\d\.dbf)"', tt, flags=re.I)
-    o.append(f"== sinasc arquivos {arqs[:12]}"); o += re.findall(r'<OPTION[^>]*VALUE="([^"]+)"[^>]*>', tt, flags=re.I)[:30]
-open("expl4.txt","w").write("\n".join(o))
+import sys, json, time, os
+sys.path.insert(0, "scripts")
+os.makedirs("data", exist_ok=True)
+import atualizar_municipios as A
+o=[]
+def t(nome, f):
+    t0=time.time()
+    try: r=f(); o.append(f"== {nome} OK {time.time()-t0:.1f}s\n{json.dumps(r, ensure_ascii=False)[:1500]}")
+    except Exception as e:
+        import traceback; o.append(f"== {nome} ERRO {e}\n{traceback.format_exc()[-1500:]}")
+t("siconfi 2023", lambda: A.siconfi(5107909, 2023))
+t("siconfi 2017", lambda: A.siconfi(5107909, 2017))
+t("siconfi pequeno 2020", lambda: A.siconfi(5100102, 2020))
+ms={5107909:{"c":5107909,"n":"Sinop","uf":"MT"}, 5100102:{"c":5100102,"n":"Acorizal","uf":"MT"}, 5200050:{"c":5200050,"n":"Abadia de Goiás","uf":"GO"}}
+A.UFS={"MT":51,"GO":52}
+t("candidatos 2020", lambda: {str(k):v for k,v in list(A.candidatos(2020, A.tse_ibge()).items())[:8]})
+t("governadores 2022", lambda: A.candidatos(2022, None))
+t("emprego", lambda: (A.emprego(ms), {c:m["emp"] for c,m in ms.items()})[1])
+t("censo", lambda: (A.censo(ms, {}), {c:m["censo"] for c,m in ms.items()})[1])
+t("tabnet sim MT", lambda: dict(list(A.tabnet("sim","MT",list(range(2016,2027))).items())[:3]))
+t("mortalidade", lambda: (A.mortalidade(ms, {}), {c:m["tmi"] for c,m in ms.items()})[1])
+import espaciais as E
+E.UFS={"MT":51}
+geo={}
+t("malhas MT", lambda: (geo.update(E.malhas()), len(geo))[1])
+t("grava malha", lambda: (E.grava_malha(geo), os.path.getsize("data/malha.json"))[1])
+ms2={c:{"c":c,"n":"x","uf":"MT"} for c in geo}
+E.INICIO=2024
+t("prodes 2024+", lambda: (E.prodes(ms2, {}, geo), {k:v["desm"] for k,v in list(ms2.items()) if v["desm"] and sum(v["desm"].values())>20})[1])
+ms3={5107909:{"c":5107909,"n":"Sinop","uf":"MT"}, 5103403:{"c":5103403,"n":"Cuiabá","uf":"MT"}, 5106224:{"c":5106224,"n":"Nova Ubiratã","uf":"MT"}}
+E.INICIO=2024
+t("focos 2024+", lambda: (E.focos(ms3, {}), {c:m["fogo"] for c,m in ms3.items()})[1])
+open("tmp/teste_coletor.txt","w").write("\n".join(o))

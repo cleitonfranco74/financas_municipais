@@ -15,7 +15,7 @@ concurrency:
 jobs:
   atualizar:
     runs-on: ubuntu-latest
-    timeout-minutes: 300
+    timeout-minutes: 340
     steps:
       - uses: actions/checkout@v4
 
@@ -33,7 +33,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/municipios.json
+          git add data/municipios.json data/malha.json 2>/dev/null || git add data/municipios.json
           if git diff --cached --quiet; then
             echo "Sem mudanças."
           else
