@@ -80,6 +80,14 @@ svg.ch .vl{fill:var(--ink);font:700 11.5px var(--mono)}
 .explica b{color:var(--ink)}
 input[type=range]{width:min(100%,260px);accent-color:var(--accent)}
 .busca{position:relative}
+.hb{display:flex;flex-direction:column;gap:7px}
+.hbr{display:grid;grid-template-columns:minmax(90px,150px) minmax(0,1fr) auto;gap:10px;align-items:center;font-size:12.5px;color:var(--ink-2)}
+.hbr b{font-weight:500;font-size:12px;color:var(--ink-2)}
+h3.mini{margin:10px 0 2px;font-size:13px;color:var(--ink-2)}
+.btn{height:40px;padding:0 14px;border-radius:11px;border:1px solid var(--line);background:var(--bg);font-weight:700;font-size:13px}
+.btn:hover{border-color:var(--ink-2)}
+button.chip{background:var(--bg);color:var(--ink-2)}
+svg.mapa path:hover{stroke:var(--ink);stroke-width:1.2}
 .bar-el{display:grid;grid-template-columns:44px minmax(0,1fr) 92px;gap:10px;align-items:center;margin:9px 0;font-size:12.5px;color:var(--ink-2)}
 .pb{display:flex;height:18px;border-radius:6px;overflow:hidden;gap:1px;background:var(--surface-2)} .pb i{display:block;height:100%}
 .autor{max-width:1200px;margin:28px auto 0;padding-top:16px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;font-size:12.5px;color:var(--muted)}
@@ -114,12 +122,17 @@ html{--tbh:64px}
   <header class="top">
     <span class="eyebrow">Finanças públicas municipais</span>
     <h1>Prefeituras da <em>Amazônia Legal</em>, de Goiás e de Mato Grosso do Sul</h1>
-    <p class="lead-top">Receitas, despesas e investimentos de cada município desde 2016, a orientação ideológica do partido do prefeito e a expansão da soja, do milho, do algodão e do rebanho bovino. Inclui uma aba de econometria com eleições acirradas.</p>
+    <p class="lead-top">Receitas, despesas, investimentos e Lei de Responsabilidade Fiscal de cada município desde 2016, a orientação ideológica do partido do prefeito, o agronegócio, o desmatamento e resultados para a população. Inclui econometria (eleições acirradas e painel com efeitos fixos), mapa e dados para baixar.</p>
   </header>
   <div class="ctl" id="ctl"><span class="status">Carregando os dados dos municípios…</span></div>
   <nav class="abas" role="tablist" aria-label="Seções">
     <button role="tab" data-aba="geral" aria-selected="true">Visão geral</button>
+    <button role="tab" data-aba="fiscal" aria-selected="false">Finanças públicas</button>
+    <button role="tab" data-aba="politica" aria-selected="false">Economia política</button>
     <button role="tab" data-aba="agro" aria-selected="false">Agronegócio</button>
+    <button role="tab" data-aba="amazonia" aria-selected="false">Amazônia</button>
+    <button role="tab" data-aba="resultados" aria-selected="false">Resultados</button>
+    <button role="tab" data-aba="mapa" aria-selected="false">Mapa</button>
     <button role="tab" data-aba="mun" aria-selected="false">Municípios</button>
     <button role="tab" data-aba="rdd" aria-selected="false">Eleições acirradas</button>
     <button role="tab" data-aba="metodo" aria-selected="false">Método e fontes</button>
