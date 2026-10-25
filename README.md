@@ -11,6 +11,7 @@ Publicado em: https://cleitonfranco74.github.io/financas_municipais/
 - **Agronegócio:** área colhida de soja, milho e algodão e rebanho bovino; investimento por perfil agropecuário (peso da agropecuária no PIB); cruzamento perfil × orientação; dispersão de municípios com reta de mínimos quadrados e correlação.
 - **Amazônia:** desmatamento PRODES e focos de queimadas por orientação do prefeito, emprego formal na agropecuária, dispersão agro × ambiente e lista dos municípios que mais desmataram.
 - **Resultados:** mortalidade infantil por orientação do prefeito, esgoto e alfabetização (Censo 2022) e dispersão gasto × resultado.
+- **Correlações:** matriz de correlações (Pearson ou Spearman) entre 20 características dos municípios (orientação do prefeito, população, PIB, agro, finanças, LRF, ambiente e resultados), ranking das relações mais fortes com valor-p e gráfico de dispersão de cada par.
 - **Mapa:** mapa coroplético dos municípios (orientação, investimento, pessoal, saúde fiscal, agro, desmatamento, mortalidade, esgoto).
 - **Municípios:** ranking, ficha de cada município, comparador de até quatro municípios e download do painel município-ano em CSV (Excel ou R/Stata/Python).
 - **Eleições acirradas:** regressão descontínua (linear local, núcleo triangular, erro-padrão robusto HC1) sobre a margem da esquerda contra a direita ou do partido do governador contra outro partido, com faixa ajustável e histograma das margens.
