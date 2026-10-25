@@ -30,7 +30,7 @@
   const SEM = { k: "sd", n: "Sem classificação", c: "#52525b" };
   let D, M = [], ANOS = [], REF = null;
   const st = { aba: "geral", uf: "", modo: "4", met: "invpc", mun: null, x: "peso", y: "inv", h: 20, rddE: "2016+2020", rddY: "inv", rddC: "ideo", ord: "invpc", comp: [],
-    fn: "10", polY: "invpc", polY2: "convEpc", amX: "expansao", amY: "desm", resX: "saude", resY: "tmi", mapa: "orient", cmet: "invpc", corr: "p", cxy: "6-3" };
+    fn: "10", polY: "invpc", polY2: "convEpc", amX: "expansao", amY: "desm", resX: "saude", resY: "tmi", mapa: "orient", cmet: "invpc", corr: "p", cxy: "6-3", cvar: "6" };
 
   const nota = sg => { if (!sg) return null; const s = sg.trim().toUpperCase(); return D.escala[D.sinonimos[s] || s] ?? null; };
   const cat7 = sc => sc == null ? null : CATS.find(c => sc <= c[2])[0];
@@ -800,24 +800,24 @@
   /* uma linha por município; períodos médios para suavizar anos atípicos */
   const mediaLrf = (m, i) => { const v = ULT().map(a => m.f[a]?.lrf?.[i]).filter(x => x != null); return v.length >= 2 ? media(v) : null; };
   const VARS = [
-    { n: "Ideologia do prefeito", l: "Escala ideológica do partido do prefeito eleito em 2020 (0 = esquerda, 10 = direita)", v: m => nota(m.ele?.["2020"]?.[0]), f: v => nf(v, 1) },
-    { n: "População (log)", l: "Logaritmo decimal da população", v: m => m.pop?.[REF] ? Math.log10(m.pop[REF]) : null, f: v => nf(10 ** v) },
-    { n: "PIB por habitante", l: RX.pib.n, v: pibpc, f: brl },
-    { n: "Peso do agro no PIB", l: XS.peso.n, v: XS.peso.v, f: XS.peso.f },
-    { n: "Lavouras por habitante", l: XS.soja.n, v: XS.soja.v, f: XS.soja.f },
+    { n: "Ideologia do prefeito", a: (m, a) => scoreAno(m, a),  l: "Escala ideológica do partido do prefeito eleito em 2020 (0 = esquerda, 10 = direita)", v: m => nota(m.ele?.["2020"]?.[0]), f: v => nf(v, 1) },
+    { n: "População (log)", a: (m, a) => m.pop?.[a] ? Math.log10(m.pop[a]) : null,  l: "Logaritmo decimal da população", v: m => m.pop?.[REF] ? Math.log10(m.pop[REF]) : null, f: v => nf(10 ** v) },
+    { n: "PIB por habitante", a: (m, a) => m.pib?.[a]?.[0] && m.pop?.[a] ? m.pib[a][0] * 1e3 * deflator(a) / m.pop[a] : null,  l: RX.pib.n, v: pibpc, f: brl },
+    { n: "Peso do agro no PIB", a: (m, a) => m.pib?.[a]?.[0] && m.pib[a][1] != null ? m.pib[a][1] / m.pib[a][0] : null,  l: XS.peso.n, v: XS.peso.v, f: XS.peso.f },
+    { n: "Lavouras por habitante", a: (m, a) => m.agro?.[a] && m.pop?.[a] ? (m.agro[a][0] + m.agro[a][1] + m.agro[a][2]) / m.pop[a] : null,  l: XS.soja.n, v: XS.soja.v, f: XS.soja.f },
     { n: "Expansão das lavouras", l: XS.expansao.n, v: XS.expansao.v, f: XS.expansao.f },
-    { n: "Investimento/hab.", l: YS.inv.n, v: YS.inv.v, f: brl },
-    { n: "Receita própria/hab.", l: YS.tribpc.n, v: YS.tribpc.v, f: brl },
-    { n: "Transferências %", l: YS.transf.n, v: YS.transf.v, f: YS.transf.f },
-    { n: "Voluntárias/hab.", l: "Transferências voluntárias por habitante, média 2021–2024", v: m => periodo(m, ULT(), "convpc"), f: brl },
-    { n: "Saúde/hab.", l: RX.saude.n, v: RX.saude.v, f: brl },
-    { n: "Educação/hab.", l: RX.educ.n, v: RX.educ.v, f: brl },
-    { n: "Pessoal % RCL", l: "Despesa com pessoal em % da RCL, média 2021–2024", v: m => mediaLrf(m, 1), f: v => `${nf(v, 1)}%` },
-    { n: "Saúde fiscal", l: "Índice de saúde fiscal, média 2021–2024", v: m => { const v = ULT().map(a => isf(m, a)).filter(x => x != null); return v.length >= 2 ? media(v) : null; }, f: v => nf(v, 2) },
-    { n: "Desmatamento", l: AMY.desm.n, v: AMY.desm.v, f: AMY.desm.f },
-    { n: "Queimadas", l: AMY.fogo.n, v: AMY.fogo.v, f: AMY.fogo.f },
-    { n: "Emprego agro", l: AMY.emp.n, v: AMY.emp.v, f: AMY.emp.f },
-    { n: "Mortalidade infantil", l: RY.tmi.n, v: RY.tmi.v, f: RY.tmi.f },
+    { n: "Investimento/hab.", a: (m, a) => indiv(m, a, "invpc"),  l: YS.inv.n, v: YS.inv.v, f: brl },
+    { n: "Receita própria/hab.", a: (m, a) => indiv(m, a, "tribpc"),  l: YS.tribpc.n, v: YS.tribpc.v, f: brl },
+    { n: "Transferências %", a: (m, a) => indiv(m, a, "transf"),  l: YS.transf.n, v: YS.transf.v, f: YS.transf.f },
+    { n: "Voluntárias/hab.", a: (m, a) => indiv(m, a, "convpc"),  l: "Transferências voluntárias por habitante, média 2021–2024", v: m => periodo(m, ULT(), "convpc"), f: brl },
+    { n: "Saúde/hab.", a: (m, a) => indiv(m, a, "saudepc"),  l: RX.saude.n, v: RX.saude.v, f: brl },
+    { n: "Educação/hab.", a: (m, a) => indiv(m, a, "educpc"),  l: RX.educ.n, v: RX.educ.v, f: brl },
+    { n: "Pessoal % RCL", a: (m, a) => m.f[a]?.lrf?.[1] ?? null,  l: "Despesa com pessoal em % da RCL, média 2021–2024", v: m => mediaLrf(m, 1), f: v => `${nf(v, 1)}%` },
+    { n: "Saúde fiscal", a: (m, a) => isf(m, a),  l: "Índice de saúde fiscal, média 2021–2024", v: m => { const v = ULT().map(a => isf(m, a)).filter(x => x != null); return v.length >= 2 ? media(v) : null; }, f: v => nf(v, 2) },
+    { n: "Desmatamento", a: (m, a) => m.desm?.[a] ?? null,  l: AMY.desm.n, v: AMY.desm.v, f: AMY.desm.f },
+    { n: "Queimadas", a: (m, a) => m.fogo?.[a] ?? null,  l: AMY.fogo.n, v: AMY.fogo.v, f: AMY.fogo.f },
+    { n: "Emprego agro", a: (m, a) => m.emp?.[a] && m.pop?.[a] ? 1000 * m.emp[a][1] / m.pop[a] : null,  l: AMY.emp.n, v: AMY.emp.v, f: AMY.emp.f },
+    { n: "Mortalidade infantil", a: (m, a) => { const v = m.tmi?.[a]; return v && v[1] >= 50 ? 1000 * v[0] / v[1] : null; },  l: RY.tmi.n, v: RY.tmi.v, f: RY.tmi.f },
     { n: "Rede de esgoto", l: RY.esgoto.n, v: RY.esgoto.v, f: RY.esgoto.f },
     { n: "Alfabetização", l: RY.alfab.n, v: RY.alfab.v, f: RY.alfab.f },
   ];
@@ -831,6 +831,22 @@
     const { r } = spearman ? ols(postos(x), postos(y)) : ols(x, y);
     const t = Math.abs(r) < 1 ? r * Math.sqrt((n - 2) / (1 - r * r)) : Infinity;
     return { r, n, p: isFinite(t) ? normalP(t) : 0 };
+  }
+  /* intervalo de 95% pela transformação z de Fisher */
+  const icR = (r, n) => { if (n < 4) return [null, null]; const z = Math.atanh(Math.max(-.9999, Math.min(.9999, r))), e = 1.96 / Math.sqrt(n - 3); return [Math.tanh(z - e), Math.tanh(z + e)]; };
+  /* barras horizontais de correlação, de −1 a +1, com intervalo de confiança */
+  function barrasR(itens, { w = largura(), rotulo = 170 } = {}){
+    if (!itens.length) return `<p class="nota">Poucos municípios para calcular.</p>`;
+    const lh = 24, pt = 22, alto = pt + itens.length * lh + 8, x0 = rotulo + 8, x1 = w - 64, X = r => x0 + (r + 1) / 2 * (x1 - x0);
+    return `<svg class="ch" viewBox="0 0 ${w} ${alto}" role="img" aria-label="Correlações em barras">
+      ${[-1, -.5, 0, .5, 1].map(t => `<line class="${t ? "gl" : "zero"}" x1="${X(t)}" x2="${X(t)}" y1="${pt - 4}" y2="${alto - 6}"/><text class="ax" x="${X(t)}" y="12" text-anchor="middle">${t > 0 ? "+" : ""}${nf(t, 1)}</text>`).join("")}
+      ${itens.map((q, k) => { const y = pt + k * lh, c = q.r >= 0 ? "#2dd4bf" : "#f97316";
+        return `<g ${q.st ? `data-st="${q.st}" style="cursor:pointer"` : ""}><rect x="0" y="${y}" width="${w}" height="${lh}" fill="transparent"/><text class="ax" x="${rotulo}" y="${y + lh / 2 + 4}" text-anchor="end" style="fill:var(--ink-2)">${esc(q.n)}</text>
+          <rect x="${Math.min(X(0), X(q.r))}" y="${y + 5}" width="${Math.max(1, Math.abs(X(q.r) - X(0)))}" height="${lh - 10}" rx="3" fill="${c}" fill-opacity="${q.destaque ? 1 : .75}"/>
+          ${q.lo != null ? `<line x1="${X(q.lo)}" x2="${X(q.hi)}" y1="${y + lh / 2}" y2="${y + lh / 2}" stroke="var(--ink)" stroke-width="1.4"/><line x1="${X(q.lo)}" x2="${X(q.lo)}" y1="${y + 8}" y2="${y + lh - 8}" stroke="var(--ink)"/><line x1="${X(q.hi)}" x2="${X(q.hi)}" y1="${y + 8}" y2="${y + lh - 8}" stroke="var(--ink)"/>` : ""}
+          <text class="ax" x="${x1 + 6}" y="${y + lh / 2 + 4}" style="fill:var(--ink)">${q.r >= 0 ? "+" : "−"}${nf(Math.abs(q.r), 2)}</text>
+          <title>${esc(q.n)}: r = ${nf(q.r, 2)}${q.lo != null ? `, intervalo de 95% de ${nf(q.lo, 2)} a ${nf(q.hi, 2)}` : ""} (n = ${q.nn})</title></g>`; }).join("")}
+    </svg>`;
   }
   const forca = r => { const a = Math.abs(r); return a < .1 ? "nula" : a < .3 ? "fraca" : a < .5 ? "moderada" : "forte"; };
   const corR = r => r == null ? "var(--surface-2)" : `rgba(${r >= 0 ? "45,212,191" : "249,115,22"},${(.12 + .88 * Math.min(1, Math.abs(r))).toFixed(2)})`;
@@ -859,6 +875,25 @@
     pares.sort((a, b) => Math.abs(b.r) - Math.abs(a.r));
     const sigTxt = p => p < .001 ? "***" : p < .01 ? "**" : p < .05 ? "*" : "";
     const linha = q => `<tr data-st="cxy:${q.i}-${q.j}" style="cursor:pointer"><td>${esc(VARS[q.i].n)} × ${esc(VARS[q.j].n)}</td><td class="num" style="color:${q.r >= 0 ? "#2dd4bf" : "#f97316"}">${q.r >= 0 ? "+" : "−"}${nf(Math.abs(q.r), 2)}${sigTxt(q.p)}</td><td>${forca(q.r)}</td><td class="num">${nf(q.n)}</td></tr>`;
+    // 1) uma variável contra todas as outras
+    const cv = Math.min(K - 1, Math.max(0, +st.cvar || 0));
+    const comIc = o => { const [lo, hi] = icR(o.r, o.nn); return { ...o, lo, hi }; };
+    const perfil = VARS.map((V, j) => j === cv || !R[cv][j] ? null : comIc({ n: V.n, r: R[cv][j].r, nn: R[cv][j].n, st: `cxy:${cv}-${j}` })).filter(Boolean).sort((a, b) => b.r - a.r);
+    const rotB = curto ? 112 : 170;
+    // 2) o par escolhido em cada estado (todos os estados, mesmo com o filtro ligado)
+    const parUf = D.ufs.map(uf => { const g = M.filter(m => m.uf === uf), c2 = correl(g.map(m => VARS[cj].v(m)), g.map(m => VARS[ci].v(m)), sp);
+      return c2 ? comIc({ n: `${uf} (${c2.n})`, r: c2.r, nn: c2.n, st: `uf:${uf}`, destaque: uf === st.uf }) : null; }).filter(Boolean).sort((a, b) => b.r - a.r);
+    const geralPar = correl(M.map(m => VARS[cj].v(m)), M.map(m => VARS[ci].v(m)), sp);
+    // 3) o par escolhido ano a ano
+    const anosC = [...new Set(M.flatMap(m => [...Object.keys(m.fin || {}), ...Object.keys(m.desm || {})]))].filter(a => +a >= 2016).sort();
+    let tempo = `<p class="nota">${!VARS[ci].a ? esc(VARS[ci].n) : esc(VARS[cj].n)} não varia de ano para ano no painel (${(!VARS[ci].a ? VARS[ci] : VARS[cj]).l.includes("Censo") ? "vem do Censo 2022" : "é uma medida do período todo"}). Escolha outro par na matriz.</p>`;
+    let nAnos = 0;
+    if (VARS[ci].a && VARS[cj].a){
+      const ser = { r: {}, lo: {}, hi: {} };
+      anosC.forEach(a => { const c3 = correl(ms.map(m => VARS[cj].a(m, a)), ms.map(m => VARS[ci].a(m, a)), sp); if (!c3 || c3.n < 30) return; const [lo, hi] = icR(c3.r, c3.n); ser.r[a] = c3.r; ser.lo[a] = lo; ser.hi[a] = hi; nAnos++; });
+      tempo = nAnos ? linhas([{ n: `r de ${sp ? "Spearman" : "Pearson"}`, c: "#2dd4bf", v: ser.r }, { n: "Limites do intervalo de 95%", c: "#71717a", dash: true, v: ser.lo }, { n: " ", c: "#71717a", dash: true, v: ser.hi }],
+        { anos: anosC.filter(a => ser.r[a] != null), fmt: v => `${v > 0 ? "+" : v < 0 ? "−" : ""}${nf(Math.abs(v), 2)}`, alto: 260, w: Math.min(largura(), 560) }).replace(/<span><i style="background:#71717a"><\/i> <\/span>/, "") : `<p class="nota">Poucos municípios com os dois dados em cada ano.</p>`;
+    }
     // dispersão do par escolhido
     const X = VARS[cj], Y = VARS[ci], c = R[ci]?.[cj];
     const pts = ms.map(m => { const g = grupo(nota(m.ele?.["2020"]?.[0])); return { x: X.v(m), y: Y.v(m), c: g.c, id: m.c, t: `${m.n} (${m.uf}) · ${g.n}\n${X.n}: ${X.f(X.v(m))}\n${Y.n}: ${Y.f(Y.v(m))}` }; }).filter(p => p.x != null && p.y != null && isFinite(p.x) && isFinite(p.y));
@@ -871,6 +906,16 @@
         <div class="leg"><span><i style="background:${corR(-.9)}"></i>−0,9</span><span><i style="background:${corR(-.5)}"></i>−0,5</span><span><i style="background:${corR(-.15)}"></i>−0,15</span><span><i style="background:${corR(.15)}"></i>+0,15</span><span><i style="background:${corR(.5)}"></i>+0,5</span><span><i style="background:${corR(.9)}"></i>+0,9</span></div></section>
       <section class="panel" style="margin-top:16px"><h2>${esc(Y.n)} × ${esc(X.n)}</h2><p class="sub">${c ? `r de ${sp ? "Spearman" : "Pearson"} = <b>${nf(c.r, 2)}</b> (${forca(c.r)}), ${nf(c.n)} municípios, valor-p ${c.p < .001 ? "&lt; 0,001" : nf(c.p, 3)}. Linha: mínimos quadrados.` : "Poucos municípios com os dois dados."} Clique num ponto para abrir o município.</p>
           ${typeof d === "string" ? d : `${d.svg}${legGrupos()}`}</section>
+      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>${esc(VARS[cv].n)} contra todas as outras</h2><p class="sub">Correlação de ${sp ? "Spearman" : "Pearson"} com cada variável, da mais positiva à mais negativa. Traço preto: intervalo de 95% (transformação z de Fisher); se ele cruza o zero, a correlação não é significativa a 5%. Clique numa barra para ver o gráfico do par.</p></div>
+        <div class="ctl" style="padding:8px 12px"><label class="f"><span>Variável</span><select data-stsel="cvar">${VARS.map((V, i) => `<option value="${i}" ${i === cv ? "selected" : ""}>${esc(V.n)}</option>`).join("")}</select></label></div></div>
+        ${barrasR(perfil, { rotulo: rotB })}</section>
+      <div class="grid" style="margin-top:16px">
+        <section class="panel"><h2>${esc(Y.n)} × ${esc(X.n)}, por estado</h2><p class="sub">A mesma correlação calculada dentro de cada UF (entre parênteses, o número de municípios). ${geralPar ? `Na região toda: <b>r = ${nf(geralPar.r, 2)}</b>.` : ""} Estados com menos de 10 municípios com dado ficam de fora. Clique num estado para filtrar a página.</p>
+          ${barrasR(parUf, { w: Math.min(largura(), 560), rotulo: 70 })}
+          <p class="nota">Se a relação muda de sinal ou de força entre estados, a correlação da região mistura situações diferentes (heterogeneidade; no limite, o paradoxo de Simpson). Estados com poucos municípios (AP, RR, AC) têm intervalos largos.</p></section>
+        <section class="panel"><h2>${esc(Y.n)} × ${esc(X.n)}, ano a ano</h2><p class="sub">A correlação entre os valores de cada ano${st.uf ? ` em ${st.uf}` : ""}, com o intervalo de 95%. Anos com menos de 30 municípios com os dois dados ficam de fora; o último ano das finanças e do PRODES pode ser parcial.</p>
+          ${tempo}</section>
+      </div>
       <section class="panel" style="margin-top:16px"><h2>As relações mais fortes</h2><p class="sub">Pares ordenados pelo tamanho da correlação. *** p &lt; 0,001; ** p &lt; 0,01; * p &lt; 0,05. Clique para ver o gráfico.</p>
           <div class="tbwrap"><table class="tb"><thead><tr><th>Par</th><th>r</th><th>Força</th><th>n</th></tr></thead><tbody>${pares.slice(0, 15).map(linha).join("")}</tbody></table></div>
           <p class="nota">Com mais de mil municípios, até correlações fracas (|r| perto de 0,1) são estatisticamente significativas; olhe o tamanho, não só as estrelas. Alguns pares são quase mecânicos (receita própria e PIB, lavouras e emprego agro).</p></section>
@@ -917,7 +962,7 @@
     const t = e.target.closest("[data-met],[data-ord],[data-mun],[data-voltar],[data-st],[data-comp],[data-csv]");
     if (!t) return;
     if (t.dataset.csv){ baixarCsv(t.dataset.csv); return; }
-    if (t.dataset.st){ const [k, v] = t.dataset.st.split(":"); st[k] = v; }
+    if (t.dataset.st){ const [k, v] = t.dataset.st.split(":"); st[k] = v; if (k === "uf") controles(); }
     else if (t.dataset.comp){ const c = +t.dataset.comp, i = st.comp.indexOf(c); if (i >= 0) st.comp.splice(i, 1); else { st.comp.push(c); if (st.comp.length > 4) st.comp.shift(); } }
     else if (t.dataset.met) st.met = t.dataset.met;
     else if (t.dataset.ord) st.ord = t.dataset.ord;
