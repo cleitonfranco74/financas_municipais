@@ -841,10 +841,10 @@
     for (let i = 0; i < K; i++) for (let j = i + 1; j < K; j++){ R[i][j] = R[j][i] = correl(col[i], col[j], sp); }
     // matriz
     // em telas estreitas, as linhas levam só o número (a tabela de variáveis serve de legenda)
-    const w = largura(), curto = w < 640, rot = curto ? 24 : 190, cel = Math.max(11, Math.min(40, (w - rot - 8) / K)), larg = rot + cel * K + 4, alt = 26 + cel * K + 4;
+    const w = largura(), curto = w < 640, rot = curto ? 24 : 190, cel = Math.max(30, Math.min(40, (w - rot - 8) / K)), larg = rot + cel * K + 4, alt = 26 + cel * K + 4;
     const num = cel >= 30;
     const [ci, cj] = (st.cxy || "6-3").split("-").map(Number);
-    const mat = `<svg class="ch" viewBox="0 0 ${larg} ${alt}" role="img" aria-label="Matriz de correlações" style="max-width:${larg}px">
+    const mat = `<svg class="ch" viewBox="0 0 ${larg} ${alt}" role="img" aria-label="Matriz de correlações" style="width:${larg}px;max-width:none">
       ${VARS.map((V, j) => `<text class="ax" x="${rot + cel * (j + .5)}" y="18" text-anchor="middle">${j + 1}</text>`).join("")}
       ${VARS.map((V, i) => `<text class="ax" x="${rot - 6}" y="${26 + cel * (i + .5) + 4}" text-anchor="end" style="fill:var(--ink-2)">${i + 1}${curto ? "" : `. ${esc(V.n)}`}</text>` +
         VARS.map((W, j) => { const c = R[i][j], x = rot + cel * j, y = 26 + cel * i, ativo = (i === ci && j === cj) || (i === cj && j === ci);
@@ -865,7 +865,7 @@
     const d = ci !== cj ? dispersao(pts, { fx: X.f, fy: Y.f, nx: X.l, ny: Y.l }) : "";
     main.innerHTML = `
       <div class="explica"><h3>Como ler</h3><p>Cada célula mostra a correlação entre duas características dos municípios${st.uf ? ` de ${st.uf}` : ""}, de −1 a +1. <b style="color:#2dd4bf">Verde-água</b>: as duas sobem juntas; <b style="color:#f97316">laranja</b>: quando uma sobe, a outra desce; quanto mais forte a cor, mais forte a relação. Clique numa célula para ver o gráfico do par. <b>Pearson</b> mede relação linear e é sensível a valores extremos; <b>Spearman</b> usa a ordem (postos) e capta qualquer relação que só sobe ou só desce. Correlação não é causa: veja as abas Economia política e Eleições acirradas.</p></div>
-      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>Matriz de correlações</h2><p class="sub">${K} variáveis, ${ms.length} municípios; cada par usa os municípios com os dois dados. Finanças: médias de 2021 a 2024, a preços de ${REF}.${curto ? " Os números das linhas e colunas estão na tabela Variáveis, no fim da página." : ""}</p></div>
+      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>Matriz de correlações</h2><p class="sub">${K} variáveis, ${ms.length} municípios; cada par usa os municípios com os dois dados. Finanças: médias de 2021 a 2024, a preços de ${REF}.${curto ? " Arraste a matriz para o lado para ver todas as colunas; os números das linhas e colunas estão na tabela Variáveis, no fim da página." : ""}</p></div>
         ${segSt("corr", [["p", "Pearson"], ["s", "Spearman"]])}</div>
         <div class="tbwrap">${mat}</div>
         <div class="leg"><span><i style="background:${corR(-.9)}"></i>−0,9</span><span><i style="background:${corR(-.5)}"></i>−0,5</span><span><i style="background:${corR(-.15)}"></i>−0,15</span><span><i style="background:${corR(.15)}"></i>+0,15</span><span><i style="background:${corR(.5)}"></i>+0,5</span><span><i style="background:${corR(.9)}"></i>+0,9</span></div></section>
@@ -908,7 +908,7 @@
   const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, resultados, correlacoes, mapa: mapaAba, mun: munAba, rdd: rddAba, metodo };
   function render(){
     document.querySelectorAll("nav.abas button").forEach(b => b.setAttribute("aria-selected", b.dataset.aba === st.aba));
-    ABAS[st.aba]();
+    (ABAS[st.aba] || ABAS.geral)();
   }
   document.querySelector("nav.abas").addEventListener("click", e => { const b = e.target.closest("[data-aba]"); if (!b) return; st.aba = b.dataset.aba; history.replaceState(null, "", "#" + st.aba); render(); });
   ctl.addEventListener("change", e => { if (e.target.id === "fUf"){ st.uf = e.target.value; render(); } });
