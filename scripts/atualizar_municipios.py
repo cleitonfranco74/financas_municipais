@@ -242,17 +242,17 @@ RC_CODIGOS = {
 }
 
 
-def siconfi(cod: int, ano: int) -> dict:
+def siconfi(cod: int, ano: int, so_lrf: bool = False) -> dict:
     """Contas de um município num ano, em R$ mil:
     fin: [receita líquida, transferências, receita tributária, despesa liquidada, investimento liquidado];
     rc: fontes de receita na ordem de RC_NOMES; fn: {função: despesa liquidada};
     lrf: [RCL, pessoal % RCL, dívida consolidada líquida % RCL, restos a pagar não processados, caixa líquido,
-          resultado primário, meta de resultado primário]."""
+          resultado primário, meta de resultado primário, % aplicado em saúde, % aplicado em educação (MDE)]."""
     p = lambda anexo: {"an_exercicio": ano, "id_ente": cod, "no_anexo": anexo}
     itens = lambda r: r.json().get("items", [])
-    rec = itens(get(SICONFI + "dca", p("DCA-Anexo I-C"), timeout=90))
-    desp = itens(get(SICONFI + "dca", p("DCA-Anexo I-D"), timeout=90))
     out: dict = {}
+    rec = [] if so_lrf else itens(get(SICONFI + "dca", p("DCA-Anexo I-C"), timeout=90))
+    desp = [] if so_lrf else itens(get(SICONFI + "dca", p("DCA-Anexo I-D"), timeout=90))
     if rec or desp:
         def soma(lista, prefixo, coluna):
             return sum(i.get("valor") or 0 for i in lista if str(i.get("cod_conta", "")).startswith(prefixo) and coluna(i.get("coluna", "")))
@@ -268,7 +268,7 @@ def siconfi(cod: int, ano: int) -> dict:
             out["fin"] = [round(x / 1e3, 1) for x in (receita, transf, trib, despesa, invest)]
         brutas = {i.get("cod_conta"): i.get("valor") or 0 for i in rec if bruta(i.get("coluna", ""))}
         out["rc"] = [round(sum(brutas.get(k, 0) for k in RC_CODIGOS[n]) / 1e3, 1) for n in RC_NOMES]
-    funcoes = itens(get(SICONFI + "dca", p("DCA-Anexo I-E"), timeout=90))
+    funcoes = [] if so_lrf else itens(get(SICONFI + "dca", p("DCA-Anexo I-E"), timeout=90))
     fn = {}
     for i in funcoes:
         m = re.match(r"^\s*(\d\d) - ", i.get("conta") or "")
@@ -276,15 +276,20 @@ def siconfi(cod: int, ano: int) -> dict:
             fn[m.group(1)] = fn.get(m.group(1), 0) + (i.get("valor") or 0)
     if fn:
         out["fn"] = {k: round(v / 1e3, 1) for k, v in sorted(fn.items())}
-    # RGF simplificado do Executivo: 3º quadrimestre ou, nos municípios que publicam por semestre, o 2º semestre
+    # RGF do Executivo, Anexo 6 (demonstrativo simplificado): 3º quadrimestre ou 2º semestre. Municípios com menos
+    # de 50 mil habitantes podem publicar o "RGF Simplificado", semestral, e o "RREO Simplificado".
     rgf = []
-    for periodicidade, periodo in (("Q", 3), ("S", 2)):
+    for tipo, periodicidade, periodo in (("RGF", "Q", 3), ("RGF Simplificado", "S", 2), ("RGF", "S", 2), ("RGF Simplificado", "Q", 3)):
         rgf = itens(get(SICONFI + "rgf", {"an_exercicio": ano, "in_periodicidade": periodicidade, "nr_periodo": periodo,
-                                         "co_tipo_demonstrativo": "RGF", "no_anexo": "RGF-Anexo 06", "co_poder": "E", "id_ente": cod}, timeout=90))
+                                         "co_tipo_demonstrativo": tipo, "no_anexo": "RGF-Anexo 06", "co_poder": "E", "id_ente": cod}, timeout=90))
         if rgf:
             break
-    rreo = itens(get(SICONFI + "rreo", {"an_exercicio": ano, "nr_periodo": 6, "co_tipo_demonstrativo": "RREO",
-                                       "no_anexo": "RREO-Anexo 14", "id_ente": cod}, timeout=90))
+    rreo = []
+    for tipo in ("RREO", "RREO Simplificado"):
+        rreo = itens(get(SICONFI + "rreo", {"an_exercicio": ano, "nr_periodo": 6, "co_tipo_demonstrativo": tipo,
+                                           "no_anexo": "RREO-Anexo 14", "id_ente": cod}, timeout=90))
+        if rreo:
+            break
     def acha(lista, conta, coluna):
         for i in lista:
             if conta(str(i.get("cod_conta", ""))) and coluna(str(i.get("coluna", "")).upper()):
@@ -299,8 +304,12 @@ def siconfi(cod: int, ano: int) -> dict:
         caixa = acha(rgf, lambda c: "ValorTotalRestosAPagar" in c, lambda c: c.startswith("DISPONIBILIDADE"))
         primario = acha(rreo, lambda c: "ResultadoPrimario" in c and "Simplificado" in c, lambda c: c.startswith("RESULTADO APURADO"))
         meta = acha(rreo, lambda c: "ResultadoPrimario" in c and "Simplificado" in c, lambda c: c.startswith("META"))
+        saude = acha(rreo, lambda c: "ServicosPublicosDeSaude" in c, lambda c: c.startswith("% APLICADO"))
+        ensino = acha(rreo, lambda c: "ManutencaoEDesenvolvimentoDoEnsino" in c, lambda c: c.startswith("% APLICADO"))
         mil = lambda x: round(x / 1e3, 1) if x is not None else None
-        out["lrf"] = [mil(rcl), pessoal, divida, mil(rp), mil(caixa), mil(primario), mil(meta)]
+        out["lrf"] = [mil(rcl), pessoal, divida, mil(rp), mil(caixa), mil(primario), mil(meta), saude, ensino]
+    else:
+        out["lrf"] = [None] * 9   # nada publicado: marca como consultado (os dois últimos anos são sempre revistos)
     return out
 
 
@@ -313,18 +322,20 @@ def financas(ms: dict, antes: dict) -> None:
             m[k] = {a: v for a, v in antes.get(c, {}).get(k, {}).items() if v}
         for a in range(INICIO, fim + 1):
             if str(a) not in m["fin"]:
-                pendentes.append((c, a))
-            elif a >= fim - 1 or str(a) not in m["lrf"]:  # os dois últimos anos podem ser retificados
-                revisar.append((c, a))
+                pendentes.append((c, a, False))
+            elif a >= fim - 1:                            # os dois últimos anos podem ser retificados
+                revisar.append((c, a, False))
+            elif len(m["lrf"].get(str(a), [])) < 9:       # falta a LRF (ou os campos novos): só RGF e RREO
+                revisar.append((c, a, True))
     # primeiro o que falta (anos recentes antes), depois as revisões, se sobrar tempo
     pendentes = (sorted(pendentes, key=lambda p: -p[1]) + sorted(revisar, key=lambda p: -p[1]))[:MAX_PARES]
     limite = time.monotonic() + PRAZO_SICONFI * 60
-    def tarefa(c, a):
-        return siconfi(c, a) if time.monotonic() < limite else None
+    def tarefa(c, a, so_lrf):
+        return siconfi(c, a, so_lrf) if time.monotonic() < limite else None
     log(f"Siconfi: {len(pendentes)} pares município-ano a consultar.")
     feitos = erros = adiados = 0
     with ThreadPoolExecutor(TRABALHADORES) as ex:
-        fut = {ex.submit(tarefa, c, a): (c, a) for c, a in pendentes}
+        fut = {ex.submit(tarefa, *p): p[:2] for p in pendentes}
         for f in as_completed(fut):
             c, a = fut[f]
             try:
@@ -626,7 +637,7 @@ def main() -> int:
         "unidades": {"fin": "R$ mil correntes: receita líquida, transferências, receita tributária, despesa liquidada, investimento liquidado",
                      "rc": "R$ mil correntes, receitas brutas: " + ", ".join(RC_NOMES),
                      "fn": "R$ mil correntes: despesa liquidada por função (código da função)",
-                     "lrf": "RCL (R$ mil), pessoal % RCL, dívida consolidada líquida % RCL, restos a pagar não processados (R$ mil), caixa líquido (R$ mil), resultado primário (R$ mil), meta (R$ mil)",
+                     "lrf": "RCL (R$ mil), pessoal % RCL, dívida consolidada líquida % RCL, restos a pagar não processados (R$ mil), caixa líquido (R$ mil), resultado primário (R$ mil), meta (R$ mil), % da receita de impostos aplicado em saúde e em manutenção e desenvolvimento do ensino (RREO, Anexo 14)",
                      "agro": "soja, milho e algodão (ha colhidos), valor das três lavouras (R$ mil), bovinos (cabeças)",
                      "pib": "PIB e valor adicionado da agropecuária (R$ mil correntes)",
                      "ele": "partido do vencedor, votos, partido do 2º colocado, votos, votos válidos, turno",
