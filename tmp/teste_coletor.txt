@@ -1,25 +1,265 @@
-== rgf 1200013 2023: 0
-
-== rreo 1200013 2023: 0
-
-== extrato 1200013: 
-== rgf 1300060 2023: 0
-
-== rreo 1300060 2023: 0
-
-== extrato 1300060: 
-== rgf 2100055 2023: 0
-
-== rreo 2100055 2023: 0
-
-== extrato 2100055: 
-== rgf 1700251 2023: 0
-
-== rreo 1700251 2023: 0
-
-== extrato 1700251: 
-== rgf 5000203 2023: 0
-
-== rreo 5000203 2023: 0
-
-== extrato 5000203: 
+== rgf 1200013 RGF Q3: 0 {}
+== rgf 1200013 RGF S2: 0 {}
+== rgf 1200013 RGF Simplificado Q3: 0 {}
+== rgf 1200013 RGF Simplificado S2: 301 {'RGF-Anexo 01': 101, 'RGF-Anexo 02': 60, 'RGF-Anexo 03': 12, 'RGF-Anexo 04': 12, 'RGF-Anexo 05': 93, 'RGF-Anexo 06': 23}
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-10> | 2608237.04
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-11> | 786939.77
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-1> | 2833769.97
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-2> | 2212091.88
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-3> | 1956402.11
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-4> | 2891031.31
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-5> | 1754792.91
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-6> | 2733013.75
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-7> | 2352019.4
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-8> | 2506083.23
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-9> | 2753994.47
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR> | 5061771.79
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (b) | 36203.98
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | TOTAL (ÚLTIMOS 12 MESES) (a) | 30450147.63
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-10> | 2608237.04
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-11> | 786939.77
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-1> | 2833769.97
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-2> | 2212091.88
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-3> | 1956402.11
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-4> | 2891031.31
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-5> | 1754792.91
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-6> | 2733013.75
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-7> | 2352019.4
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-8> | 2506083.23
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-9> | 2753994.47
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR> | 5061771.79
+RGF-Anexo 01 | DespesaComPessoalBruta | INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (b) | 36203.98
+RGF-Anexo 01 | DespesaComPessoalBruta | TOTAL (ÚLTIMOS 12 MESES) (a) | 30450147.63
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-10> | 2280940.85
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-11> | 786939.77
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-1> | 2427017.93
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-2> | 2212091.88
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-3> | 1758886.27
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-4> | 2697129.16
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-5> | 1555740.41
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-6> | 2542220.1
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-7> | 2164364.11
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-8> | 2320716.81
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-9> | 2576243.81
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR> | 4860016.65
+RGF-Anexo 01 | DespesaComPessoalLiquida | INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (b) | 36203.98
+RGF-Anexo 01 | DespesaComPessoalLiquida | TOTAL (ÚLTIMOS 12 MESES) (a) | 28182307.75
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-10> | 327296.19
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-1> | 406752.04
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-3> | 197515.84
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-4> | 193902.15
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-5> | 199052.5
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-6> | 190793.65
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-7> | 187655.29
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-8> | 185366.42
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-9> | 177750.66
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR> | 201755.14
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | TOTAL (ÚLTIMOS 12 MESES) (a) | 2267839.88
+RGF-Anexo 01 | DespesaComPessoalNaoComputadaIndenizacaoDemissaoVoluntaria | <MR-10> | 327296.19
+RGF-Anexo 01 | DespesaComPessoalNaoComputadaIndenizacaoDemissaoVoluntaria | <MR-1> | 406752.04
+RGF-Anexo 01 | DespesaComPessoalNaoComputadaIndenizacaoDemissaoVoluntaria | <MR-3> | 197515.84
+RGF-Anexo 01 | DespesaComPessoalNaoComputadaIndenizacaoDemissaoVoluntaria | <MR-4> | 193902.15
+RGF-Anexo 01 | DespesaComPessoalNaoComputadaIndenizacaoDemissaoVoluntaria 
+== rreo 1200013 RREO: 0 {}
+== rreo 1200013 RREO Simplificado: 1131 {'RREO-Anexo 01': 268, 'RREO-Anexo 02': 304, 'RREO-Anexo 03': 319, 'RREO-Anexo 06': 143, 'RREO-Anexo 07': 33, 'RREO-Anexo 09': 17, 'RREO-Anexo 14': 47}
+RREO-Anexo 14 | AplicacaoTotalDasDespesasComAcoesEServicosPublicosDeSaude | % Aplicado Até o Bimestre | 16.93
+RREO-Anexo 14 | AplicacaoTotalDasDespesasComAcoesEServicosPublicosDeSaude | % Mínimo a Aplicar no Exercício | 15
+RREO-Anexo 14 | AplicacaoTotalDasDespesasComAcoesEServicosPublicosDeSaude | Valor Apurado Até o Bimestre | 4269748.14
+RREO-Anexo 14 | ComplementacaoDaUniaoAoFUNDEBEducacaoInfantil | % Mínimo a Aplicar no Exercício | 50
+RREO-Anexo 14 | ComplementacaoDaUniaoAoFUNDEBEmDespesasDeCapital | % Mínimo a Aplicar no Exercício | 15
+RREO-Anexo 14 | DespesaDeCapitalLiquidaDemonstrativoSimplificado | Saldo Não Realizado | 5979752.28
+RREO-Anexo 14 | DespesaDeCapitalLiquidaDemonstrativoSimplificado | Valor Apurado no Exercício | 17473149.81
+RREO-Anexo 14 | DespesasEmpenhadasDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 73988898.91
+RREO-Anexo 14 | DespesasEmpenhadasDemonstrativoSimplificadoDespesasPorFuncaoSubfuncao | Até o Bimestre | 73988898.91
+RREO-Anexo 14 | DespesasLiquidadasDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 67662298.52
+RREO-Anexo 14 | DespesasPagasDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 67118565.38
+RREO-Anexo 14 | DotacaoAtualizadaDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 89562151.03
+RREO-Anexo 14 | DotacaoInicialDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 54204358.25
+RREO-Anexo 14 | MinimoAnualDasReceitasDeImpostosNaManutencaoEDesenvolvimentoDoEnsinoDemonstrativoSimplificado | % Aplicado Até o Bimestre | 38.89
+RREO-Anexo 14 | MinimoAnualDasReceitasDeImpostosNaManutencaoEDesenvolvimentoDoEnsinoDemonstrativoSimplificado | % Mínimo a Aplicar no Exercício | 25
+RREO-Anexo 14 | MinimoAnualDasReceitasDeImpostosNaManutencaoEDesenvolvimentoDoEnsinoDemonstrativoSimplificado | Valor Apurado Até o Bimestre | 10384154.99
+RREO-Anexo 14 | MinimoAnualDoFUNDEBNaRemuneracaoDoMagisterioComEducacaoInfantilEnsinoFundamentalEMedioDemonstrativoSimplificado | % Aplicado Até o Bimestre | 87.2
+RREO-Anexo 14 | MinimoAnualDoFUNDEBNaRemuneracaoDoMagisterioComEducacaoInfantilEnsinoFundamentalEMedioDemonstrativoSimplificado | % Mínimo a Aplicar no Exercício | 70
+RREO-Anexo 14 | MinimoAnualDoFUNDEBNaRemuneracaoDoMagisterioComEducacaoInfantilEnsinoFundamentalEMedioDemonstrativoSimplificado | Valor Apurado Até o Bimestre | 14488260.3
+RREO-Anexo 14 | PrevisaoAtualizadaDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 54204358.25
+RREO-Anexo 14 | PrevisaoInicialDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 54204358.25
+RREO-Anexo 14 | ReceitaCorrenteLiquidaAjustadaParaCalculoDosLimitesDaDespesaComPessoalDemonstrativoSimplificado | Até o Bimestre | 68076387.14
+RREO-Anexo 14 | ReceitaCorrenteLiquidaAjustadaParaCalculoDosLimitesDeEndividamentoDemonstrativoSimplificado | Até o Bimestre | 68076387.14
+RREO-Anexo 14 | ReceitaCorrenteLiquidaDemonstrativoSimplificado | Até o Bimestre | 68076387.14
+RREO-Anexo 14 | ReceitasRealizadasDemonstra
+== rgf 1300060 RGF Q3: 0 {}
+== rgf 1300060 RGF S2: 0 {}
+== rgf 1300060 RGF Simplificado Q3: 0 {}
+== rgf 1300060 RGF Simplificado S2: 304 {'RGF-Anexo 01': 102, 'RGF-Anexo 02': 63, 'RGF-Anexo 03': 12, 'RGF-Anexo 04': 8, 'RGF-Anexo 05': 96, 'RGF-Anexo 06': 23}
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-10> | 1848596.18
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-11> | 2152974.1
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-1> | 3087087.92
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-2> | 2492825.32
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-3> | 3195873.54
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-4> | 2256347.89
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-5> | 3011448.41
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-6> | 2245185.88
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-7> | 2727948.67
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-8> | 2272992.02
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-9> | 1820576.15
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR> | 2697729.5
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | TOTAL (ÚLTIMOS 12 MESES) (a) | 29809585.58
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-10> | 1848596.18
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-11> | 2152974.1
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-1> | 3087087.92
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-2> | 2492825.32
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-3> | 3195873.54
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-4> | 2256347.89
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-5> | 3011448.41
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-6> | 2245185.88
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-7> | 2727948.67
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-8> | 2272992.02
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-9> | 1820576.15
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR> | 2697729.5
+RGF-Anexo 01 | DespesaComPessoalBruta | TOTAL (ÚLTIMOS 12 MESES) (a) | 29809585.58
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-10> | 1762557.81
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-11> | 1911791.28
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-1> | 2887336.51
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-2> | 2234490.25
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-3> | 1704531.46
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-4> | 2144503.59
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-5> | 2922722.35
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-6> | 2128514.92
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-7> | 2647653.19
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-8> | 2174940.3
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR-9> | 1721216.05
+RGF-Anexo 01 | DespesaComPessoalLiquida | <MR> | 1817141.05
+RGF-Anexo 01 | DespesaComPessoalLiquida | TOTAL (ÚLTIMOS 12 MESES) (a) | 26057398.76
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-10> | 86038.37
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-11> | 241182.82
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-1> | 199751.41
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-2> | 258335.07
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-3> | 1491342.08
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-4> | 111844.3
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-5> | 88726.06
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-6> | 116670.96
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-7> | 80295.48
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-8> | 98051.72
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR-9> | 99360.1
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | <MR> | 880588.45
+RGF-Anexo 01 | DespesaComPessoalNaoComputada | TOTAL (ÚLTIMOS 12 MESES) (a) | 3752186.82
+RGF-Anexo 01 | DespesaComPessoalNaoComputadaExerciciosAnterioresAoPeriodoDaApuracao | <MR-11> | 185475.27
+RGF-Anexo 01 | DespesaComPessoalNaoComputadaExerciciosAnterioresAoPeriodoDaApuracao | TOTAL (ÚLTIMOS 12 MESES) (a) | 185475.27
+RGF-Anexo 01 | DespesaComPessoalNaoComputadaIndenizacaoDemissaoVoluntaria | <MR-10> | 86038.37
+RGF-Anexo 01 | DespesaComPessoalNaoComputadaIndenizacaoDemissaoVoluntaria | <MR-11> | 55707.55
+RGF-Anexo 01 | DespesaComPessoalNaoComputadaIndenizacaoDemissaoVoluntaria | <MR-1> | 199751.41
+RGF-Anexo 01 | DespesaComPessoalNaoComputadaIndenizacaoDemissaoVoluntaria | <MR-2> | 258335.07
+RGF-Anexo 01 | De
+== rreo 1300060 RREO: 0 {}
+== rreo 1300060 RREO Simplificado: 1116 {'RREO-Anexo 01': 215, 'RREO-Anexo 02': 356, 'RREO-Anexo 03': 299, 'RREO-Anexo 06': 134, 'RREO-Anexo 07': 42, 'RREO-Anexo 09': 14, 'RREO-Anexo 14': 56}
+RREO-Anexo 14 | AplicacaoTotalDasDespesasComAcoesEServicosPublicosDeSaude | % Aplicado Até o Bimestre | 21.03
+RREO-Anexo 14 | AplicacaoTotalDasDespesasComAcoesEServicosPublicosDeSaude | % Mínimo a Aplicar no Exercício | 15
+RREO-Anexo 14 | AplicacaoTotalDasDespesasComAcoesEServicosPublicosDeSaude | Valor Apurado Até o Bimestre | 5637392.73
+RREO-Anexo 14 | ComplementacaoDaUniaoAoFUNDEBEducacaoInfantil | % Aplicado Até o Bimestre | 56.38
+RREO-Anexo 14 | ComplementacaoDaUniaoAoFUNDEBEducacaoInfantil | % Mínimo a Aplicar no Exercício | 50
+RREO-Anexo 14 | ComplementacaoDaUniaoAoFUNDEBEducacaoInfantil | Valor Apurado Até o Bimestre | 2853448.75
+RREO-Anexo 14 | ComplementacaoDaUniaoAoFUNDEBEmDespesasDeCapital | % Aplicado Até o Bimestre | 27.48
+RREO-Anexo 14 | ComplementacaoDaUniaoAoFUNDEBEmDespesasDeCapital | % Mínimo a Aplicar no Exercício | 15
+RREO-Anexo 14 | ComplementacaoDaUniaoAoFUNDEBEmDespesasDeCapital | Valor Apurado Até o Bimestre | 1390817
+RREO-Anexo 14 | DespesaDeCapitalLiquidaDemonstrativoSimplificado | Saldo Não Realizado | 33598.21
+RREO-Anexo 14 | DespesaDeCapitalLiquidaDemonstrativoSimplificado | Valor Apurado no Exercício | 10066378.99
+RREO-Anexo 14 | DespesasEmpenhadasDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 61081705.27
+RREO-Anexo 14 | DespesasEmpenhadasDemonstrativoSimplificadoDespesasPorFuncaoSubfuncao | Até o Bimestre | 61081705.27
+RREO-Anexo 14 | DespesasLiquidadasDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 56969349.74
+RREO-Anexo 14 | DespesasLiquidadasDemonstrativoSimplificadoDespesasPorFuncaoSubfuncao | Até o Bimestre | 56969349.74
+RREO-Anexo 14 | DespesasPagasDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 56762912.65
+RREO-Anexo 14 | DotacaoAtualizadaDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 63907936.39
+RREO-Anexo 14 | DotacaoInicialDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 55282154
+RREO-Anexo 14 | MinimoAnualDasReceitasDeImpostosNaManutencaoEDesenvolvimentoDoEnsinoDemonstrativoSimplificado | % Aplicado Até o Bimestre | 25
+RREO-Anexo 14 | MinimoAnualDasReceitasDeImpostosNaManutencaoEDesenvolvimentoDoEnsinoDemonstrativoSimplificado | % Mínimo a Aplicar no Exercício | 25
+RREO-Anexo 14 | MinimoAnualDasReceitasDeImpostosNaManutencaoEDesenvolvimentoDoEnsinoDemonstrativoSimplificado | Valor Apurado Até o Bimestre | 7133251.07
+RREO-Anexo 14 | MinimoAnualDoFUNDEBNaRemuneracaoDoMagisterioComEducacaoInfantilEnsinoFundamentalEMedioDemonstrativoSimplificado | % Aplicado Até o Bimestre | 70.2
+RREO-Anexo 14 | MinimoAnualDoFUNDEBNaRemuneracaoDoMagisterioComEducacaoInfantilEnsinoFundamentalEMedioDemonstrativoSimplificado | % Mínimo a Aplicar no Exercício | 70
+RREO-Anexo 14 | MinimoAnualDoFUNDEBNaRemuneracaoDoMagisterioComEducacaoInfantilEnsinoFundamentalEMedioDemonstrativoSimplificado | Valor Apurado Até o Bimestre | 16211054.34
+RREO-Anexo 14 | PrevisaoAtualizadaDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 55282154
+RREO-Anexo
+== rgf 1700251 RGF Q3: 0 {}
+== rgf 1700251 RGF S2: 0 {}
+== rgf 1700251 RGF Simplificado Q3: 0 {}
+== rgf 1700251 RGF Simplificado S2: 360 {'RGF-Anexo 01': 164, 'RGF-Anexo 02': 59, 'RGF-Anexo 03': 9, 'RGF-Anexo 04': 15, 'RGF-Anexo 05': 92, 'RGF-Anexo 06': 21}
+RGF-Anexo 01 | AposentadoriasReservaEReformas | <MR-10> | 62109.86
+RGF-Anexo 01 | AposentadoriasReservaEReformas | <MR-11> | 62109.86
+RGF-Anexo 01 | AposentadoriasReservaEReformas | <MR-1> | 85221.81
+RGF-Anexo 01 | AposentadoriasReservaEReformas | <MR-2> | 79096.24
+RGF-Anexo 01 | AposentadoriasReservaEReformas | <MR-3> | 76641.92
+RGF-Anexo 01 | AposentadoriasReservaEReformas | <MR-4> | 76641.92
+RGF-Anexo 01 | AposentadoriasReservaEReformas | <MR-5> | 76641.92
+RGF-Anexo 01 | AposentadoriasReservaEReformas | <MR-6> | 76497.3
+RGF-Anexo 01 | AposentadoriasReservaEReformas | <MR-7> | 143177.18
+RGF-Anexo 01 | AposentadoriasReservaEReformas | <MR-8> | 71987.11
+RGF-Anexo 01 | AposentadoriasReservaEReformas | <MR-9> | 69452.39
+RGF-Anexo 01 | AposentadoriasReservaEReformas | <MR> | 89633.68
+RGF-Anexo 01 | AposentadoriasReservaEReformas | TOTAL (ÚLTIMOS 12 MESES) (a) | 969211.19
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-10> | 725553.12
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-11> | 485749.08
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-1> | 803322.48
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-2> | 856028.99
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-3> | 946004
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-4> | 670281.55
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-5> | 1118236.93
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-6> | 858902.74
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-7> | 753320.06
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-8> | 751373.63
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR-9> | 828239.23
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | <MR> | 1590552.69
+RGF-Anexo 01 | DespesaComPessoalAtivoBruta | TOTAL (ÚLTIMOS 12 MESES) (a) | 10387564.5
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-10> | 891169.95
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-11> | 574701.45
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-1> | 1011494.73
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-2> | 992835.59
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-3> | 1062781.92
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-4> | 897761.46
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-5> | 1282574.95
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-6> | 1042507.03
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-7> | 1000355.24
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-8> | 930694.5
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR-9> | 954402.8
+RGF-Anexo 01 | DespesaComPessoalBruta | <MR> | 1829821.56
+RGF-Anexo 01 | DespesaComPessoalBruta | INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (b) | 15335
+RGF-Anexo 01 | DespesaComPessoalBruta | TOTAL (ÚLTIMOS 12 MESES) (a) | 12471101.18
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstituicaoBruta | <MR-10> | 99586.21
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstituicaoBruta | <MR-11> | 22921.75
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstituicaoBruta | <MR-1> | 118990.44
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstituicaoBruta | <MR-2> | 53750.36
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstituicaoBruta | <MR-3> | 36176
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstituicaoBruta | <MR-4> | 146877.99
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstituicaoBruta | <MR-5> | 83736.1
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstituicaoBruta | <MR-6> | 103146.99
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstituicaoBruta | <MR-7> | 95938
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstituicaoBruta | <MR-8> | 103413
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstituicaoBruta | <MR-9> | 52790.42
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstituicaoBruta | <MR> | 145675.19
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstituicaoBruta | INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (b) | 15335
+RGF-Anexo 01 | DespesaComPessoalDecorrenteDeTerceirizacaoPorSubstit
+== rreo 1700251 RREO: 0 {}
+== rreo 1700251 RREO Simplificado: 1900 {'RREO-Anexo 01': 362, 'RREO-Anexo 02': 692, 'RREO-Anexo 03': 370, 'RREO-Anexo 04': 72, 'RREO-Anexo 06': 166, 'RREO-Anexo 07': 30, 'RREO-Anexo 09': 14, 'RREO-Anexo 10 - RPPS': 100, 'RREO-Anexo 11': 33, 'RREO-Anexo 14': 61}
+RREO-Anexo 14 | AplicacaoTotalDasDespesasComAcoesEServicosPublicosDeSaude | % Aplicado Até o Bimestre | 16.46
+RREO-Anexo 14 | AplicacaoTotalDasDespesasComAcoesEServicosPublicosDeSaude | % Mínimo a Aplicar no Exercício | 15
+RREO-Anexo 14 | AplicacaoTotalDasDespesasComAcoesEServicosPublicosDeSaude | Valor Apurado Até o Bimestre | 3283135.81
+RREO-Anexo 14 | ComplementacaoDaUniaoAoFUNDEBEducacaoInfantil | % Mínimo a Aplicar no Exercício | 50
+RREO-Anexo 14 | ComplementacaoDaUniaoAoFUNDEBEmDespesasDeCapital | % Mínimo a Aplicar no Exercício | 15
+RREO-Anexo 14 | DespesaDeCapitalLiquidaDemonstrativoSimplificado | Saldo Não Realizado | 1982511.41
+RREO-Anexo 14 | DespesaDeCapitalLiquidaDemonstrativoSimplificado | Valor Apurado no Exercício | 2593556.78
+RREO-Anexo 14 | DespesasEmpenhadasDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 27128380.07
+RREO-Anexo 14 | DespesasEmpenhadasDemonstrativoSimplificadoDespesasPorFuncaoSubfuncao | Até o Bimestre | 27128380.07
+RREO-Anexo 14 | DespesasLiquidadasDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 27010102.48
+RREO-Anexo 14 | DespesasLiquidadasDemonstrativoSimplificadoDespesasPorFuncaoSubfuncao | Até o Bimestre | 27010102.48
+RREO-Anexo 14 | DespesasPagasDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 25780482.74
+RREO-Anexo 14 | DespesasPrevidenciariasEmpenhadasRPPSPrevidenciarioDemonstrativoSimplificado | Até o Bimestre | 1020534.23
+RREO-Anexo 14 | DespesasPrevidenciariasLiquidadasRPPSPrevidenciarioDemonstrativoSimplificado | Até o Bimestre | 1020534.23
+RREO-Anexo 14 | DespesasPrevidenciariasPagasRPPSPrevidenciarioDemonstrativoSimplificado | Até o Bimestre | 1020534.23
+RREO-Anexo 14 | DespesasPrevidenciariasProjecaoAtuarialRGPSDemonstrativoSimplificado | 10º Exercício | 788881.25
+RREO-Anexo 14 | DespesasPrevidenciariasProjecaoAtuarialRGPSDemonstrativoSimplificado | 20º Exercício | 1269101.44
+RREO-Anexo 14 | DespesasPrevidenciariasProjecaoAtuarialRGPSDemonstrativoSimplificado | Exercício | 105966.15
+RREO-Anexo 14 | DotacaoAtualizadaDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 31297939.26
+RREO-Anexo 14 | DotacaoInicialDemonstrativoSimplificadoBalancoOrcamentario | Até o Bimestre | 29973454
+RREO-Anexo 14 | MinimoAnualDasReceitasDeImpostosNaManutencaoEDesenvolvimentoDoEnsinoDemonstrativoSimplificado | % Aplicado Até o Bimestre | 32.37
+RREO-Anexo 14 | MinimoAnualDasReceitasDeImpostosNaManutencaoEDesenvolvimentoDoEnsinoDemonstrativoSimplificado | % Mínimo a Aplicar no Exercício | 25
+RREO-Anexo 14 | MinimoAnualDasReceitasDeImpostosNaManutencaoEDesenvolvimentoDoEnsinoDemonstrativoSimplificado | Valor Apurado Até o Bimestre | 6476975.43
+RREO-Anexo 14 | MinimoAnualDoFUNDEBNaRemuneracaoDoMagisterioComEducacaoInfantilEnsinoFundamentalEMedioDemonstrativoSimplificado | % Aplicado Até o Bimestre | 96.75
+RREO-Anexo 14 | MinimoAnualDoFUNDEBNaRemuneracaoDoMagisterioComEducacaoInfantilEnsinoFundamentalEMedioDemonstrativoSimplificado | % Mínimo a Aplicar no Exercício |
