@@ -12,7 +12,8 @@ Publicado em: https://cleitonfranco74.github.io/financas_municipais/
 - **Amazônia:** desmatamento PRODES e focos de queimadas por orientação do prefeito, emprego formal na agropecuária, dispersão agro × ambiente e lista dos municípios que mais desmataram.
 - **Resultados:** mortalidade infantil por orientação do prefeito, esgoto e alfabetização (Censo 2022) e dispersão gasto × resultado.
 - **Correlações:** correlação (Pearson ou Spearman) de uma variável contra as outras 19 características dos municípios (orientação do prefeito, população, PIB, agro, finanças, LRF, ambiente e resultados), com intervalo de 95%; gráfico de dispersão do par escolhido, o mesmo par por estado e ano a ano; ranking das relações mais fortes com valor-p.
-- **Mapa:** mapa coroplético dos municípios (orientação, investimento, pessoal, saúde fiscal, agro, desmatamento, mortalidade, esgoto).
+- **Regressão:** regressão múltipla por MQO montada na página (variável dependente e explicativas à escolha, dummies de estado, coeficientes padronizados): coeficientes simples × múltiplos (viés de variável omitida), erros-padrão robustos HC1, IC 95%, valor-p, VIF, R² e R² ajustado, e gráfico de resíduos.
+- **Mapa:** mapa coroplético dos municípios (orientação, investimento, pessoal, saúde fiscal, agro, desmatamento, mortalidade, esgoto), com o modo de aglomerados espaciais: I de Moran global (499 permutações), LISA e diagrama de dispersão de Moran, com vizinhança dos 6 municípios mais próximos.
 - **Municípios:** ranking, ficha de cada município, comparador de até quatro municípios e download do painel município-ano em CSV (Excel ou R/Stata/Python).
 - **Eleições acirradas:** regressão descontínua (linear local, núcleo triangular, erro-padrão robusto HC1) sobre a margem da esquerda contra a direita ou do partido do governador contra outro partido, com faixa ajustável e histograma das margens.
 - **Método e fontes:** definições e a escala ideológica dos partidos.

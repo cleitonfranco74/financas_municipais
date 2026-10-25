@@ -30,7 +30,8 @@
   const SEM = { k: "sd", n: "Sem classificação", c: "#52525b" };
   let D, M = [], ANOS = [], REF = null;
   const st = { aba: "geral", uf: "", modo: "4", met: "invpc", mun: null, x: "peso", y: "inv", h: 20, rddE: "2016+2020", rddY: "inv", rddC: "ideo", ord: "invpc", comp: [],
-    fn: "10", polY: "invpc", polY2: "convEpc", amX: "expansao", amY: "desm", resX: "saude", resY: "tmi", mapa: "orient", cmet: "invpc", corr: "p", cxy: "6-3", cvar: "6" };
+    fn: "10", polY: "invpc", polY2: "convEpc", amX: "expansao", amY: "desm", resX: "saude", resY: "tmi", mapa: "orient", cmet: "invpc", corr: "p", cxy: "6-3", cvar: "6",
+    regY: "6", regX: [0, 1, 2, 3], regUF: true, regZ: false, mapaModo: "v" };
 
   const nota = sg => { if (!sg) return null; const s = sg.trim().toUpperCase(); return D.escala[D.sinonimos[s] || s] ?? null; };
   const cat7 = sc => sc == null ? null : CATS.find(c => sc <= c[2])[0];
@@ -718,7 +719,7 @@
     }
     const ms = sel().filter(m => MALHA[m.c]?.length), aL = anoCom(ms, x => x.lrf && x.lrf[1] != null), ult = D.eleicoes[D.eleicoes.length - 1];
     const IND = {
-      orient: { n: `Orientação do prefeito eleito em ${ult}`, cat: m => grupo(nota(m.ele?.[ult]?.[0])) },
+      orient: { n: `Orientação do prefeito eleito em ${ult}`, cat: m => grupo(nota(m.ele?.[ult]?.[0])), v: m => nota(m.ele?.[ult]?.[0]), f: v => nf(v, 1) },
       invpc: { n: `Investimento por habitante (${REF})`, v: m => indiv(m, REF, "invpc"), f: brl },
       transf: { n: `Transferências em % da receita (${REF})`, v: m => indiv(m, REF, "transf"), f: v => pct(v, 0) },
       pessoal: { n: `Despesa com pessoal em % da RCL (${aL})`, v: m => m.f[aL]?.lrf?.[1], f: v => `${nf(v, 1)}%` },
@@ -733,8 +734,14 @@
     const k = Math.cos((y0 + y1) / 2 * Math.PI / 180), W0 = largura(), s = Math.min(W0 / ((x1 - x0) * k || 1), 700 / ((y1 - y0) || 1));
     const W = (x1 - x0) * k * s, H = (y1 - y0) * s;
     const caminho = r => { let d = ""; for (let i = 0; i < r.length; i += 2) d += `${i ? "L" : "M"}${((r[i] - x0) * k * s).toFixed(1)},${((y1 - r[i + 1]) * s).toFixed(1)}`; return d + "Z"; };
-    let cor, leg;
-    if (I.cat){
+    let cor, leg, L = null;
+    const modoL = st.mapaModo === "l";
+    if (modoL){
+      L = lisa(ms, I.v, `${st.mapa}|${st.uf}|${D.atualizado}|${aL}|${ms.length}`);
+      const cont = {}; if (L) L.tipo.forEach(t => { cont[t] = (cont[t] || 0) + 1; });
+      cor = m => L?.tipo.has(m.c) ? TIPOS_LISA[L.tipo.get(m.c)][1] : "#1f1f23";
+      leg = `<div class="leg">${Object.entries(TIPOS_LISA).map(([t, [n, c]]) => `<span><i style="background:${c}"></i>${esc(n)} (${cont[t] || 0})</span>`).join("")}<span><i style="background:#1f1f23"></i>sem dado</span></div>`;
+    } else if (I.cat){
       cor = m => I.cat(m).c;
       leg = `<div class="leg">${[...MODOS[st.modo], SEM].map(g => `<span><i style="background:${g.c}"></i>${esc(g.n)}</span>`).join("")}</div>`;
     } else {
@@ -745,12 +752,28 @@
       const lim = [vs[0], ...cortes, vs[vs.length - 1]];
       leg = vs.length ? `<div class="leg">${SEQ.map((c, i) => `<span><i style="background:${c}"></i>${esc(I.f(lim[i]))} a ${esc(I.f(lim[i + 1]))}</span>`).join("")}<span><i style="background:#2a2e35"></i>sem dado</span></div>` : "";
     }
-    const valor = m => I.cat ? I.cat(m).n : I.f(I.v(m));
+    const valor = m => (modoL && L?.tipo.has(m.c) ? `${TIPOS_LISA[L.tipo.get(m.c)][0]} · ` : "") + (I.cat ? I.cat(m).n : I.f(I.v(m)));
     const paths = ms.map(m => `<path d="${MALHA[m.c].map(caminho).join("")}" fill="${cor(m)}" stroke="#08090b" stroke-width=".4" data-mun="${m.c}" style="cursor:pointer"><title>${esc(m.n)} (${m.uf}): ${esc(valor(m))}</title></path>`).join("");
-    main.innerHTML = `<section class="panel"><div class="hd"><div><h2>${esc(I.n)}</h2><p class="sub">${ms.length} municípios. ${I.cat ? "" : "Cinco faixas com o mesmo número de municípios (quintis). "}Passe o mouse para ver o valor; clique para abrir a ficha.</p></div>
-      <div class="ctl" style="padding:8px 12px">${selSt("mapa", "Indicador", IND)}</div></div>
+    let painelL = "";
+    if (modoL && L){
+      const sigI = L.p < .01 ? "significativa a 1%" : L.p < .05 ? "significativa a 5%" : L.p < .1 ? "significativa a 10%" : "não significativa";
+      const pts = L.pts.map((o, i) => { const t = L.tipo.get(o.m.c); return { x: L.z[i], y: L.lag[i], c: TIPOS_LISA[t][1], id: o.m.c, t: `${o.m.n} (${o.m.uf}) · ${TIPOS_LISA[t][0]}\n${I.n}: ${I.f(o.x)}` }; });
+      const d = dispersao(pts, { fx: v => nf(v, 1), fy: v => nf(v, 1), nx: "Valor do município (desvios-padrão)", ny: "Média dos 6 vizinhos", alto: 320, w: Math.min(largura(), 560) });
+      painelL = `<div class="grid" style="margin-top:16px">
+        <section class="panel"><h2>I de Moran global</h2>
+          <div class="kpis" style="margin-top:10px">
+            <div class="kpi"><span>I de Moran</span><b>${nf(L.I, 3)}</b><small>esperado sem padrão espacial: ${nf(L.EI, 3)}</small></div>
+            <div class="kpi"><span>Pseudo valor-p</span><b>${L.p < .002 ? "&lt; 0,002" : nf(L.p, 3)}</b><small>${sigI} (499 permutações)</small></div>
+          </div>
+          <p class="nota">${L.I > 0 && L.p < .05 ? "<b>Há dependência espacial positiva:</b> municípios vizinhos tendem a ter valores parecidos (altos perto de altos, baixos perto de baixos)." : L.I < 0 && L.p < .05 ? "<b>Há dependência espacial negativa:</b> vizinhos tendem a ter valores opostos." : "Não há evidência de padrão espacial: os valores parecem distribuídos ao acaso no mapa."} ${L.n} municípios; vizinhança: os ${K_VIZ} municípios mais próximos de cada um (pelos centroides), com pesos iguais.</p>
+          <p class="nota">Em regressões com dados municipais, dependência espacial viola a hipótese de observações independentes: os erros-padrão comuns ficam pequenos demais. Alternativas: erros-padrão de Conley, modelos de defasagem ou de erro espacial (pacotes <b>spdep</b> e <b>spatialreg</b> no R; <b>PySAL</b> no Python).</p></section>
+        <section class="panel"><h2>Diagrama de dispersão de Moran</h2><p class="sub">Cada ponto é um município: o seu valor padronizado contra a média dos vizinhos. A inclinação da reta é o I de Moran. Quadrante superior direito: alto cercado de alto; inferior esquerdo: baixo cercado de baixo.</p>${typeof d === "string" ? d : d.svg}</section>
+      </div>`;
+    } else if (modoL) painelL = `<p class="nota" style="margin-top:16px">Poucos municípios com o dado para calcular o LISA.</p>`;
+    main.innerHTML = `<section class="panel"><div class="hd"><div><h2>${esc(I.n)}${modoL ? ": aglomerados espaciais (LISA)" : ""}</h2><p class="sub">${ms.length} municípios. ${modoL ? "Coloridos só os municípios com associação local significativa a 5% (499 permutações condicionais). Com muitos testes ao mesmo tempo, alguns aglomerados aparecem por acaso: leia os blocos grandes, não os municípios isolados. " : I.cat ? "" : "Cinco faixas com o mesmo número de municípios (quintis). "}Passe o mouse para ver o valor; clique para abrir a ficha.</p></div>
+      <div class="ctl" style="padding:8px 12px">${selSt("mapa", "Indicador", IND)}<div class="f"><span>Mostrar</span>${segSt("mapaModo", [["v", "Valores"], ["l", "Aglomerados (LISA)"]])}</div></div></div>
       <svg class="ch mapa" viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" role="img" aria-label="Mapa: ${esc(I.n)}" style="max-width:${W.toFixed(0)}px;margin:0 auto">${paths}</svg>${leg}
-      <p class="nota">Malha municipal do IBGE (projeto geodata-br), simplificada para a página.</p></section>`;
+      <p class="nota">Malha municipal do IBGE (projeto geodata-br), simplificada para a página.${modoL && st.mapa === "orient" ? " No LISA, a orientação entra pela posição do partido na escala ideológica (0 a 10)." : ""}</p></section>${painelL}`;
   }
 
   /* ---------- comparador e download ---------- */
@@ -911,6 +934,120 @@
       </tbody></table></div><p class="nota">Para estimar no R, no Stata ou no Python, baixe o painel completo na aba Municípios (CSV).</p></section>`;
   }
 
+  /* ---------- aba: regressão múltipla ---------- */
+  /* coeficientes e R² de uma regressão por mínimos quadrados */
+  function ajusta(y, X){
+    const inv = inversa(X.map(a => X.map(b => a.reduce((s, v, i) => s + v * b[i], 0)))); if (!inv) return null;
+    const Xty = X.map(a => a.reduce((s, v, i) => s + v * y[i], 0)), b = inv.map(r => r.reduce((s, v, j) => s + v * Xty[j], 0));
+    const my = media(y), ajust = y.map((_, i) => X.reduce((s, c, j) => s + c[i] * b[j], 0));
+    let sr = 0, sq = 0; y.forEach((v, i) => { sr += (v - ajust[i]) ** 2; sq += (v - my) ** 2; });
+    return { b, ajust, r2: sq ? 1 - sr / sq : 0 };
+  }
+  const fmtC = v => v == null || !isFinite(v) ? "—" : Math.abs(v) < 1e-9 ? "0" : `${v < 0 ? "−" : ""}${Math.abs(v) >= 100 ? nf(Math.abs(v), 0) : Math.abs(v) >= 1 ? nf(Math.abs(v), 2) : Math.abs(v) >= .001 ? nf(Math.abs(v), 4) : Math.abs(v).toExponential(2).replace(".", ",")}`;
+  const FRACAO = new Set(["Peso do agro no PIB", "Expansão das lavouras", "Transferências %"]);
+  function regressao(){
+    const ms = sel(), yi = +st.regY, xs = st.regX.filter(j => j !== yi);
+    const rows = ms.map(m => ({ m, y: VARS[yi].v(m), x: xs.map(j => VARS[j].v(m)) }))
+      .filter(r => r.y != null && isFinite(r.y) && r.x.every(v => v != null && isFinite(v)));
+    const n = rows.length, ids = rows.map((_, i) => i);
+    const padroniza = arr => { const mu = media(arr), sd = Math.sqrt(media(arr.map(v => (v - mu) ** 2))) || 1; return arr.map(v => (v - mu) / sd); };
+    let Y = rows.map(r => r.y), XS = xs.map((_, k) => rows.map(r => r.x[k]));
+    if (st.regZ){ Y = padroniza(Y); XS = XS.map(padroniza); }
+    const ufs = st.regUF && !st.uf ? [...new Set(rows.map(r => r.m.uf))].sort().slice(1) : [];
+    const um = rows.map(() => 1), dum = ufs.map(u => rows.map(r => +(r.m.uf === u)));
+    const Xc = [um, ...XS, ...dum], k = Xc.length;
+    const ok = xs.length && n > k + 10;
+    const full = ok ? mqo(Y, Xc, ids) : null, fit = ok ? ajusta(Y, Xc) : null;
+    const simples = XS.map(x => ok ? mqo(Y, [um, x], ids) : null);
+    const vif = XS.map((x, j) => { if (!ok) return null; if (XS.length + dum.length < 2) return 1; const a = ajusta(x, [um, ...XS.filter((_, q) => q !== j), ...dum]); return a ? 1 / Math.max(1e-9, 1 - a.r2) : null; });
+    const r2 = fit?.r2, r2a = fit ? 1 - (1 - r2) * (n - 1) / (n - k) : null;
+    const pv = (b, e) => e ? normalP(b / e) : null;
+    const cel = (r, j) => r ? `${fmtC(r.b[j])}${estrelas(r.b[j], r.ep[j])}<br><small style="color:var(--muted)">(${fmtC(r.ep[j])})</small>` : "—";
+    const linhasT = xs.map((xj, q) => { const j = q + 1, p = full ? pv(full.b[j], full.ep[j]) : null;
+      return `<tr><td style="text-align:left">${esc(VARS[xj].n)}${FRACAO.has(VARS[xj].n) && !st.regZ ? ' <small style="color:var(--muted)">(fração)</small>' : ""}</td>
+        <td class="num">${cel(simples[q], 1)}</td><td class="num"><b>${cel(full, j)}</b></td>
+        <td class="num">${full ? `${fmtC(full.b[j] - 1.96 * full.ep[j])} a ${fmtC(full.b[j] + 1.96 * full.ep[j])}` : "—"}</td>
+        <td class="num">${p == null ? "—" : p < .001 ? "&lt; 0,001" : nf(p, 3)}</td>
+        <td class="num" style="color:${vif[q] > 10 ? "#f87171" : vif[q] > 5 ? "#f5b83d" : "inherit"}">${vif[q] == null ? "—" : nf(vif[q], 1)}</td></tr>`; }).join("");
+    // resíduos contra valores ajustados
+    let resid = "";
+    if (fit){
+      const pts = rows.map((r, i) => { const g = grupo(nota(r.m.ele?.["2020"]?.[0])), e = Y[i] - fit.ajust[i];
+        return { x: fit.ajust[i], y: e, c: g.c, id: r.m.c, t: `${r.m.n} (${r.m.uf})\nAjustado: ${fmtC(fit.ajust[i])}\nResíduo: ${fmtC(e)}` }; });
+      const d = dispersao(pts, { fx: fmtC, fy: fmtC, nx: "Valor ajustado pelo modelo", ny: "Resíduo", reta: false, alto: 300 });
+      resid = typeof d === "string" ? d : d.svg;
+    }
+    const eq = full ? `${esc(VARS[yi].n)} = ${fmtC(full.b[0])}${xs.map((xj, q) => ` ${full.b[q + 1] < 0 ? "−" : "+"} ${fmtC(Math.abs(full.b[q + 1]))} × ${esc(VARS[xj].n)}`).join("")}${dum.length ? ` + efeitos de estado` : ""}` : "";
+    const leitura = full ? xs.map((xj, q) => { const b = full.b[q + 1], p = pv(b, full.ep[q + 1]), s0 = simples[q]?.b[1];
+      const un = st.regZ ? "1 desvio-padrão" : FRACAO.has(VARS[xj].n) ? "10 pontos percentuais" : "1 unidade", fator = !st.regZ && FRACAO.has(VARS[xj].n) ? .1 : 1;
+      return `<li><b>${esc(VARS[xj].n)}:</b> mantidas as demais variáveis constantes, cada ${un} a mais corresponde, em média, a ${fmtC(Math.abs(b * fator))}${st.regZ ? " desvio-padrão" : ""} ${b >= 0 ? "a mais" : "a menos"} em ${esc(VARS[yi].n.toLowerCase())} (${p != null && p < .05 ? "significativo a 5%" : "não significativo a 5%"}).${s0 != null && Math.sign(s0) !== Math.sign(b) ? " <b>O sinal muda</b> em relação à regressão simples." : s0 != null && Math.abs(b) < .5 * Math.abs(s0) ? " O efeito cai a menos da metade quando entram os controles." : ""}</li>`; }).join("") : "";
+    main.innerHTML = `
+      <div class="explica"><h3>Regressão múltipla por mínimos quadrados</h3><p>Estima a relação de cada variável explicativa com a variável dependente <b>mantendo as demais constantes</b>. Compare a coluna <b>simples</b> (só a variável, sem controles) com a <b>múltipla</b>: quando o coeficiente muda muito ao entrar um controle, a correlação simples misturava o efeito de outra variável (<b>viés de variável omitida</b>). Erros-padrão robustos à heterocedasticidade (HC1). VIF acima de 5 sugere multicolinearidade; acima de 10, forte. Cada município é uma observação; as finanças são médias de 2021 a 2024, a preços de ${REF}.</p></div>
+      <section class="panel" style="margin-top:16px"><h2>Especificação</h2>
+        <div class="ctl" style="margin-top:10px">
+          ${selSt("regY", "Variável dependente (Y)", Object.fromEntries(VARS.map((V, i) => [String(i), V])))}
+          <div class="f"><span>Opções</span><div class="chks">
+            <label class="chk"><input type="checkbox" data-regopt="regUF" ${st.regUF ? "checked" : ""} ${st.uf ? "disabled" : ""}> Efeitos fixos de estado (dummies de UF)</label>
+            <label class="chk"><input type="checkbox" data-regopt="regZ" ${st.regZ ? "checked" : ""}> Coeficientes padronizados (beta)</label></div></div>
+        </div>
+        <div class="f" style="margin-top:12px"><span class="lbl">Variáveis explicativas (X)</span><div class="chks">${VARS.map((V, j) => j === yi ? "" : `<label class="chk"><input type="checkbox" data-regx="${j}" ${xs.includes(j) ? "checked" : ""}> ${esc(V.n)}</label>`).join("")}</div></div></section>
+      ${!xs.length ? `<p class="nota" style="margin-top:16px">Marque ao menos uma variável explicativa.</p>` : !full ? `<p class="nota" style="margin-top:16px">Não foi possível estimar: poucos municípios com todos os dados (${n}) ou variáveis perfeitamente colineares.</p>` : `
+      <div class="kpis" style="margin-top:16px">
+        <div class="kpi"><span>Observações</span><b>${nf(n)}</b><small>municípios com todos os dados${st.uf ? ` em ${st.uf}` : ""}</small></div>
+        <div class="kpi"><span>R²</span><b>${nf(r2, 3)}</b><small>parcela da variação de Y explicada</small></div>
+        <div class="kpi"><span>R² ajustado</span><b>${nf(r2a, 3)}</b><small>penaliza o número de regressores (${k - 1})</small></div>
+        <div class="kpi"><span>Efeitos de estado</span><b>${dum.length ? dum.length + 1 : "não"}</b><small>${dum.length ? `estados; ${ufs.length} dummies, base ${[...new Set(rows.map(r => r.m.uf))].sort()[0]}` : st.uf ? "um estado só no filtro" : "sem dummies de UF"}</small></div>
+      </div>
+      <section class="panel" style="margin-top:16px"><h2>Resultados: ${esc(VARS[yi].n)}</h2><p class="sub">Coeficiente, com o erro-padrão robusto entre parênteses. *** p &lt; 0,01; ** p &lt; 0,05; * p &lt; 0,1.</p>
+        <div class="tbwrap"><table class="tb"><thead><tr><th style="text-align:left">Variável</th><th>Simples</th><th>Múltipla</th><th>IC 95% (múltipla)</th><th>Valor-p</th><th>VIF</th></tr></thead><tbody>
+          ${linhasT}<tr><td style="text-align:left">Constante</td><td class="num">—</td><td class="num">${cel(full, 0)}</td><td></td><td></td><td></td></tr>
+        </tbody></table></div>
+        <p class="nota" style="font-family:var(--mono)">${eq}</p>
+        <ul class="nota" style="padding-left:18px;line-height:1.6">${leitura}</ul>
+        <p class="nota">${st.regZ ? "Com coeficientes padronizados, Y e X estão em desvios-padrão: os coeficientes podem ser comparados entre si." : "Coeficientes nas unidades originais: reais por habitante, km², pontos da escala ideológica etc. As variáveis marcadas como fração vão de 0 a 1 (0,25 = 25%). Para comparar a importância das variáveis, marque “coeficientes padronizados”."} Correlação condicional ainda não é causa: para isso, veja as abas Economia política e Eleições acirradas.</p></section>
+      <section class="panel" style="margin-top:16px"><h2>Resíduos × valores ajustados</h2><p class="sub">Num modelo bem especificado, os pontos se espalham ao redor do zero sem forma definida. Um funil indica heterocedasticidade (por isso o erro-padrão robusto); uma curva sugere relação não linear (experimente logaritmos ou outra variável). Clique num ponto para abrir o município.</p>${resid}${legGrupos()}</section>`}`;
+  }
+
+  /* ---------- Moran e LISA (autocorrelação espacial) ---------- */
+  const K_VIZ = 6;
+  const centroide = c => { const r = MALHA[c][0]; let x = 0, y = 0; for (let i = 0; i < r.length; i += 2){ x += r[i]; y += r[i + 1]; } return [2 * x / r.length, 2 * y / r.length]; };
+  /* gerador pseudoaleatório com semente fixa: o resultado das permutações não muda a cada clique */
+  const sorteador = semente => () => { semente = semente + 0x6D2B79F5 | 0; let t = Math.imul(semente ^ semente >>> 15, 1 | semente); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const cacheLisa = new Map();
+  function lisa(ms, v, chave){
+    if (cacheLisa.has(chave)) return cacheLisa.get(chave);
+    const pts = ms.map(m => ({ m, x: v(m) })).filter(o => o.x != null && isFinite(o.x));
+    const n = pts.length; if (n < 30){ cacheLisa.set(chave, null); return null; }
+    // vizinhos: os 6 municípios mais próximos (centroides), pesos iguais (matriz padronizada na linha)
+    const cs = pts.map(o => centroide(o.m.c)), kc = Math.cos(media(cs.map(c => c[1])) * Math.PI / 180);
+    const viz = cs.map((a, i) => { const d = []; cs.forEach((b, j) => { if (j !== i) d.push([j, ((a[0] - b[0]) * kc) ** 2 + (a[1] - b[1]) ** 2]); }); d.sort((p, q) => p[1] - q[1]); return d.slice(0, K_VIZ).map(p => p[0]); });
+    const mu = media(pts.map(o => o.x)), sd = Math.sqrt(media(pts.map(o => (o.x - mu) ** 2))) || 1;
+    const z = pts.map(o => (o.x - mu) / sd), m2 = z.reduce((s, x) => s + x * x, 0);
+    const defasagem = zz => viz.map(vs => vs.reduce((s, j) => s + zz[j], 0) / K_VIZ);
+    const lag = defasagem(z), moran = (zz, ll) => zz.reduce((s, x, i) => s + x * ll[i], 0) / m2;
+    const I = moran(z, lag), rnd = sorteador(20261025), P = 499;
+    let extremos = 0; const zp = z.slice();
+    for (let p = 0; p < P; p++){
+      for (let i = n - 1; i > 0; i--){ const j = Math.floor(rnd() * (i + 1)); [zp[i], zp[j]] = [zp[j], zp[i]]; }
+      const Ip = moran(zp, defasagem(zp)); if (I >= 0 ? Ip >= I : Ip <= I) extremos++;
+    }
+    // LISA: permutação condicional (o município fica fixo; os vizinhos são sorteados entre os demais)
+    const tipo = new Map(), pl = [];
+    z.forEach((zi, i) => {
+      const Ii = zi * lag[i]; let ext = 0;
+      for (let p = 0; p < P; p++){
+        let s = 0; const usados = new Set([i]);
+        for (let q = 0; q < K_VIZ; q++){ let j; do { j = Math.floor(rnd() * n); } while (usados.has(j)); usados.add(j); s += z[j]; }
+        const Ip = zi * s / K_VIZ; if (Ii >= 0 ? Ip >= Ii : Ip <= Ii) ext++;
+      }
+      const p = (ext + 1) / (P + 1); pl.push(p);
+      tipo.set(pts[i].m.c, p >= .05 ? "ns" : zi > 0 && lag[i] > 0 ? "AA" : zi < 0 && lag[i] < 0 ? "BB" : zi > 0 ? "AB" : "BA");
+    });
+    const out = { I, p: (extremos + 1) / (P + 1), EI: -1 / (n - 1), n, z, lag, pts, tipo };
+    cacheLisa.set(chave, out); return out;
+  }
+  const TIPOS_LISA = { AA: ["Alto cercado de alto", "#ef4444"], BB: ["Baixo cercado de baixo", "#3b82f6"], AB: ["Alto cercado de baixo", "#fb923c"], BA: ["Baixo cercado de alto", "#93c5fd"], ns: ["Não significativo", "#3f3f46"] };
+
   /* ---------- aba: método ---------- */
   function metodo(){
     const linhasEscala = Object.entries(D.escala).sort((a, b) => a[1] - b[1]).map(([p, sc]) => { const c = CATS.find(k => sc <= k[2]);
@@ -937,7 +1074,7 @@
   }
 
   /* ---------- navegação ---------- */
-  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, resultados, correlacoes, mapa: mapaAba, mun: munAba, rdd: rddAba, metodo };
+  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, resultados, correlacoes, regressao, mapa: mapaAba, mun: munAba, rdd: rddAba, metodo };
   function render(){
     document.querySelectorAll("nav.abas button").forEach(b => b.setAttribute("aria-selected", b.dataset.aba === st.aba));
     (ABAS[st.aba] || ABAS.geral)();
@@ -965,6 +1102,8 @@
     else if (id === "rY") st.rddY = e.target.value;
     else if (id === "cPY" || id === "cPX"){ const [y, x] = (st.cxy || "6-3").split("-"); st.cxy = id === "cPY" ? `${e.target.value}-${x}` : `${y}-${e.target.value}`; }
     else if (e.target.dataset.stsel) st[e.target.dataset.stsel] = e.target.value;
+    else if (e.target.dataset.regx != null){ const j = +e.target.dataset.regx; st.regX = e.target.checked ? [...new Set([...st.regX, j])].sort((a, b) => a - b) : st.regX.filter(q => q !== j); }
+    else if (e.target.dataset.regopt) st[e.target.dataset.regopt] = e.target.checked;
     else if (id === "fMun"){ const v = e.target.value, m = M.find(x => `${x.n} - ${x.uf}` === v); if (m){ st.mun = m.c; } else return; }
     else return;
     render();
