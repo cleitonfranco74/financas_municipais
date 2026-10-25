@@ -39,6 +39,7 @@ import json
 import html
 import re
 import sys
+import threading
 import time
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -61,7 +62,7 @@ TSE_IBGE = "https://raw.githubusercontent.com/betafcc/Municipios-Brasileiros-TSE
 TABNET = "http://tabnet.datasus.gov.br/cgi/"
 LAVOURAS = {"40124": "soja", "40122": "milho", "40099": "algodao"}
 GOVERNADORES = (2014, 2018, 2022)
-TRABALHADORES = 12         # consultas simultâneas ao Siconfi
+TRABALHADORES = 8          # consultas simultâneas ao Siconfi (o ritmo comum limita os pedidos por segundo)
 MAX_PARES = 20000          # teto de pares município-ano por execução (a primeira carga tem cerca de 11 mil)
 PRAZO_SICONFI = 190        # minutos; o que faltar fica para a execução seguinte (a primeira carga leva duas ou três)
 
@@ -89,18 +90,54 @@ def log(msg: str) -> None:
     print(msg, file=sys.stderr, flush=True)
 
 
+class Ritmo:
+    """Ritmo comum a todas as consultas ao Siconfi: um intervalo mínimo entre pedidos, que cresce a cada
+    HTTP 429 (com uma pausa geral) e volta a diminuir devagar quando as respostas vêm normais."""
+    def __init__(self, intervalo: float):
+        self.intervalo, self.minimo, self.proximo, self.trava = intervalo, intervalo, 0.0, threading.Lock()
+
+    def espera(self) -> None:
+        with self.trava:
+            agora = time.monotonic()
+            vez = max(agora, self.proximo)
+            self.proximo = vez + self.intervalo
+        time.sleep(max(0.0, vez - agora))
+
+    def recusado(self, pausa: float) -> None:
+        with self.trava:
+            self.intervalo = min(2.0, self.intervalo * 1.25)
+            self.proximo = max(self.proximo, time.monotonic() + pausa)
+
+    def aceito(self) -> None:
+        with self.trava:
+            self.intervalo = max(self.minimo, self.intervalo * 0.995)
+
+
+RITMO = Ritmo(0.2)   # até 5 pedidos por segundo ao Siconfi
+
+
 def get(url: str, params: dict | None = None, timeout: int = 120, tentativas: int = 4):
+    siconfi = url.startswith(SICONFI)
+    if siconfi:
+        tentativas = max(tentativas, 8)
     for t in range(tentativas):
         try:
+            if siconfi:
+                RITMO.espera()
             r = requests.get(url, params=params, headers=H, timeout=timeout)
             if r.status_code == 429 or r.status_code >= 500:
+                if siconfi and r.status_code == 429:
+                    ra = r.headers.get("Retry-After", "")
+                    RITMO.recusado(float(ra) if ra.isdigit() else 15 * (t + 1))
                 raise requests.HTTPError(f"HTTP {r.status_code}")
             r.raise_for_status()
+            if siconfi:
+                RITMO.aceito()
             return r
         except Exception:  # noqa: BLE001
             if t == tentativas - 1:
                 raise
-            time.sleep(2 * (t + 1))
+            time.sleep(min(60, 2 ** (t + 1)))
 
 
 def sigla_escala(sg: str) -> str:
@@ -270,15 +307,17 @@ def siconfi(cod: int, ano: int) -> dict:
 def financas(ms: dict, antes: dict) -> None:
     fim = date.today().year - 1                       # a DCA de um ano sai no ano seguinte
     chaves = ("fin", "rc", "fn", "lrf")
-    pendentes = []
+    pendentes, revisar = [], []
     for c, m in ms.items():
         for k in chaves:
             m[k] = {a: v for a, v in antes.get(c, {}).get(k, {}).items() if v}
         for a in range(INICIO, fim + 1):
-            falta = any(str(a) not in m[k] for k in ("fin", "rc", "lrf"))
-            if falta or a >= fim - 1:                   # os dois últimos anos podem ser retificados
+            if str(a) not in m["fin"]:
                 pendentes.append((c, a))
-    pendentes = sorted(pendentes, key=lambda p: -p[1])[:MAX_PARES]   # anos recentes primeiro
+            elif a >= fim - 1 or str(a) not in m["lrf"]:  # os dois últimos anos podem ser retificados
+                revisar.append((c, a))
+    # primeiro o que falta (anos recentes antes), depois as revisões, se sobrar tempo
+    pendentes = (sorted(pendentes, key=lambda p: -p[1]) + sorted(revisar, key=lambda p: -p[1]))[:MAX_PARES]
     limite = time.monotonic() + PRAZO_SICONFI * 60
     def tarefa(c, a):
         return siconfi(c, a) if time.monotonic() < limite else None
