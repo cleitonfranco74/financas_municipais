@@ -1,8 +1,5 @@
-import sys, json
+import sys
 sys.path.insert(0, "scripts")
 import atualizar_municipios as A
-o=[]
-for cod, ano, so in ((1200013, 2023, True), (1300060, 2021, False), (5107909, 2023, True), (5107909, 2017, True)):
-    try: o.append(f"== {cod} {ano} so_lrf={so}\n{json.dumps(A.siconfi(cod, ano, so))[:900]}")
-    except Exception as e: o.append(f"== {cod} ERRO {e}")
-open("tmp/teste_coletor.txt","w").write("\n".join(o))
+r=A.get(A.SICONFI+"rreo", {"an_exercicio":2023,"nr_periodo":6,"co_tipo_demonstrativo":"RREO","no_anexo":"RREO-Anexo 14","id_ente":5107909}, timeout=120).json()["items"]
+open("tmp/teste_coletor.txt","w").write("\n".join(sorted({f'{i.get("cod_conta")} | {i.get("coluna")} | {i.get("valor")}' for i in r if "Saude" in str(i.get("cod_conta")) or "Ensino" in str(i.get("cod_conta")) or "%" in str(i.get("coluna"))})))
