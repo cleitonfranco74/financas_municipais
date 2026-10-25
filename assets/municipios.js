@@ -849,26 +849,13 @@
     </svg>`;
   }
   const forca = r => { const a = Math.abs(r); return a < .1 ? "nula" : a < .3 ? "fraca" : a < .5 ? "moderada" : "forte"; };
-  const corR = r => r == null ? "var(--surface-2)" : `rgba(${r >= 0 ? "45,212,191" : "249,115,22"},${(.12 + .88 * Math.min(1, Math.abs(r))).toFixed(2)})`;
   function correlacoes(){
     const ms = sel(), sp = st.corr === "s", K = VARS.length;
     const col = VARS.map(V => ms.map(m => V.v(m)));
     const R = VARS.map(() => Array(K).fill(null));
     for (let i = 0; i < K; i++) for (let j = i + 1; j < K; j++){ R[i][j] = R[j][i] = correl(col[i], col[j], sp); }
-    // matriz
-    // em telas estreitas, as linhas levam só o número (a tabela de variáveis serve de legenda)
-    const w = largura(), curto = w < 640, rot = curto ? 24 : 190, cel = Math.max(30, Math.min(40, (w - rot - 8) / K)), larg = rot + cel * K + 4, alt = 26 + cel * K + 4;
-    const num = cel >= 30;
+    const curto = largura() < 640;
     const [ci, cj] = (st.cxy || "6-3").split("-").map(Number);
-    const mat = `<svg class="ch" viewBox="0 0 ${larg} ${alt}" role="img" aria-label="Matriz de correlações" style="width:${larg}px;max-width:none">
-      ${VARS.map((V, j) => `<text class="ax" x="${rot + cel * (j + .5)}" y="18" text-anchor="middle">${j + 1}</text>`).join("")}
-      ${VARS.map((V, i) => `<text class="ax" x="${rot - 6}" y="${26 + cel * (i + .5) + 4}" text-anchor="end" style="fill:var(--ink-2)">${i + 1}${curto ? "" : `. ${esc(V.n)}`}</text>` +
-        VARS.map((W, j) => { const c = R[i][j], x = rot + cel * j, y = 26 + cel * i, ativo = (i === ci && j === cj) || (i === cj && j === ci);
-          if (i === j) return `<rect x="${x + .5}" y="${y + .5}" width="${cel - 1}" height="${cel - 1}" rx="3" fill="var(--surface-2)"/>`;
-          return `<g data-st="cxy:${i}-${j}" style="cursor:pointer"><rect x="${x + .5}" y="${y + .5}" width="${cel - 1}" height="${cel - 1}" rx="3" fill="${corR(c?.r)}" ${ativo ? 'stroke="var(--ink)" stroke-width="2"' : ""}/>` +
-            (num && c ? `<text x="${x + cel / 2}" y="${y + cel / 2 + 4}" text-anchor="middle" style="font:600 10.5px var(--mono);fill:${Math.abs(c.r) > .45 ? "#0b0d06" : "var(--ink)"}">${nf(c.r, 2).replace("0,", ",")}</text>` : "") +
-            `<title>${esc(V.n)} × ${esc(W.n)}: r = ${c ? nf(c.r, 2) : "—"}${c ? ` (n = ${c.n}, p ${c.p < .001 ? "< 0,001" : "= " + nf(c.p, 3)})` : ""}</title></g>`; }).join("")).join("")}
-    </svg>`;
     // ranking
     const pares = [];
     for (let i = 0; i < K; i++) for (let j = i + 1; j < K; j++) if (R[i][j]) pares.push({ i, j, ...R[i][j] });
@@ -899,16 +886,16 @@
     const pts = ms.map(m => { const g = grupo(nota(m.ele?.["2020"]?.[0])); return { x: X.v(m), y: Y.v(m), c: g.c, id: m.c, t: `${m.n} (${m.uf}) · ${g.n}\n${X.n}: ${X.f(X.v(m))}\n${Y.n}: ${Y.f(Y.v(m))}` }; }).filter(p => p.x != null && p.y != null && isFinite(p.x) && isFinite(p.y));
     const d = ci !== cj ? dispersao(pts, { fx: X.f, fy: Y.f, nx: X.l, ny: Y.l }) : "";
     main.innerHTML = `
-      <div class="explica"><h3>Como ler</h3><p>Cada célula mostra a correlação entre duas características dos municípios${st.uf ? ` de ${st.uf}` : ""}, de −1 a +1. <b style="color:#2dd4bf">Verde-água</b>: as duas sobem juntas; <b style="color:#f97316">laranja</b>: quando uma sobe, a outra desce; quanto mais forte a cor, mais forte a relação. Clique numa célula para ver o gráfico do par. <b>Pearson</b> mede relação linear e é sensível a valores extremos; <b>Spearman</b> usa a ordem (postos) e capta qualquer relação que só sobe ou só desce. Correlação não é causa: veja as abas Economia política e Eleições acirradas.</p></div>
-      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>Matriz de correlações</h2><p class="sub">${K} variáveis, ${ms.length} municípios; cada par usa os municípios com os dois dados. Finanças: médias de 2021 a 2024, a preços de ${REF}.${curto ? " Arraste a matriz para o lado para ver todas as colunas; os números das linhas e colunas estão na tabela Variáveis, no fim da página." : ""}</p></div>
-        ${segSt("corr", [["p", "Pearson"], ["s", "Spearman"]])}</div>
-        <div class="tbwrap">${mat}</div>
-        <div class="leg"><span><i style="background:${corR(-.9)}"></i>−0,9</span><span><i style="background:${corR(-.5)}"></i>−0,5</span><span><i style="background:${corR(-.15)}"></i>−0,15</span><span><i style="background:${corR(.15)}"></i>+0,15</span><span><i style="background:${corR(.5)}"></i>+0,5</span><span><i style="background:${corR(.9)}"></i>+0,9</span></div></section>
-      <section class="panel" style="margin-top:16px"><h2>${esc(Y.n)} × ${esc(X.n)}</h2><p class="sub">${c ? `r de ${sp ? "Spearman" : "Pearson"} = <b>${nf(c.r, 2)}</b> (${forca(c.r)}), ${nf(c.n)} municípios, valor-p ${c.p < .001 ? "&lt; 0,001" : nf(c.p, 3)}. Linha: mínimos quadrados.` : "Poucos municípios com os dois dados."} Clique num ponto para abrir o município.</p>
-          ${typeof d === "string" ? d : `${d.svg}${legGrupos()}`}</section>
-      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>${esc(VARS[cv].n)} contra todas as outras</h2><p class="sub">Correlação de ${sp ? "Spearman" : "Pearson"} com cada variável, da mais positiva à mais negativa. Traço preto: intervalo de 95% (transformação z de Fisher); se ele cruza o zero, a correlação não é significativa a 5%. Clique numa barra para ver o gráfico do par.</p></div>
-        <div class="ctl" style="padding:8px 12px"><label class="f"><span>Variável</span><select data-stsel="cvar">${VARS.map((V, i) => `<option value="${i}" ${i === cv ? "selected" : ""}>${esc(V.n)}</option>`).join("")}</select></label></div></div>
+      <div class="explica"><h3>Como ler</h3><p>A correlação vai de −1 a +1 e mede quanto duas características dos municípios${st.uf ? ` de ${st.uf}` : ""} andam juntas. <b style="color:#2dd4bf">Verde-água</b>: as duas sobem juntas; <b style="color:#f97316">laranja</b>: quando uma sobe, a outra desce. <b>Pearson</b> mede relação linear e é sensível a valores extremos; <b>Spearman</b> usa a ordem (postos) e capta qualquer relação que só sobe ou só desce. Correlação não é causa: veja as abas Economia política e Eleições acirradas.</p></div>
+      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>${esc(VARS[cv].n)} contra todas as outras</h2><p class="sub">Correlação com cada uma das outras ${K - 1} variáveis, da mais positiva à mais negativa (${ms.length} municípios; finanças: médias de 2021 a 2024, a preços de ${REF}). O traço sobre a barra é o intervalo de 95% (transformação z de Fisher): se ele cruza o zero, a correlação não é significativa a 5%. Clique numa barra para ver o gráfico do par.</p></div>
+        <div class="ctl" style="padding:8px 12px"><label class="f"><span>Variável</span><select data-stsel="cvar">${VARS.map((V, i) => `<option value="${i}" ${i === cv ? "selected" : ""}>${esc(V.n)}</option>`).join("")}</select></label>
+          <div class="f"><span>Coeficiente</span>${segSt("corr", [["p", "Pearson"], ["s", "Spearman"]])}</div></div></div>
         ${barrasR(perfil, { rotulo: rotB })}</section>
+      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>${esc(Y.n)} × ${esc(X.n)}</h2><p class="sub">${c ? `r de ${sp ? "Spearman" : "Pearson"} = <b>${nf(c.r, 2)}</b> (${forca(c.r)}), ${nf(c.n)} municípios, valor-p ${c.p < .001 ? "&lt; 0,001" : nf(c.p, 3)}. Linha: mínimos quadrados.` : "Poucos municípios com os dois dados."} Cor: orientação do prefeito eleito em 2020. Clique num ponto para abrir o município.</p></div>
+        <div class="ctl" style="padding:8px 12px">
+          <label class="f"><span>Eixo vertical</span><select id="cPY">${VARS.map((V, i) => `<option value="${i}" ${i === ci ? "selected" : ""}>${esc(V.n)}</option>`).join("")}</select></label>
+          <label class="f"><span>Eixo horizontal</span><select id="cPX">${VARS.map((V, i) => `<option value="${i}" ${i === cj ? "selected" : ""}>${esc(V.n)}</option>`).join("")}</select></label></div></div>
+          ${typeof d === "string" ? d : `${d.svg}${legGrupos()}`}</section>
       <div class="grid" style="margin-top:16px">
         <section class="panel"><h2>${esc(Y.n)} × ${esc(X.n)}, por estado</h2><p class="sub">A mesma correlação calculada dentro de cada UF (entre parênteses, o número de municípios). ${geralPar ? `Na região toda: <b>r = ${nf(geralPar.r, 2)}</b>.` : ""} Estados com menos de 10 municípios com dado ficam de fora. Clique num estado para filtrar a página.</p>
           ${barrasR(parUf, { w: Math.min(largura(), 560), rotulo: 70 })}
@@ -976,6 +963,7 @@
     else if (id === "fY") st.y = e.target.value;
     else if (id === "rE") st.rddE = e.target.value;
     else if (id === "rY") st.rddY = e.target.value;
+    else if (id === "cPY" || id === "cPX"){ const [y, x] = (st.cxy || "6-3").split("-"); st.cxy = id === "cPY" ? `${e.target.value}-${x}` : `${y}-${e.target.value}`; }
     else if (e.target.dataset.stsel) st[e.target.dataset.stsel] = e.target.value;
     else if (id === "fMun"){ const v = e.target.value, m = M.find(x => `${x.n} - ${x.uf}` === v); if (m){ st.mun = m.c; } else return; }
     else return;
