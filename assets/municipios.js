@@ -524,8 +524,14 @@
     ms.forEach(m => { const x = m.f[aF]; if (!x?.fn) return; popF += x.pop || 0; Object.entries(x.fn).forEach(([k, v]) => { tot[k] = (tot[k] || 0) + v; totG += v; }); });
     const comp = Object.entries(tot).sort((a, b) => b[1] - a[1]).slice(0, 10);
     const barras = comp.length ? barrasH(comp.map(([k, v]) => ({ n: FUNCOES[k] || `Função ${k}`, w: v / comp[0][1], v, c: k === fnS ? "var(--accent)" : "#60a5fa" })), v => `${pct(v / totG, 0)} · ${brl(popF ? v / popF : null)}/hab.`) : `<p class="nota">Sem despesa por função no recorte.</p>`;
-    const sa = [], ed = [];
-    ms.forEach(m => { const x = m.f[aF]; if (!x?.fn || !x.rc) return; const r = rit(x); if (!(r > 0)) return; sa.push(100 * (x.fn["10"] || 0) / r); ed.push(100 * (x.fn["12"] || 0) / r); });
+    // percentuais oficiais do RREO (Anexo 14) quando há cobertura; senão, a aproximação pela despesa por função
+    const aM = anoCom(ms, x => x.lrf && x.lrf[7] != null);
+    const ofS = ms.map(m => m.f[aM]?.lrf?.[7]).filter(v => v != null), ofE = ms.map(m => m.f[aM]?.lrf?.[8]).filter(v => v != null);
+    const oficial = ofS.length >= .3 * ms.length;
+    let sa = ofS, ed = ofE;
+    if (!oficial){ sa = []; ed = [];
+      ms.forEach(m => { const x = m.f[aF]; if (!x?.fn || !x.rc) return; const r = rit(x); if (!(r > 0)) return; sa.push(100 * (x.fn["10"] || 0) / r); ed.push(100 * (x.fn["12"] || 0) / r); }); }
+    const abaixo = (v, lim) => v.length ? `${v.filter(x => x < lim).length} de ${v.length} abaixo do mínimo` : "";
     const fP = v => `${nf(v)}%`;
     const L = ms.map(m => ({ m, l: m.f[aL]?.lrf })).filter(o => o.l && o.l[1] != null);
     const pes = L.map(o => o.l[1]), acima = lim => L.filter(o => o.l[1] > lim).length;
@@ -548,10 +554,10 @@
         ${segSt("fn", DESTAQUE.map(k => [k, FUNCOES[k]]))}</div>${linhas(serieFn, { anos: ANOS, fmt: brl })}</section>
       <div class="grid" style="margin-top:16px">
         <section class="panel"><h2>Para onde vai o dinheiro em ${aF}</h2><p class="sub">As dez funções com maior despesa liquidada no recorte: parcela do total e valor por habitante.</p>${barras}</section>
-        <section class="panel"><h2>Mínimos constitucionais (aproximação)</h2><p class="sub">Despesa da função em % da receita de impostos e transferências constitucionais (impostos próprios, FPM, ICMS, ITR e IPVA), ${aF}.</p>
-          <h3 class="mini">Saúde (mínimo de 15%)</h3>${histograma(sa, { lo: 0, hi: 50, passo: 2, fmt: fP, marcas: [{ x: 15, n: "15%" }], cor: v => v < 15 ? "#f87171" : "#34d399", alto: 150 })}
-          <h3 class="mini">Educação (mínimo de 25%)</h3>${histograma(ed, { lo: 0, hi: 70, passo: 2.5, fmt: fP, marcas: [{ x: 25, n: "25%" }], cor: v => v < 25 ? "#f87171" : "#34d399", alto: 150 })}
-          <p class="nota">A função inclui gastos pagos com recursos do SUS e do Fundeb, que não entram no cálculo oficial; por isso a razão fica acima do índice do SIOPS e do SIOPE. Serve para comparar municípios, não para verificar o cumprimento da regra.</p></section>
+        <section class="panel"><h2>Mínimos constitucionais${oficial ? "" : " (aproximação)"}</h2><p class="sub">${oficial ? `Percentual da receita de impostos e transferências aplicado em saúde e em manutenção e desenvolvimento do ensino, declarado no RREO (Anexo 14), ${aM}.` : `Despesa da função em % da receita de impostos e transferências constitucionais (impostos próprios, FPM, ICMS, ITR e IPVA), ${aF}.`}</p>
+          <h3 class="mini">Saúde (mínimo de 15%) · ${abaixo(sa, 15)}</h3>${histograma(sa, { lo: 0, hi: 50, passo: 2, fmt: fP, marcas: [{ x: 15, n: "15%" }], cor: v => v < 15 ? "#f87171" : "#34d399", alto: 150 })}
+          <h3 class="mini">Educação (mínimo de 25%) · ${abaixo(ed, 25)}</h3>${histograma(ed, { lo: 0, hi: 70, passo: 2.5, fmt: fP, marcas: [{ x: 25, n: "25%" }], cor: v => v < 25 ? "#f87171" : "#34d399", alto: 150 })}
+          <p class="nota">${oficial ? "Valores declarados pela própria prefeitura ao Tesouro; o cálculo definitivo é feito pelos tribunais de contas, pelo SIOPS e pelo SIOPE." : "A função inclui gastos pagos com recursos do SUS e do Fundeb, que não entram no cálculo oficial; por isso a razão fica acima do índice do SIOPS e do SIOPE. Serve para comparar municípios, não para verificar o cumprimento da regra."}</p></section>
       </div>
       <div class="grid" style="margin-top:16px">
         <section class="panel"><h2>Despesa com pessoal na Lei de Responsabilidade Fiscal</h2><p class="sub">Poder Executivo, em % da receita corrente líquida, ${aL} (RGF, Anexo 6). Limites: alerta 48,6%, prudencial 51,3%, máximo 54%.</p>
@@ -774,7 +780,7 @@
     const rc = D.rc_nomes || [];
     const cab = ["codigo_ibge", "municipio", "uf", "ano", "populacao", "partido_prefeito", "escala_ideologica", "orientacao", "prefeito_2o_mandato", "partido_governador", "alinhado_governador",
       "receita_rs_mil", "transferencias_rs_mil", "receita_tributaria_rs_mil", "despesa_rs_mil", "investimento_rs_mil", ...rc.map(n => `rec_${n}_rs_mil`), "saude_rs_mil", "educacao_rs_mil",
-      "rcl_rs_mil", "pessoal_pct_rcl", "dcl_pct_rcl", "restos_pagar_np_rs_mil", "caixa_liquido_rs_mil", "resultado_primario_rs_mil", "meta_primario_rs_mil",
+      "rcl_rs_mil", "pessoal_pct_rcl", "dcl_pct_rcl", "restos_pagar_np_rs_mil", "caixa_liquido_rs_mil", "resultado_primario_rs_mil", "meta_primario_rs_mil", "saude_pct_impostos", "educacao_mde_pct_impostos",
       "pib_rs_mil", "pib_agro_rs_mil", "emprego_total", "emprego_agro", "obitos_infantis", "nascidos_vivos", "desmatamento_km2", "focos_queimadas", "esgoto_rede_2022_pct", "alfabetizacao_2022_pct", "ipca_indice"];
     const out = [cab.join(sep)];
     ms.forEach(m => anos.forEach(a => {
@@ -782,7 +788,7 @@
       const al = alinhado(m, a);
       out.push([m.c, m.n, m.uf, +a, m.pop?.[a], e?.[0], sc, c7 ? CATS.find(c => c[0] === c7)[1] : "", m.reel?.[E], g, al == null ? "" : +al,
         fi[0], fi[1], fi[2], fi[3], fi[4], ...rc.map((_, i) => r[i]), m.fn?.[a] ? fn["10"] || 0 : "", m.fn?.[a] ? fn["12"] || 0 : "",
-        l[0], l[1], l[2], l[3], l[4], l[5], l[6], m.pib?.[a]?.[0], m.pib?.[a]?.[1], m.emp?.[a]?.[0], m.emp?.[a]?.[1], m.tmi?.[a]?.[0], m.tmi?.[a]?.[1],
+        l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8], m.pib?.[a]?.[0], m.pib?.[a]?.[1], m.emp?.[a]?.[0], m.emp?.[a]?.[1], m.tmi?.[a]?.[0], m.tmi?.[a]?.[1],
         m.desm?.[a], m.fogo?.[a], m.censo?.[0], m.censo?.[1], D.ipca?.[a]].map(dec).join(sep));
     }));
     const blob = new Blob([(sep === ";" ? "﻿" : "") + out.join("\r\n")], { type: "text/csv;charset=utf-8" });
@@ -801,7 +807,7 @@
         <p><b>Agropecuária:</b> IBGE: Produção Agrícola Municipal (área colhida de soja, milho e algodão), Pesquisa da Pecuária Municipal (bovinos) e PIB dos Municípios (peso da agropecuária no PIB). <b>Agro forte</b>: agropecuária com 30% ou mais do PIB, em média, nos três últimos anos publicados; <b>agro médio</b>: 15% a 30%.</p>
         <p><b>População:</b> estimativas do IBGE e Censo 2022, interpoladas nos anos sem estimativa.</p>
         <p><b>Fontes de receita e despesa por função:</b> DCA, Anexos I-C (receitas brutas: FPM, ICMS, ITR, IPVA, CFEM, royalties do petróleo, convênios da União e do estado, transferências especiais e impostos próprios) e I-E (despesa liquidada por função). Os códigos de conta mudaram com o novo ementário de 2022; a coleta usa os dois.</p>
-        <p><b>Lei de Responsabilidade Fiscal:</b> RGF simplificado do Poder Executivo (Anexo 6, último quadrimestre ou semestre): RCL, despesa com pessoal, dívida consolidada líquida, restos a pagar e disponibilidade de caixa; RREO, Anexo 14 (6º bimestre): resultado primário e meta da LDO.</p>
+        <p><b>Lei de Responsabilidade Fiscal:</b> Anexo 6 do RGF do Poder Executivo (último quadrimestre ou semestre; municípios com menos de 50 mil habitantes podem publicar o RGF Simplificado): RCL, despesa com pessoal, dívida consolidada líquida, restos a pagar e disponibilidade de caixa; Anexo 14 do RREO (6º bimestre): resultado primário, meta da LDO e percentuais aplicados em saúde e em educação.</p>
         <p><b>Reeleição e governadores:</b> cadastro de candidatos do TSE (prefeito eleito que concorria à reeleição; partido do governador eleito em 2014, 2018 e 2022).</p>
         <p><b>Amazônia:</b> PRODES (Inpe, TerraBrasilis), polígonos anuais de desmatamento da Amazônia e do Cerrado atribuídos ao município pelo ponto central; focos de queimadas do satélite de referência do Inpe; emprego assalariado na agropecuária do Cadastro Central de Empresas do IBGE.</p>
         <p><b>Resultados:</b> mortalidade infantil do SIM e do Sinasc (DATASUS, TabNet), por residência; esgotamento sanitário e alfabetização do Censo 2022. O Ideb não entra porque o Inep bloqueia a coleta automática.</p>
