@@ -65,6 +65,7 @@ LAVOURAS = {"40124": "soja", "40122": "milho", "40099": "algodao"}
 GOVERNADORES = (2014, 2018, 2022)
 TRABALHADORES = 8          # consultas simultâneas ao Siconfi (o ritmo comum limita os pedidos por segundo)
 MAX_PARES = 20000          # teto de pares município-ano por execução (a primeira carga tem cerca de 11 mil)
+BASICO = False             # True na coleta nacional (scripts/brasil.py): só a DCA, sem RGF e RREO
 PRAZO_SICONFI = 190        # minutos; o que faltar fica para a execução seguinte (a primeira carga leva duas ou três)
 
 # Escala esquerda (0) – direita (10). Média ponderada das rodadas de 2018 e 2022 em Bolognesi, Ribeiro,
@@ -341,6 +342,8 @@ def siconfi(cod: int, ano: int, so_lrf: bool = False, pequeno: bool = False, so_
             fn[m.group(1)] = fn.get(m.group(1), 0) + (i.get("valor") or 0)
     if fn:
         out["fn"] = {k: round(v / 1e3, 1) for k, v in sorted(fn.items())}
+    if BASICO:
+        return out
     # RGF do Executivo, Anexo 6 (demonstrativo simplificado): 3º quadrimestre ou 2º semestre. Municípios com menos
     # de 50 mil habitantes podem publicar o "RGF Simplificado", semestral, e o "RREO Simplificado".
     rgf = []
@@ -393,7 +396,7 @@ def financas(ms: dict, antes: dict) -> None:
                 pendentes.append((c, a, "tudo"))
             elif a >= fim - 1:                            # os dois últimos anos podem ser retificados
                 revisar.append((c, a, "tudo"))
-            elif len(m["lrf"].get(str(a), [])) < 9:       # falta a LRF (ou os campos novos): só RGF e RREO
+            elif not BASICO and len(m["lrf"].get(str(a), [])) < 9:   # falta a LRF (ou os campos novos): só RGF e RREO
                 revisar.append((c, a, "lrf"))
             elif str(a) not in m["tr"]:                    # faltam os repasses classificados: só o anexo I-C
                 revisar.append((c, a, "ic"))
