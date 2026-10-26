@@ -1,51 +1,39 @@
-import sys, json, re, time, ftplib, socket
+import sys, json, re, time, ftplib
 sys.path.insert(0, "scripts")
 import requests
 import atualizar_municipios as A
 o = []
 def t(nome, f, lim=2500):
     t0 = time.time()
-    try: o.append(f"== {nome} ({time.time()-t0:.0f}s)\n{str(f())[:lim]}")
+    try: r = f(); o.append(f"== {nome} ({time.time()-t0:.0f}s)\n{str(r)[:lim]}")
     except Exception as e: o.append(f"== {nome} ERRO {type(e).__name__}: {str(e)[:300]}")
-S = "https://apisidra.ibge.gov.br/values/"
-def sid(c):
-    d = requests.get(S + c, timeout=120).json()
-    return "\n".join(" | ".join(str(l.get(k)) for k in ("D2N", "D3N", "D4C", "D4N", "V")) for l in d[1:])
-# 1 Cempre: unidades locais e empresas por seção CNAE, último ano
-t("cempre 6450 Sinop", lambda: sid("t/6450/n6/5107909/v/706,707,708/p/last%201/c12762/all"), 6000)
-t("cempre 6449?", lambda: sid("t/6449/n6/5107909/v/all/p/last%201"), 1500)
-# 2 PIB por setor 2021
-t("pib 5938 Sinop", lambda: sid("t/5938/n6/5107909/v/37,498,513,517,6575,525/p/2020,2021,2022,2023"), 3000)
-# 3 DCA I-C: todas as transferências (códigos), três ementários
-for ano in (2017, 2020, 2023):
-    def f(ano=ano):
-        r = A.get(A.SICONFI + "dca", {"an_exercicio": ano, "id_ente": 5107909, "no_anexo": "DCA-Anexo I-C"}, timeout=90).json()["items"]
-        return "\n".join(sorted({f'{i["cod_conta"]} | {i["conta"][:75]} | {round(i["valor"] or 0)}' for i in r if i["coluna"] == "Receitas Brutas Realizadas" and re.match(r"RO(1\.7|2\.4)", i["cod_conta"])}))
-    t(f"dca {ano} transferências", f, 9000)
-# 4 RREO Anexo 12 (saúde) e 08 (MDE)
-for anexo in ("RREO-Anexo 12", "RREO-Anexo 08"):
-    def g(anexo=anexo):
-        r = A.get(A.SICONFI + "rreo", {"an_exercicio": 2023, "nr_periodo": 6, "co_tipo_demonstrativo": "RREO", "no_anexo": anexo, "id_ente": 5107909}, timeout=90).json()["items"]
-        return f"{len(r)} linhas\n" + "\n".join(sorted({f'{i["cod_conta"][:70]} | {i["coluna"][:40]} | {i["valor"]}' for i in r if re.search("Investiment|Capital|FUNDEB|Fundeb|TotalDasDespesas|Pessoal", i["cod_conta"] or "")}))
-    t(f"rreo 2023 {anexo}", g, 5000)
-# 5 Receita Federal CNPJ
-for u in ("https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj/", "https://dadosabertos.rfb.gov.br/CNPJ/"):
-    t(f"cnpj {u}", lambda u=u: (lambda r: (r.status_code, re.findall(r'href="([^"]+)"', r.text)[-15:]))(requests.get(u, timeout=60)))
-# 6 PNI TabNet
-for d in ("pni/cnv/cpnimt.def", "pni/cnv/cpniuf.def", "pni/cnv/dpnimt.def"):
-    def h(d=d):
-        r = requests.get("http://tabnet.datasus.gov.br/cgi/deftohtm.exe?" + d, timeout=60)
-        pg = r.content.decode("latin-1")
-        return r.status_code, re.findall(r"<title>(.*?)</title>", pg, re.I), re.findall(r'VALUE="([a-z]{3,6}\d\d\.dbf)"', pg, re.I)[:30], re.findall(r'NAME="(Linha|Coluna|Incremento)"(.*?)</SELECT>', pg, re.S | re.I)[:3] and [re.findall(r'VALUE="([^"]+)"', x[1])[:25] for x in re.findall(r'NAME="(Linha|Coluna|Incremento)"(.*?)</SELECT>', pg, re.S | re.I)]
-    t(f"pni {d}", h, 3000)
-# 7 Tesouro Transparente: transferências constitucionais
-t("tesouro ckan", lambda: [ (r["name"], r.get("url")) for r in requests.get("https://www.tesourotransparente.gov.br/ckan/api/3/action/package_show?id=transferencias-constitucionais-realizadas", timeout=60).json()["result"]["resources"]][:20])
-# 8 PDET FTP (RAIS / Novo Caged)
-def ftp():
-    f = ftplib.FTP("ftp.mtps.gov.br", timeout=40); f.login(); out = f.nlst("/pdet/microdados/"); f.quit(); return out
-t("pdet ftp", ftp)
-# 9 FNDE dados abertos (SIOPE)
-t("fnde ckan", lambda: requests.get("https://www.fnde.gov.br/dadosabertos/api/3/action/package_search?q=siope&rows=10", timeout=60).text[:1500])
-# 10 SIOPS
-t("siops", lambda: requests.get("http://siops.datasus.gov.br/consleirespfiscal.php", timeout=60).status_code)
+H = {"User-Agent": "Mozilla/5.0"}
+# PNI TabNet (legado)
+for d in ("pni/cnv/cpniuf.def", "pni/cnv/cpnimt.def", "pni/cnv/cpnimun.def"):
+    t(f"pni deftohtm {d}", lambda d=d: (lambda r: (r.status_code, len(r.content), r.content.decode("latin-1")[:1200]))(requests.get("http://tabnet.datasus.gov.br/cgi/deftohtm.exe?" + d, headers=H, timeout=180)), 1500)
+t("pni dhdat", lambda: (lambda r: (r.status_code, r.content.decode("latin-1")[:1500]))(requests.get("http://tabnet.datasus.gov.br/cgi/dhdat.exe?bd_pni/cpnibr.def", headers=H, timeout=180)), 1800)
+t("sipni web", lambda: requests.get("http://sipni.datasus.gov.br/si-pni-web/faces/relatorio/consolidado/coberturaVacinal.jsf", headers=H, timeout=60).status_code)
+# OpenDataSUS SI-PNI rotina
+t("opendatasus pni", lambda: [(r.get("name"), r.get("url")) for r in requests.get("https://opendatasus.saude.gov.br/api/3/action/package_search?q=pni&rows=20", headers=H, timeout=60).json()["result"]["results"]], 4000)
+# CNPJ
+for u in ("https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj/", "https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj/2026-09/", "https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9", "https://dados-abertos-rf-cnpj.casadosdados.com.br/"):
+    t(f"cnpj {u}", lambda u=u: (lambda r: (r.status_code, r.url, re.findall(r'href="([^"]+)"', r.text)[:40]))(requests.get(u, headers=H, timeout=60)), 3000)
+# RAIS e Novo Caged
+def lista(p):
+    f = ftplib.FTP("ftp.mtps.gov.br", timeout=60, encoding="latin-1"); f.login(); out = []
+    f.retrlines("LIST " + p, out.append); f.quit(); return "\n".join(out[-40:])
+t("rais", lambda: lista("/pdet/microdados/RAIS/"), 4000)
+t("rais 2023", lambda: lista("/pdet/microdados/RAIS/2023/"), 4000)
+t("rais 2024", lambda: lista("/pdet/microdados/RAIS/2024/"), 4000)
+t("novo caged", lambda: lista("/pdet/microdados/NOVO CAGED/"), 3000)
+t("novo caged 2025", lambda: lista("/pdet/microdados/NOVO CAGED/2025/"), 3000)
+# SIOPS indicadores municipais (TabNet)
+for u in ("http://siops-asp.datasus.gov.br/CGI/deftohtm.exe?SIOPS/serhist/municipio/indicMun.def", "http://siops.datasus.gov.br/rel_indicadores.php"):
+    t(f"siops {u}", lambda u=u: (lambda r: (r.status_code, r.content.decode("latin-1")[:1500]))(requests.get(u, headers=H, timeout=90)), 1800)
+# MSC orçamentária: despesa por função e natureza
+def msc():
+    r = A.get(A.SICONFI + "msc_orcamentaria", {"id_ente": 5107909, "an_referencia": 2023, "me_referencia": 12, "co_tipo_matriz": "MSCC", "classe_conta": 6, "id_tv": "period_change"}, timeout=180).json()
+    it = r.get("items", [])
+    return len(it), r.get("hasMore"), it[:3], sorted({(i.get("conta_contabil"), i.get("natureza_despesa", "")[:2] if i.get("natureza_despesa") else None, i.get("funcao")) for i in it if i.get("funcao") in ("10", "12")})[:40]
+t("msc", msc, 5000)
 open("tmp/teste_coletor.txt", "w").write("\n".join(o))
