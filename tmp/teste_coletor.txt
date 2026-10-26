@@ -1,0 +1,193 @@
+7z: /usr/bin/7z /usr/bin/7za
+== rais 2016 (2s)
+10-19-17  04:48PM              5650138 AC2016.7z
+10-19-17  04:48PM             21752824 AL2016.7z
+10-19-17  04:48PM             27780623 AM2016.7z
+10-19-17  04:48PM              5496342 AP2016.7z
+10-19-17  04:49PM            110042341 BA2016.7z
+10-19-17  04:49PM             69675238 CE2016.7z
+03-12-26  10:48AM             56869724 DF2016.7z
+10-19-17  04:49PM             49605504 ES2016.7z
+10-19-17  04:49PM             97947067 ESTB2016.7z
+10-19-17  04:49PM             83564848 GO2016.7z
+10-19-17  04:50PM             29373204 MA2016.7z
+03-12-26  10:48AM            269832176 MG2016.7z
+10-19-17  04:50PM             37520554 MS2016.7z
+10-19-17  04:50PM             49293145 MT2016.7z
+10-19-17  04:51PM             54239834 PA2016.7z
+10-19-17  04:51PM             26235223 PB2016.7z
+03-12-26  10:48AM             76569528 PE2016.7z
+10-19-17  04:51PM             18837611 PI2016.7z
+10-19-17  04:51PM            182127400 PR2016.7z
+03-12-26  10:48AM            236494416 RJ2016.7z
+10-19-17  04:52PM             27650425 RN2016.7z
+10-19-17  04:52PM             17582591 RO2016.7z
+10-19-17  04:52PM              4269591 RR2016.7z
+10-19-17  04:53PM            178624065 RS2016.7z
+10-19-17  04:53PM            136609278 SC2016.7z
+10-19-17  04:53PM             18503771 SE2016.7z
+03-12-26  10:48AM            811715016 SP2016.7z
+10-19-17  04:55PM             12981832 TO2016.7z
+== rais 2019 (2s)
+08-08-25  10:00AM       <DIR>          Legado
+11-30-21  05:42PM                  156 Leia-me.txt
+04-24-26  04:13PM             97089255 RAIS_ESTAB_PUB.7z
+04-24-26  03:50PM            224488639 RAIS_VINC_PUB_CENTRO_OESTE.7z
+04-24-26  03:59PM            530349639 RAIS_VINC_PUB_MG_ES_RJ.7z
+04-24-26  03:59PM            385829294 RAIS_VINC_PUB_NORDESTE.7z
+12-17-21  02:00PM            123507782 RAIS_VINC_PUB_NORTE.7z
+04-24-26  04:00PM            805974450 RAIS_VINC_PUB_SP.7z
+04-24-26  04:00PM            502535667 RAIS_VINC_PUB_SUL.7z
+== rais 2021 (7s)
+08-12-25  11:52AM            102529877 RAIS_ESTAB_PUB.7z
+08-12-25  11:53AM            245663162 RAIS_VINC_PUB_CENTRO_OESTE.7z
+11-19-25  03:36PM            567007560 RAIS_VINC_PUB_MG_ES_RJ.7z
+08-12-25  11:56AM            418690692 RAIS_VINC_PUB_NORDESTE.7z
+08-12-25  11:56AM            139063147 RAIS_VINC_PUB_NORTE.7z
+08-12-25  11:51AM            864685461 RAIS_VINC_PUB_SP.7z
+08-12-25  11:52AM            551324193 RAIS_VINC_PUB_SUL.7z
+== rais 2022 (1s)
+08-12-25  11:46AM             91369253 RAIS_ESTAB_PUB.7z
+08-12-25  11:46AM            279182629 RAIS_VINC_PUB_CENTRO_OESTE.7z
+08-12-25  11:43AM            628291547 RAIS_VINC_PUB_MG_ES_RJ.7z
+08-12-25  11:43AM                63071 RAIS_VINC_PUB_NI.7z
+08-12-25  11:43AM            462393275 RAIS_VINC_PUB_NORDESTE.7z
+08-12-25  11:44AM            156214163 RAIS_VINC_PUB_NORTE.7z
+08-12-25  11:45AM            947704550 RAIS_VINC_PUB_SP.7z
+08-12-25  11:48AM            599471446 RAIS_VINC_PUB_SUL.7z
+== caged 202509 (2s)
+06-16-26  02:27PM               119675 CAGEDEXC202509.7z
+06-16-26  02:27PM               655984 CAGEDFOR202509.7z
+06-16-26  02:27PM             53975596 CAGEDMOV202509.7z
+== caged 202001 (1s)
+06-21-22  03:55PM             34261878 CAGEDMOV202001.7z
+== rais 2024 estab (176s)
+(140661991, [('RAIS_ESTAB_PUB.COMT', 1431437349, ['"Bairros SP - Código","Bairros Fortaleza - Código","Bairros RJ - Código","CNAE 2.0 Classe - Código","CNAE 95 Classe - Código","Distritos SP - Código","Qtd Vínculos CLT","Qtd Vínculos Ativos","Qtd Vínculos Estatutários","Ind Atividade Ano - Código","Ind CEI Vinculado - Código","Ind Estab Participante PAT - Código","Ind RAIS Negativa - Código","Ind Estab Participante SIMPLES - Código","Município - Código","Natureza Jurídica - Código","Região Adm DF - Código","CNAE 2.0 Subclasse - Codigo","Tamanho Estabelecimento - Código","Tipo Estabelecimento - Código","UF - Código","IBGE Subsetor - Código","CEP Estab"', '999997,999997,999997," 4530703",5030,999997,28,28,0,1,0,9,0,1,351880,2062,999997," 4530703",5,1,35,16,7112000', '999997,999997,999997," 4520002",5020,999997,1,1,0,1,0,9,0,1,530010,2135,999997," 4520002",2,1,53,16,72545236', '999997,999997,999997," 4781400",5232,999997,1,1,0,1,0,9,0,1,314700,2062,999997," 4781400",2,1,31,16,38600214'])])
+== rais 2024 subsetor (24s)
+(['Bairros SP - Código,"Bairros Fortaleza - Código","Bairros RJ - Código","CNAE 2.0 Classe - Código","CNAE 95 Classe - Código","Distritos SP - Código","Qtd Vínculos CLT","Qtd Vínculos Ativos","Qtd Vínculos Estatutários","Ind Atividade Ano - Código","Ind CEI Vinculado - Código","Ind Estab Participante PAT - Código","Ind RAIS Negativa - Código","Ind Estab Participante SIMPLES - Código","Município - Código","Natureza Jurídica - Código","Região Adm DF - Código","CNAE 2.0 Subclasse - Codigo","Tamanho Estabelecimento - Código","Tipo Estabelecimento - Código","UF - Código","IBGE Subsetor - Código","CEP Estab"'], 13186059, [('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150210,9999,999997,"0312401",1,5,15,25,68400000', 62450), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150460,9999,999997,"0312401",1,5,15,25,68420000', 27381), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150770,9999,999997,"0312401",1,5,15,25,68820000', 20904), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150010,9999,999997,"0312401",1,5,15,25,68440000', 20743), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150180,9999,999997,"0312401",1,5,15,25,68800000', 20523), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150120,9999,999997,"0312401",1,5,15,25,68465000', 19848), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150490,9999,999997,"0312401",1,5,15,25,68825000', 19128), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,210860,9999,999997,"0312401",1,5,21,25,65200000', 17582), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150790,9999,999997,"0312401",1,5,15,25,68870000', 15956), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150570,9999,999997,"0312401",1,5,15,25,68830000', 15712), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150330,9999,999997,"0312401",1,5,15,25,68430000', 15651), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,211280,9999,999997,"0312401",1,5,21,25,65215000', 15573), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150400,9999,999997,"0312401",1,5,15,25,68415000', 14259), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150280,9999,999997,"0312401",1,5,15,25,68815000', 14217), ('999997,999997,999997,"0311602",5118,999997,0,0,0,0,0,9,1,0,211250,9999,999997,"0311602",1,5,21,25,65580000', 14027), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150520,9999,999997,"0312401",1,5,15,25,68470000', 13301), ('999997,999997,999997,"0311602",5118,999997,0,0,0,0,0,9,1,0,211120,9999,999997,"0311602",1,5,21,25,65110000', 13010), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150178,9999,999997,"0312401",1,5,15,25,68488000', 12786), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150310,9999,999997,"0312401",1,5,15,25,68300000', 12487), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,210120,9999,999997,"0312401",1,5,21,25,65700000', 11794), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150480,9999,999997,"0312401",1,5,15,25,68220000', 11713), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,211400,9999,999997,"0312401",1,5,21,25,65365000', 11496), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,211003,9999,999997,"0312401",1,5,21,25,65272000', 11136), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150200,9999,999997,"0312401",1,5,15,25,68840000', 11032), ('999997,999997,999997,"0311602",5118,999997,0,0,0,0,0,9,1,0,210510,9999,999997,"0311602",1,5,21,25,65170000', 10861), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,210870,9999,999997,"0312401",1,5,21,25,65707000', 10820), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,210960,9999,999997,"0312401",1,5,21,25,65150000', 10708), ('999997,999997,999997,"0312401",5118,999997,0,0,0,0,0,9,1,0,150600,9999,999997,"0312401",1,5,15,25,68130000', 10467), ('999997,999997,999997,"0312401",5118,999997
+== caged mov (69s)
+(53975596, [('CAGEDMOV202509.txt', 455970146, ['competÃªnciamov;regiÃ£o;uf;municÃ\xadpio;seÃ§Ã£o;subclasse;saldomovimentaÃ§Ã£o;cbo2002ocupaÃ§Ã£o;categoria;graudeinstruÃ§Ã£o;idade;horascontratuais;raÃ§acor;sexo;tipoempregador;tipoestabelecimento;tipomovimentaÃ§Ã£o;tipodedeficiÃªncia;indtrabintermitente;indtrabparcial;salÃ¡rio;tamestabjan;indicadoraprendiz;origemdainformaÃ§Ã£o;competÃªnciadec;indicadordeforadoprazo;unidadesalÃ¡riocÃ³digo;valorsalÃ¡riofixo', '202509;3;33;330380;G;4723700;-1;521110;101;1;27;44,00;1;1;0;1;31;0;0;0;1699,10;3;0;1;202509;0;5;1699,10', '202509;3;35;354000;G;4711302;1;142205;101;7;58;44,00;1;3;0;1;97;0;0;0;2756,25;6;0;1;202509;0;5;2756,25', '202509;3;35;353870;G;4781400;-1;521110;101;7;28;44,00;1;3;0;1;31;0;0;0;1913,00;3;0;1;202509;0;5;1913,00'])])
+== pni script srcs: ['/tabnet/tabalfa.js']
+== pni script inline:
+
+<!--
+function OnButton1()
+{
+    document.Form1.action = "webtabx.exe?bd_pni/cpnibr.def"
+    document.Form1.target = "_blank";    // Open in a new window
+    document.Form1.method = "post"
+    document.Form1.submit();             // Submit the page
+    return true;
+}
+function OnButton2()
+{
+    document.Form1.action = "geralinkdatasus.exe?bd_pni/cpnibr.def"
+    document.Form1.target = "_blank";    // Open in a new window
+    document.Form1.method = "get"
+    document.Form1.submit();             // Submit the page
+    return true;
+}
+-->
+
+== pni script inline:
+
+== pni hidden/inputs: ['<input name="pesqmes2" class="achefacil" id="pesqmes2"  value="Digite o texto e ache fácil"\r\n    onkeyup="acha(this, \'S2\', listahidden2,bt_selecionar2);"\r\n    onfocus="this.value = \'\';"\r\n    onkeypress="if(event.keyCode==13)return false;" />', '<input type="button" class="botaoescondido" name="bt_selecionar2" id="bt_selecionar2" value="" />', '<input name="pesqmes3" class="achefacil" id="pesqmes3"  value="Digite o texto e ache fácil"\r\n    onkeyup="acha(this, \'S3\', listahidden3,bt_selecionar3);"\r\n    onfocus="this.value = \'\';"\r\n    onkeypress="if(event.keyCode==13)return false;" />', '<input type="button" class="botaoescondido" name="bt_selecionar3" id="bt_selecionar3" value="" />', '<input name="pesqmes4" class="achefacil" id="pesqmes4"  value="Digite o texto e ache fácil"\r\n    onkeyup="acha(this, \'S4\', listahidden4,bt_selecionar4);"\r\n    onfocus="this.value = \'\';"\r\n    onkeypress="if(event.keyCode==13)return false;" />', '<input type="button" class="botaoescondido" name="bt_selecionar4" id="bt_selecionar4" value="" />', '<input name="pesqmes5" class="achefacil" id="pesqmes5"  value="Digite o texto e ache fácil"\r\n    onkeyup="acha(this, \'S5\', listahidden5,bt_selecionar5);"\r\n    onfocus="this.value = \'\';"\r\n    onkeypress="if(event.keyCode==13)return false;" />', '<input type="button" class="botaoescondido" name="bt_selecionar5" id="bt_selecionar5" value="" />', '<input name="pesqmes6" class="achefacil" id="pesqmes6"  value="Digite o texto e ache fácil"\r\n    onkeyup="acha(this, \'S6\', listahidden6,bt_selecionar6);"\r\n    onfocus="this.value = \'\';"\r\n    onkeypress="if(event.keyCode==13)return false;" />', '<input type="button" class="botaoescondido" name="bt_selecionar6" id="bt_selecionar6" value="" />', '<input name="pesqmes7" class="achefacil" id="pesqmes7"  value="Digite o texto e ache fácil"\r\n    onkeyup="acha(this, \'S7\', listahidden7,bt_selecionar7);"\r\n    onfocus="this.value = \'\';"\r\n    onkeypress="if(event.keyCode==13)return false;" />', '<input type="button" class="botaoescondido" name="bt_selecionar7" id="bt_selecionar7" value="" />', '<input name="pesqmes8" class="achefacil" id="pesqmes8"  value="Digite o texto e ache fácil"\r\n    onkeyup="acha(this, \'S8\', listahidden8,bt_selecionar8);"\r\n    onfocus="this.value = \'\';"\r\n    onkeypress="if(event.keyCode==13)return false;" />', '<input type="button" class="botaoescondido" name="bt_selecionar8" id="bt_selecionar8" value="" />', '<input name="pesqmes9" class="achefacil" id="pesqmes9"  value="Digite o texto e ache fácil"\r\n    onkeyup="acha(this, \'S9\', listahidden9,bt_selecionar9);"\r\n    onfocus="this.value = \'\';"\r\n    onkeypress="if(event.keyCode==13)return false;" />', '<input type="button" class="botaoescondido" name="bt_selecionar9" id="bt_selecionar9" value="" />', '<input name="pesqmes10" class="achefacil" id="pesqmes10"  value="Digite o texto e ache fácil"\r\n    onkeyup="acha(this, \'S10\', listahidden10,bt_selecionar10);"\r\n    onfocus="this.value = \'\';"\r\n    onkeypress="if(event.keyCode==13)return false;" />', '<input type="button" class="botaoescondido" name="bt_selecionar10" id="bt_selecionar10" value="" />', '<input name="pesqmes13" class="achefacil" id="pesqmes13"  value="Digite o texto e ache fácil"\r\n    onkeyup="acha(this, \'S13\', listahidden13,bt_selecionar13);"\r\n    onfocus="this.value = \'\';"\r\n    onkeypress="if(event.keyCode==13)return false;" />', '<input type="button" class="botaoescondido" name="bt_selecionar13" id="bt_selecionar13" value="" />', '<input name="pesqmes14" class="achefacil" id="pesqmes14"  value="Digite o texto e ache fácil"\r\n    onkeyup="acha(this, \'S14\', listahidden14,bt_selecionar14);"\r\n    onfocus="this.value = \'\';"\r\n    onkeypress="if(event.keyCode==13)return false;" />', '<input type="button" class="botaoescondido" name="bt_selecionar14" id="bt_selecionar14" value="" />', '<INPUT TYPE="hidden" NAME="nomedef" ID="L" VALUE="bd_pni/cpnibr.def">', '<INPUT TYPE="radio" NAME="grafico" ID="L" VALUE="" CHECKED>', '<INPUT TYPE="radio" NAME="grafico" ID="L" VALUE="LineChart">', '<INPUT TYPE="radio" NAME="grafico" ID="L" VALUE="AreaChart">', '<INPUT TYPE="radio" NAME="grafico" ID="L" VALUE="ColumnChart">', '<INPUT TYPE="radio" NAME="grafico" ID="L" VALUE="ScatterChart">', '<INPUT TYPE="radio" NAME="grafico" ID="L" VALUE="BarChart">', '<INPUT TYPE="radio" NAME="grafico" ID="L" VALUE="Diario">', '<INPUT TYPE="radio" NAME="grafico" ID="L" VALUE="PieChart">', '<INPUT type="button" value="Mostra" name=button1 onclick="return OnButton1();">', '<input type="reset" value="Limpa">']
+== pni js /tabnet/tabalfa.js (0s)
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<title>IIS 8.5 Detailed Error - 404.0 - Not Found</title> 
+<style type="text/css"> 
+<!-- 
+body{margin:0;font-size:.7em;font-family:Verdana,Arial,Helvetica,sans-serif;} 
+code{margin:0;color:#006600;font-size:1.1em;font-weight:bold;} 
+.config_source code{font-size:.8em;color:#000000;} 
+pre{margin:0;font-size:1.4em;word-wrap:break-word;} 
+ul,ol{margin:10px 0 10px 5px;} 
+ul.first,ol.first{margin-top:5px;} 
+fieldset{padding:0 15px 10px 15px;word-break:break-all;} 
+.summary-container fieldset{padding-bottom:5px;margin-top:4px;} 
+legend.no-expand-all{padding:2px 15px 4px 10px;margin:0 0 0 -12px;} 
+legend{color:#333333;;margin:4px 0 8px -12px;_margin-top:0px; 
+font-weight:bold;font-size:1em;} 
+a:link,a:visited{color:#007EFF;font-weight:bold;} 
+a:hover{text-decoration:none;} 
+h1{font-size:2.4em;margin:0;color:#FFF;} 
+h2{font-size:1.7em;margin:0;color:#CC0000;} 
+h3{font-size:1.4em;margin:10px 0 0 0;color:#CC0000;} 
+h4{font-size:1.2em;margin:10px 0 5px 0; 
+}#header{width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:"trebuchet MS",Verdana,sans-serif; 
+ color:#FFF;background-color:#5C87B2; 
+}#content{margin:0 0 0 2%;position:relative;} 
+.summary-container,.content-container{background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;} 
+.content-container p{margin:0 0 10px 0; 
+}#details-left{width:35%;float:left;margin-right:2%; 
+}#details-right{width:63%;float:left;overflow:hidden; 
+}#server_version{width:96%;_height:1px;min-height:1px;margin:0 0 5px 0;padding:11px 2% 8px 2%;color:#FFFFFF; 
+ background-color:#5A7FA5;border-bottom:1px solid #C1CFDD;border-top:1px solid #4A6C8E;font-weight:normal; 
+ font-size:1em;color:#FFF;text-align:right; 
+}#server_version p{margin:5px 0;} 
+table{margin:4px 0 4px 0;width:100%;border:none;} 
+td,th{vertical-align:top;padding:3px 0;text-align:left;font-weight:normal;border:none;} 
+th{width:30%;text-align:right;padding-right:2%;font-weight:bold;} 
+thead th{background-color:#ebebeb;width:25%; 
+}#details-right th{width:20%;} 
+table tr.alt td,table tr.alt th{} 
+.highlight-code{color:#CC0000;font-weight:bold;font-style:italic;} 
+.clear{clear:both;} 
+.preferred{padding:0 5px 2px 5px;font-weight:normal;background:#006633;color:#FFF;font-size:.8em;} 
+--> 
+</style> 
+ 
+</head> 
+<body> 
+<div id="content"> 
+<div class="content-container"> 
+  <h3>HTTP Error 404.0 - Not Found</h3> 
+  <h4>The resource you are looking for has been removed, had its name changed, or is temporarily unavailable.</h4> 
+</div> 
+<div class="content-container"> 
+ <fieldset><h4>Most likely causes:</h4> 
+  <ul> 	<li>The directory or file specified does not exist on the Web server.</li> 	<li>The URL contains a typographical error.</li> 	<li>A custom filter or module, such as URLScan, restricts access to the file.</li> </ul> 
+ </fieldset> 
+</div> 
+<div class="content-container"> 
+ <fieldset><h4>Things you can try:</h4> 
+  <ul> 	<li>Create the content on the Web server.</li> 	<li>Review the browser URL.</li> 	<li>Create a tracing rule to track failed requests for this HTTP status code and see which module is calling SetStatus. For more information about creating a tracing rule for failed requests, click <a href="http://go.microsoft.com/fwlink/?LinkID=66439">here</a>. </li> </ul> 
+ </fieldset> 
+</div> 
+ 
+<div class="content-container"> 
+ <fieldset><h4>Detailed Error Information:</h4> 
+  <div id="details-left"> 
+   <table border="0" cellpadding="0" cellspacing="0"> 
+    <tr class="alt"><th>Module</th><td>&nbsp;&nbsp;&nbsp;IIS Web Core</td></tr> 
+    <tr><th>Notification</th><td>&nbsp;&nbsp;&nbsp;MapRequestHandler</td></tr> 
+    <tr class="alt"><th>Handler</th><td>&nbsp;&nbsp;&nbsp;StaticFile</td></tr> 
+    <tr><th>Error Code</th><td>&nbsp;&nbsp;&nbsp;0x80070002</td></tr> 
+     
+   </table> 
+  </div> 
+  <div id="details-right"> 
+   <table border="0" cellpadding="0" cellspacing="0"> 
+    <tr class="alt"><th>Requested URL</th><td>&nbsp;&nbsp;&nbsp;http://tabnet.datasus.gov.br:80/cgi/tabnet/tabalfa.js</td></tr> 
+    <tr><th>Physical Path</th><td>&nbsp;&nbsp;&nbsp;E:\sites\TABNET\www\cgi-win\tabnet\tabalfa.js</td></tr> 
+    <tr class="alt"><th>Logon Method</th><td>&nbsp;&nbsp;&nbsp;Anonymous</td></tr> 
+    <tr><th>Logon User</th><td>&nbsp;&nbsp;&nbsp;Anonymous</td></tr> 
+     
+   </table> 
+   <div class="clear"></div> 
+  </div> 
+ </fieldset> 
+</div> 
+ 
+<div class="content-container"> 
+ <fieldset><h4>More Information:</h4> 
+  This error means that the file or directory does not exist on the server. Create the file or directory and try the request again. 
+  <p><a href="http://go.microsoft.com/fwlink/?LinkID=62293&amp;IIS70Error=404,0,0x80070002,9600">View more information &raquo;</a></p> 
+   
+ </fieldset> 
+</div> 
+</div> 
+</body> 
+</html> 
