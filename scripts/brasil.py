@@ -91,8 +91,10 @@ def main() -> int:
         A.log(f"IPCA: falha ({e})")
         deflator = json.loads(principal.read_text(encoding="utf-8")).get("ipca", {}) if principal.exists() else {}
     com_fin = sum(1 for m in ms.values() if m.get("fin"))
-    if com_fin < 0.3 * len(ms):
-        A.log(f"Brasil: só {com_fin} municípios com finanças; mantido o arquivo anterior.")
+    # a cobertura cresce a cada execução; só não grava se cair em relação ao arquivo anterior
+    com_fin_antes = sum(1 for m in antes.values() if m.get("fin"))
+    if com_fin < 0.9 * com_fin_antes:
+        A.log(f"Brasil: só {com_fin} municípios com finanças (antes {com_fin_antes}); mantido o arquivo anterior.")
         return 0
     saida = {
         "atualizado": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
