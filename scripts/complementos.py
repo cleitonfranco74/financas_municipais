@@ -352,24 +352,23 @@ VACINAS = ("Penta", "Poliomielite", "Tríplice Viral  D1", "BCG")   # o nome da 
 FIM_PNI = 2022
 
 
-def _texto(html_celula: str) -> str:
-    import html as h
-    return " ".join(h.unescape(re.sub(r"<[^>]+>", " ", html_celula)).split())
-
-
 def pni_tabela(pagina: str) -> dict[str, dict[str, float]]:
-    """{código do município (6 dígitos): {ano: cobertura}} a partir da tabela HTML do TabNet."""
-    linhas = [[_texto(c) for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", tr, re.S | re.I)] for tr in re.findall(r"<tr[^>]*>(.*?)</tr>", pagina, re.S | re.I)]
-    cab = next((l for l in linhas if sum(1 for x in l if re.fullmatch(r"\d{4}", x)) >= 1), None)
-    if not cab:
-        raise RuntimeError("tabela do TabNet sem cabeçalho de anos")
+    """{código do município (6 dígitos): {ano: cobertura}} a partir da resposta do TabNet, que traz os dados num
+    DataTable do Google Charts: addColumn('number','2016') ... e linhas ["120001 ACRELANDIA" ,{v: 67.16 ,f: '67,16'}, ...]."""
+    cols = re.findall(r"addColumn\('[^']*'\s*,\s*'([^']*)'\)", pagina)
+    if not cols:
+        raise RuntimeError("resposta do TabNet sem a tabela de dados")
     out = {}
-    for l in linhas:
-        m = re.match(r"(\d{6})", l[0] if l else "")
-        if not m or len(l) != len(cab):
+    for nome, resto in re.findall(r'\[\s*"([^"]*)"\s*((?:,\s*(?:\{[^}]*\}|null)\s*)*)\]', pagina):
+        m = re.match(r"\s*(\d{6})", nome)
+        if not m:
             continue
-        out[m.group(1)] = {cab[i]: float(l[i].replace(".", "").replace(",", ".")) for i in range(1, len(cab))
-                           if re.fullmatch(r"\d{4}", cab[i]) and re.fullmatch(r"[\d.,]+", l[i])}
+        vals = re.findall(r"\{v:\s*([-\d.eE]+)|(null)", resto)
+        serie = {}
+        for k, (v, nulo) in enumerate(vals, start=1):
+            if k < len(cols) and re.fullmatch(r"\d{4}", cols[k].strip()) and v and not nulo:
+                serie[cols[k].strip()] = float(v)
+        out[m.group(1)] = serie
     return out
 
 

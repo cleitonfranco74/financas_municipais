@@ -1,18 +1,24 @@
-import re, sys, requests
-from urllib.parse import quote
+import sys, json, time
 sys.path.insert(0, "scripts")
 import complementos as C
-H = {"User-Agent": "Mozilla/5.0"}
-pg = requests.get(C.PNI + "dhdat.exe?bd_pni/cpnibr.def", headers=H, timeout=300).content.decode("latin-1")
-opts = lambda nome: re.findall(r'<option[^>]*value="([^"]*)"', (re.search(rf'name="{re.escape(nome)}"[^>]*>(.*?)</select>', pg, re.S | re.I) or [None, ""])[1], re.I)
-linha = next(v for v in opts("Linha") if v.startswith("Município"))
-col = next(v for v in opts("Coluna") if v.startswith("Ano"))
-anos = [v for v in opts("PAno") if v[:4].isdigit() and 2016 <= int(v[:4]) <= 2022]
-inc = next(v for v in opts("Incremento") if v.startswith("Penta"))
-uf = next(v for v in opts("SUnidade da Federação") if v.split("|")[1:2] == ["12"])
-campos = [("Linha", linha), ("Coluna", col), ("Incremento", inc)] + [("PAno", a) for a in anos] + [("SUnidade da Federação", uf)]
-campos += [(f, "TODAS_AS_CATEGORIAS__") for f in sorted(set(re.findall(r'name="(S[^"]+)"', pg))) if f != "SUnidade da Federação"]
-corpo = "&".join(f"{quote(a, encoding='latin-1')}={quote(b, encoding='latin-1')}" for a, b in campos + [("formato", "table"), ("mostre", "Mostra")])
-t = requests.post(C.PNI + "webtabx.exe?bd_pni/cpnibr.def", data=corpo, headers={**H, "Content-Type": "application/x-www-form-urlencoded"}, timeout=300).content.decode("latin-1")
-depois = t[t.find("-->"):]
-open("tmp/teste_coletor.txt", "w").write(depois[:7000])
+import atualizar_municipios as A
+o = []
+base = json.load(open("data/municipios.json"))["municipios"]
+def t(nome, f):
+    t0 = time.time()
+    try: r = f(); o.append(f"== {nome} OK {time.time()-t0:.0f}s\n{json.dumps(r, ensure_ascii=False)[:2000]}")
+    except Exception as e:
+        import traceback; o.append(f"== {nome} ERRO {e}\n{traceback.format_exc()[-1500:]}")
+am = lambda ms, k: {c: ms[c].get(k) for c in (5107909, 1200013, 2111300) if c in ms}
+ms = {m["c"]: {} for m in base}; meta = {}
+t("vacinacao", lambda: (C.vacinacao(ms, {}, meta), am(ms, "vac"), meta.get("vac_anos"), sum(1 for m in ms.values() if m["vac"]))[1:])
+ms2 = {m["c"]: {"c": m["c"], "uf": m["uf"]} for m in base}
+t("cempre", lambda: (A.cempre(ms2), {c: (ms2[c]["cempre"], ms2[c]["cempre_set"]) for c in (5107909, 1200013)})[1])
+def pib():
+    out = {}
+    ordem = {"37": 0, "513": 1, "517": 2, "6575": 3, "525": 4}
+    for l in A.get(A.SIDRA + "t/5938/n6/5107909/v/37,513,517,6575,525/p/all", timeout=120).json()[1:]:
+        if int(l["D3C"]) >= 2019: out.setdefault(l["D3C"], [None] * 5)[ordem[l["D2C"]]] = A.valor(l["V"])
+    return out
+t("pib setores Sinop", pib)
+open("tmp/teste_coletor.txt", "w").write("\n".join(o))
