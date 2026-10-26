@@ -1,0 +1,24 @@
+tempo 958s
+stderr:
+Brasil: 5569 municípios; 1134 já estão no recorte principal.
+Siconfi: 400 pares município-ano a consultar.
+Siconfi: 400 pares, 0 erros, 0 adiados para a próxima execução (prazo).
+TSE 2012: 5567 municípios.
+TSE 2016: 5565 municípios.
+TSE 2020: 5566 municípios.
+TSE 2024: 5559 municípios.
+TSE candidatos 2008: 5529 registros.
+TSE candidatos 2012: 5567 registros.
+Reeleição 2012: 1033 de 5528 prefeitos reeleitos.
+TSE candidatos 2016: 5518 registros.
+Reeleição 2016: 969 de 5517 prefeitos reeleitos.
+TSE candidatos 2020: 5494 registros.
+Reeleição 2020: 1617 de 5445 prefeitos reeleitos.
+TSE candidatos 2024: 5528 registros.
+Reeleição 2024: 1902 de 5456 prefeitos reeleitos.
+TSE candidatos 2014: 26 registros.
+TSE candidatos 2018: 26 registros.
+TSE candidatos 2022: 26 registros.
+Brasil: só 1174 municípios com finanças; mantido o arquivo anterior.
+
+ERRO [Errno 2] No such file or directory: 'data/brasil.json'
