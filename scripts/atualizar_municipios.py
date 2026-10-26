@@ -41,6 +41,7 @@ import re
 import sys
 import threading
 import time
+import unicodedata
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, timezone
@@ -211,16 +212,18 @@ def agro(ms: dict) -> None:
         if int(l["D3C"]) >= INICIO:
             boi.setdefault(int(l["D1C"]), {})[l["D3C"]] = valor(l["V"]) or 0
     pib: dict = {}
-    for l in sidra("t/5938/{}/v/37,513/p/all"):
+    # PIB e valor adicionado: agropecuária, indústria, serviços (exceto administração pública) e administração pública
+    ordem = {"37": 0, "513": 1, "517": 2, "6575": 3, "525": 4}
+    for l in sidra("t/5938/{}/v/37,513,517,6575,525/p/all"):
         if int(l["D3C"]) < INICIO:
             continue
-        pib.setdefault(int(l["D1C"]), {}).setdefault(l["D3C"], [None, None])[0 if l["D2C"] == "37" else 1] = valor(l["V"])
+        pib.setdefault(int(l["D1C"]), {}).setdefault(l["D3C"], [None] * 5)[ordem[l["D2C"]]] = valor(l["V"])
     for c, m in ms.items():
         anos = sorted(set(lav.get(c, {})) | set(boi.get(c, {})))
         # [soja ha, milho ha, algodão ha, valor das três lavouras (R$ mil), bovinos (cabeças)]
         m["agro"] = {a: [round(lav.get(c, {}).get(a, {}).get(k, 0)) for k in ("soja", "milho", "algodao", "valor")]
                      + [round(boi.get(c, {}).get(a, 0))] for a in anos}
-        # [PIB, valor adicionado da agropecuária], R$ mil
+        # [PIB, valor adicionado da agropecuária, da indústria, dos serviços e da administração pública], R$ mil
         m["pib"] = {a: v for a, v in sorted(pib.get(c, {}).items())}
 
 
@@ -242,7 +245,62 @@ RC_CODIGOS = {
 }
 
 
-def siconfi(cod: int, ano: int, so_lrf: bool = False, pequeno: bool = False) -> dict:
+# Repasses classificados pelo nome da conta do anexo I-C da DCA: os códigos mudaram três vezes (até 2017,
+# 2018 a 2021 e desde 2022) e até dentro de um mesmo ementário; o nome e a esfera de origem são estáveis.
+TR_NOMES = ("fundeb", "sus_uniao", "sus_estado", "fnde", "educ_estado", "assist_uniao", "assist_estado")
+
+
+def _sem_acento(s: str) -> str:
+    return unicodedata.normalize("NFKD", s or "").encode("ascii", "ignore").decode().upper()
+
+
+def _esfera(cod: str) -> str | None:
+    """U (União), E (estados) ou F (fundos multigovernamentais, como o FUNDEB) a partir do código da receita."""
+    c = cod[2:]
+    if len(c.split(".")) == 7 and len(c.split(".")[5]) == 2:        # ementário até 2017
+        for pref, e in ((("1.7.2.1", "2.4.2.1", "1.7.6.1", "2.4.7.1"), "U"), (("1.7.2.2", "2.4.2.2", "1.7.6.2", "2.4.7.2"), "E"), (("1.7.2.4", "2.4.2.4"), "F")):
+            if c.startswith(pref):
+                return e
+        return None
+    return "U" if c.startswith(("1.7.1", "2.4.1")) else "E" if c.startswith(("1.7.2", "2.4.2")) else "F" if c.startswith(("1.7.5", "2.4.5")) else None
+
+
+def _item_repasse(cod: str, conta: str) -> str | None:
+    n, e = _sem_acento(conta), _esfera(cod)
+    if not e or "CONVENIO" in n:
+        return None
+    if re.search(r"FUNDO DE MANUTENCAO E DESENVOLVIMENTO|FUNDEB|COMPLEMENTACAO DA UNIAO", n):
+        return "fundeb"
+    if re.search(r"SISTEMA UNICO DE SAUDE|\bSUS\b", n):
+        return "sus_uniao" if e == "U" else "sus_estado" if e == "E" else None
+    if re.search(r"ASSISTENCIA SOCIAL", n):
+        return "assist_uniao" if e == "U" else "assist_estado" if e == "E" else None
+    if e == "U" and re.search(r"DESENVOLVIMENTO DA EDUCACAO|FNDE|SALARIO.EDUCACAO|ALIMENTACAO ESCOLAR|TRANSPORTE ESCOLAR|PROGRAMAS DE EDUCACAO", n):
+        return "fnde"
+    if e == "E" and re.search(r"EDUCACAO|TRANSPORTE ESCOLAR|ALIMENTACAO ESCOLAR", n):
+        return "educ_estado"
+    return None
+
+
+def repasses(rec: list) -> list:
+    """Soma, em R$ mil, cada repasse de TR_NOMES, sem contar duas vezes uma conta e a sua conta-mãe."""
+    sig = lambda cod: tuple(cod[2:].split("."))[: max([0] + [i + 1 for i, x in enumerate(cod[2:].split(".")) if x.strip("0")])]
+    achados: dict = {k: [] for k in TR_NOMES}
+    for i in rec:
+        if i.get("coluna") != "Receitas Brutas Realizadas":
+            continue
+        k = _item_repasse(str(i.get("cod_conta", "")), i.get("conta", ""))
+        if k:
+            achados[k].append((sig(str(i["cod_conta"])), i.get("valor") or 0))
+    out = []
+    for k in TR_NOMES:
+        cods = achados[k]
+        total = sum(v for s, v in cods if not any(o != s and s[: len(o)] == o for o, _ in cods))
+        out.append(round(total / 1e3, 1))
+    return out
+
+
+def siconfi(cod: int, ano: int, so_lrf: bool = False, pequeno: bool = False, so_ic: bool = False) -> dict:
     """Contas de um município num ano, em R$ mil:
     fin: [receita líquida, transferências, receita tributária, despesa liquidada, investimento liquidado];
     rc: fontes de receita na ordem de RC_NOMES; fn: {função: despesa liquidada};
@@ -252,6 +310,12 @@ def siconfi(cod: int, ano: int, so_lrf: bool = False, pequeno: bool = False) -> 
     itens = lambda r: r.json().get("items", [])
     out: dict = {}
     rec = [] if so_lrf else itens(get(SICONFI + "dca", p("DCA-Anexo I-C"), timeout=90))
+    if so_ic:   # só os repasses e as fontes de receita (anos já coletados antes da classificação dos repasses)
+        if rec:
+            brutas = {i.get("cod_conta"): i.get("valor") or 0 for i in rec if i.get("coluna") == "Receitas Brutas Realizadas"}
+            out["rc"] = [round(sum(brutas.get(k, 0) for k in RC_CODIGOS[n]) / 1e3, 1) for n in RC_NOMES]
+        out["tr"] = repasses(rec)
+        return out
     desp = [] if so_lrf else itens(get(SICONFI + "dca", p("DCA-Anexo I-D"), timeout=90))
     if rec or desp:
         def soma(lista, prefixo, coluna):
@@ -268,6 +332,7 @@ def siconfi(cod: int, ano: int, so_lrf: bool = False, pequeno: bool = False) -> 
             out["fin"] = [round(x / 1e3, 1) for x in (receita, transf, trib, despesa, invest)]
         brutas = {i.get("cod_conta"): i.get("valor") or 0 for i in rec if bruta(i.get("coluna", ""))}
         out["rc"] = [round(sum(brutas.get(k, 0) for k in RC_CODIGOS[n]) / 1e3, 1) for n in RC_NOMES]
+        out["tr"] = repasses(rec)
     funcoes = [] if so_lrf else itens(get(SICONFI + "dca", p("DCA-Anexo I-E"), timeout=90))
     fn = {}
     for i in funcoes:
@@ -318,24 +383,26 @@ def siconfi(cod: int, ano: int, so_lrf: bool = False, pequeno: bool = False) -> 
 
 def financas(ms: dict, antes: dict) -> None:
     fim = date.today().year - 1                       # a DCA de um ano sai no ano seguinte
-    chaves = ("fin", "rc", "fn", "lrf")
+    chaves = ("fin", "rc", "fn", "lrf", "tr")
     pendentes, revisar = [], []
     for c, m in ms.items():
         for k in chaves:
             m[k] = {a: v for a, v in antes.get(c, {}).get(k, {}).items() if v}
         for a in range(INICIO, fim + 1):
             if str(a) not in m["fin"]:
-                pendentes.append((c, a, False))
+                pendentes.append((c, a, "tudo"))
             elif a >= fim - 1:                            # os dois últimos anos podem ser retificados
-                revisar.append((c, a, False))
+                revisar.append((c, a, "tudo"))
             elif len(m["lrf"].get(str(a), [])) < 9:       # falta a LRF (ou os campos novos): só RGF e RREO
-                revisar.append((c, a, True))
+                revisar.append((c, a, "lrf"))
+            elif str(a) not in m["tr"]:                    # faltam os repasses classificados: só o anexo I-C
+                revisar.append((c, a, "ic"))
     # primeiro o que falta (anos recentes antes), depois as revisões, se sobrar tempo
     pendentes = (sorted(pendentes, key=lambda p: -p[1]) + sorted(revisar, key=lambda p: -p[1]))[:MAX_PARES]
     limite = time.monotonic() + PRAZO_SICONFI * 60
-    def tarefa(c, a, so_lrf):
+    def tarefa(c, a, modo):
         pop = ms[c].get("pop", {}).get(str(a)) or 0
-        return siconfi(c, a, so_lrf, 0 < pop < 50000) if time.monotonic() < limite else None
+        return siconfi(c, a, modo == "lrf", 0 < pop < 50000, modo == "ic") if time.monotonic() < limite else None
     log(f"Siconfi: {len(pendentes)} pares município-ano a consultar.")
     feitos = erros = adiados = 0
     with ThreadPoolExecutor(TRABALHADORES) as ex:
@@ -493,6 +560,35 @@ def emprego(ms: dict) -> None:
         m["emp"] = {a: v for a, v in sorted(out.get(c, {}).items()) if int(a) >= INICIO}
 
 
+SETORES = ("agro", "industria", "construcao", "comercio", "servicos", "adm_publica")
+SECAO_SETOR = {"A": 0, "B": 1, "C": 1, "D": 1, "E": 1, "F": 2, "G": 3, "O": 5}   # as demais seções da CNAE: serviços
+
+
+def cempre(ms: dict) -> None:
+    """Cadastro Central de Empresas (IBGE): cempre[ano] = [empresas e outras organizações, pessoal ocupado total,
+    assalariado, salários (R$ mil)] e cempre_set[ano] = pessoal assalariado por setor (SETORES)."""
+    tot: dict = {}
+    for l in sidra("t/6449/{}/v/all/p/all/c12762/117897"):
+        if int(l["D3C"]) < INICIO or "percentual" in l.get("D2N", "").lower():
+            continue
+        i = next((k for k, txt in enumerate(("número de empresas", "pessoal ocupado total", "pessoal ocupado assalariado", "salários")) if l["D2N"].lower().startswith(txt)), None)
+        if i is not None:
+            tot.setdefault(int(l["D1C"]), {}).setdefault(l["D3C"], [None] * 4)[i] = valor(l["V"])
+    # códigos das seções da CNAE na classificação 12762 (as categorias cujo nome começa com uma letra e espaço)
+    d = get(SIDRA + "t/6450/n1/all/v/708/p/last%201/c12762/all", timeout=240).json()[1:]
+    secoes = {l["D4C"]: l["D4N"][0] for l in d if re.match(r"^[A-U] ", l.get("D4N", ""))}
+    setor: dict = {}
+    for l in sidra("t/6450/{}/v/708/p/all/c12762/" + ",".join(secoes)):
+        if int(l["D3C"]) < INICIO or l.get("D4C") not in secoes:
+            continue
+        x = setor.setdefault(int(l["D1C"]), {}).setdefault(l["D3C"], [0] * len(SETORES))
+        x[SECAO_SETOR.get(secoes[l["D4C"]], 4)] += round(valor(l["V"]) or 0)
+    for c, m in ms.items():
+        m["cempre"] = {a: v for a, v in sorted(tot.get(c, {}).items())}
+        m["cempre_set"] = {a: v for a, v in sorted(setor.get(c, {}).items())}
+    log(f"Cempre: {sum(1 for m in ms.values() if m['cempre'])} municípios, {len(secoes)} seções da CNAE.")
+
+
 def censo(ms: dict, antes: dict) -> None:
     """Censo 2022: [% de domicílios com esgoto pela rede geral ou pluvial, taxa de alfabetização (15 anos ou mais)]."""
     if sum(1 for m in antes.values() if m.get("censo")) > 0.9 * len(ms):
@@ -614,7 +710,7 @@ def main() -> int:
                 log(f"{nome}: falha ({e}); dados anteriores mantidos.")
     etapas = (("população", lambda: populacao(ms)), ("agropecuária", lambda: agro(ms)),
               ("finanças", lambda: financas(ms, antes)), ("eleições", lambda: eleicoes(ms, antes)),
-              ("reeleição e governadores", governos), ("emprego", lambda: emprego(ms)), ("Censo 2022", lambda: censo(ms, antes)),
+              ("reeleição e governadores", governos), ("emprego", lambda: emprego(ms)), ("Cempre", lambda: cempre(ms)), ("Censo 2022", lambda: censo(ms, antes)),
               ("mortalidade infantil", lambda: mortalidade(ms, antes)), ("dados espaciais", espacial))
     for nome, f in etapas:
         try:
@@ -623,7 +719,7 @@ def main() -> int:
             log(f"{nome}: falha ({e}); dados anteriores mantidos.")
     # o que uma etapa não conseguiu atualizar fica como estava no arquivo anterior
     for c, m in ms.items():
-        for k in ("pop", "agro", "pib", "fin", "rc", "fn", "lrf", "ele", "reel", "emp", "censo", "tmi", "desm", "fogo"):
+        for k in ("pop", "agro", "pib", "fin", "rc", "fn", "lrf", "tr", "ele", "reel", "emp", "cempre", "cempre_set", "censo", "tmi", "desm", "fogo"):
             if not m.get(k) and antes.get(c, {}).get(k):
                 m[k] = antes[c][k]
     try:
@@ -643,7 +739,10 @@ def main() -> int:
                      "fn": "R$ mil correntes: despesa liquidada por função (código da função)",
                      "lrf": "RCL (R$ mil), pessoal % RCL, dívida consolidada líquida % RCL, restos a pagar não processados (R$ mil), caixa líquido (R$ mil), resultado primário (R$ mil), meta (R$ mil), % da receita de impostos aplicado em saúde e em manutenção e desenvolvimento do ensino (RREO, Anexo 14)",
                      "agro": "soja, milho e algodão (ha colhidos), valor das três lavouras (R$ mil), bovinos (cabeças)",
-                     "pib": "PIB e valor adicionado da agropecuária (R$ mil correntes)",
+                     "pib": "PIB e valor adicionado da agropecuária, da indústria, dos serviços (exceto administração pública) e da administração pública (R$ mil correntes; setores até 2021)",
+                     "tr": "R$ mil correntes, repasses recebidos: " + ", ".join(TR_NOMES),
+                     "cempre": "Cempre: empresas e outras organizações, pessoal ocupado total, pessoal assalariado, salários (R$ mil)",
+                     "cempre_set": "Cempre: pessoal assalariado por setor: " + ", ".join(SETORES),
                      "ele": "partido do vencedor, votos, partido do 2º colocado, votos, votos válidos, turno",
                      "reel": "1 se o prefeito eleito foi reeleito (começa o segundo mandato)",
                      "emp": "pessoal ocupado assalariado: total e na agropecuária (Cempre)",
@@ -652,6 +751,8 @@ def main() -> int:
                      "desm": "desmatamento PRODES (km², ano PRODES de agosto a julho)",
                      "fogo": "focos de queimadas (satélite de referência)"},
         "rc_nomes": list(RC_NOMES),
+        "tr_nomes": list(TR_NOMES),
+        "setores": list(SETORES),
         "gov": gov,
         "ufs": list(UFS),
         "eleicoes": list(map(str, ELEICOES)),

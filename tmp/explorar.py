@@ -1,59 +1,37 @@
-import re, time, ftplib, subprocess, os, io, zipfile, requests, shutil
+import re, sys, json, requests
+from urllib.parse import quote
+sys.path.insert(0, "scripts")
 o = []
-def t(nome, f, lim=3000):
-    t0 = time.time()
-    try: r = f(); o.append(f"== {nome} ({time.time()-t0:.0f}s)\n{str(r)[:lim]}")
-    except Exception as e: o.append(f"== {nome} ERRO {type(e).__name__}: {str(e)[:400]}")
 H = {"User-Agent": "Mozilla/5.0"}
-o.append("7z: " + str(shutil.which("7z")) + " " + str(shutil.which("7za")))
-def ftp(): f = ftplib.FTP("ftp.mtps.gov.br", timeout=120, encoding="latin-1"); f.login(); return f
-def lista(p):
-    f = ftp(); out = []; f.retrlines("LIST " + p, out.append); f.quit(); return "\n".join(out)
-for a in (2016, 2019, 2021, 2022):
-    t(f"rais {a}", lambda a=a: lista(f"/pdet/microdados/RAIS/{a}/"), 1500)
-t("caged 202509", lambda: lista("/pdet/microdados/NOVO CAGED/2025/202509/"), 1500)
-t("caged 202001", lambda: lista("/pdet/microdados/NOVO CAGED/2020/202001/"), 1500)
-def baixa(p, dest):
-    f = ftp(); 
-    with open(dest, "wb") as h: f.retrbinary("RETR " + p, h.write, blocksize=1 << 20)
-    f.quit(); return os.path.getsize(dest)
-def cabeca(arq7z):
-    os.makedirs("x", exist_ok=True); subprocess.run(["7z", "x", "-y", "-ox", arq7z], check=True, capture_output=True)
-    out = []
-    for n in os.listdir("x"):
-        with open(os.path.join("x", n), "rb") as h:
-            linhas = [h.readline().decode("latin-1").rstrip() for _ in range(4)]
-        out.append((n, os.path.getsize(os.path.join("x", n)), linhas))
-    return out
-t("rais 2024 estab", lambda: (baixa("/pdet/microdados/RAIS/2024/RAIS_ESTAB_PUB.7z", "estab.7z"), cabeca("estab.7z")), 4000)
-# valores distintos de algumas colunas da RAIS 2024
-def distintos():
-    n = [x for x in os.listdir("x") if "ESTAB" in x.upper()][0]
-    import csv, collections
-    c = collections.Counter(); c2 = collections.Counter(); tot = 0
-    with open(os.path.join("x", n), encoding="latin-1") as h:
-        r = csv.reader(h, delimiter=";"); cab = next(r)
-        iS = next(i for i, x in enumerate(cab) if "Subsetor" in x and "IBGE" in x)
-        for l in r:
-            c[l[iS]] += 1; tot += 1
-    return cab, tot, c.most_common(30)
-t("rais 2024 subsetor", distintos, 4000)
-shutil.rmtree("x", ignore_errors=True)
-def caged():
-    p = "/pdet/microdados/NOVO CAGED/2025/202509/"
-    f = ftp(); nomes = f.nlst(p); f.quit()
-    mov = [n for n in nomes if "MOV" in n.upper()][0]
-    tam = baixa(mov, "mov.7z"); return tam, cabeca("mov.7z")
-t("caged mov", caged, 4000)
-shutil.rmtree("x", ignore_errors=True)
-# PNI: javascript do formulário
-pg = requests.get("http://tabnet.datasus.gov.br/cgi/dhdat.exe?bd_pni/cpnibr.def", headers=H, timeout=180).content.decode("latin-1")
-scripts = re.findall(r"<script[^>]*>(.*?)</script>", pg, re.S | re.I)
-srcs = re.findall(r'<script[^>]*src="([^"]+)"', pg, re.I)
-o.append("== pni script srcs: " + str(srcs))
-for s in scripts: o.append("== pni script inline:\n" + s[:3000])
-o.append("== pni hidden/inputs: " + str(re.findall(r"<input[^>]*>", pg, re.I)[:40]))
-for s in srcs[:5]:
-    u = s if s.startswith("http") else "http://tabnet.datasus.gov.br/cgi/" + s.lstrip("/")
-    t(f"pni js {s}", lambda u=u: requests.get(u, headers=H, timeout=60).text[:6000], 6000)
+U = "http://tabnet.datasus.gov.br/cgi/"
+pg = requests.get(U + "dhdat.exe?bd_pni/cpnibr.def", headers=H, timeout=180).content.decode("latin-1")
+o.append("== campos: " + str(sorted(set(re.findall(r'name="([^"]+)"', pg, re.I)))))
+o.append("== radios/checks: " + str(re.findall(r'<input[^>]*type="(?:radio|checkbox)"[^>]*>', pg, re.I)[:20]))
+opts = lambda nome: re.findall(r'<option[^>]*value="([^"]*)"', (re.search(rf'name="{re.escape(nome)}"[^>]*>(.*?)</select>', pg, re.S | re.I) or [None, ""])[1], re.I)
+inc = opts("Incremento")
+o.append("== incrementos: " + str([i.split("|")[0] for i in inc]))
+linha = next(v for v in opts("Linha") if v.startswith("Município"))
+col = next(v for v in opts("Coluna") if v.startswith("Ano"))
+anos = [v for v in opts("PAno") if v[:4].isdigit() and 2016 <= int(v[:4]) <= 2022]
+ufmt = next(v for v in opts("SUnidade da Federação") if v.startswith("Mato Grosso|"))
+penta = next(v for v in inc if v.startswith("Penta"))
+campos = [("Linha", linha), ("Coluna", col), ("Incremento", penta)] + [("PAno", a) for a in anos] + [("SUnidade da Federação", ufmt)]
+for n in sorted(set(re.findall(r'name="(S[^"]+)"', pg))):
+    if n != "SUnidade da Federação":
+        campos.append((n, "TODAS_AS_CATEGORIAS__"))
+for formato in ("prn", "table"):
+    corpo = "&".join(f"{quote(k, encoding='latin-1')}={quote(v, encoding='latin-1')}" for k, v in campos + [("formato", formato), ("mostre", "Mostra")])
+    r = requests.post(U + "webtabx.exe?bd_pni/cpnibr.def", data=corpo, headers={**H, "Content-Type": "application/x-www-form-urlencoded"}, timeout=300)
+    t = r.content.decode("latin-1")
+    o.append(f"== resposta {formato}: {r.status_code} {len(t)}\n" + re.sub(r"\s+", " ", t)[:2500])
+    o.append("links: " + str(re.findall(r'href="([^"]+)"', t, re.I)[:20]))
+    pre = re.search(r"<PRE>(.*?)</PRE>", t, re.S | re.I)
+    if pre: o.append("PRE:\n" + pre.group(1)[:1500])
+# repasses classificados, com a API real
+import atualizar_municipios as A
+for ano in (2017, 2020, 2023):
+    rec = A.get(A.SICONFI + "dca", {"an_exercicio": ano, "id_ente": 5107909, "no_anexo": "DCA-Anexo I-C"}, timeout=90).json()["items"]
+    o.append(f"== repasses Sinop {ano}: " + str(dict(zip(A.TR_NOMES, A.repasses(rec)))))
+rec = A.get(A.SICONFI + "dca", {"an_exercicio": 2022, "id_ente": 1200013, "no_anexo": "DCA-Anexo I-C"}, timeout=90).json()["items"]
+o.append(f"== repasses Acrelândia 2022: " + str(dict(zip(A.TR_NOMES, A.repasses(rec)))))
 open("tmp/teste_coletor.txt", "w").write("\n".join(o))
