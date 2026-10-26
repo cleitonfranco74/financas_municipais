@@ -31,7 +31,7 @@
   let D, M = [], ANOS = [], REF = null;
   const st = { aba: "geral", uf: "", modo: "4", met: "invpc", mun: null, x: "peso", y: "inv", h: 20, rddE: "2016+2020", rddY: "inv", rddC: "ideo", ord: "invpc", comp: [],
     fn: "10", polY: "invpc", polY2: "convEpc", amX: "expansao", amY: "desm", resX: "saude", resY: "tmi", mapa: "orient", cmet: "invpc", corr: "p", cxy: "6-3", cvar: "6",
-    regY: "6", regX: [0, 1, 2, 3], regUF: true, regZ: false, mapaModo: "v" };
+    regY: "6", regX: [0, 1, 2, 3], regUF: true, regZ: false, mapaModo: "v", regLang: "r" };
 
   const nota = sg => { if (!sg) return null; const s = sg.trim().toUpperCase(); return D.escala[D.sinonimos[s] || s] ?? null; };
   const cat7 = sc => sc == null ? null : CATS.find(c => sc <= c[2])[0];
@@ -153,7 +153,7 @@
     ctl.innerHTML = `
       <label class="f"><span>Estado</span><select id="fUf"><option value="">Todos (${ufs.length} UFs)</option>${ufs.map(u => `<option ${u === st.uf ? "selected" : ""}>${u}</option>`).join("")}</select></label>
       <div class="f"><span id="lModo">Orientação do prefeito</span><div class="seg" role="group" aria-labelledby="lModo">${[["2", "Esquerda × direita"], ["4", "5 faixas"], ["7", "7 categorias"]].map(([k, n]) => `<button type="button" data-modo="${k}" aria-pressed="${st.modo === k}">${n}</button>`).join("")}</div></div>
-      <span class="status">${M.length} municípios · finanças de ${ANOS[0]} a ${REF}, a preços de ${REF} (IPCA) · atualizado em ${new Date(D.atualizado + "T12:00").toLocaleDateString("pt-BR")}</span>`;
+      <span class="status">${M.length} municípios · finanças de ${ANOS[0]} a ${REF}, a preços de ${REF} (IPCA) · atualizado em ${new Date(D.atualizado + "T12:00").toLocaleDateString("pt-BR")}${matchMedia("(pointer: coarse)").matches ? " · toque nos gráficos para ver os valores" : ""}</span>`;
   }
   const legGrupos = () => `<div class="leg">${[...MODOS[st.modo], SEM].map(g => `<span><i style="background:${g.c}"></i>${esc(g.n)}</span>`).join("")}</div>`;
   const chipGrupo = sc => { const g = grupo(sc); return `<span class="chip"><i style="background:${g.c}"></i>${esc(g.n)}</span>`; };
@@ -254,7 +254,7 @@
     const ms = sel();
     const lista = `<datalist id="lMun">${M.map(m => `<option value="${esc(m.n)} - ${m.uf}">`).join("")}</datalist>`;
     const m = st.mun && M.find(x => x.c === st.mun);
-    const busca = `<div class="ctl" style="margin-bottom:16px"><label class="f busca" style="flex:1 1 280px"><span>Município</span><input type="search" id="fMun" list="lMun" placeholder="Digite o nome, por exemplo Sinop" value="${m ? esc(`${m.n} - ${m.uf}`) : ""}"></label>${m ? `<button type="button" class="btn" data-voltar>Ver ranking</button><button type="button" class="btn" data-comp="${m.c}">${st.comp.includes(m.c) ? "Retirar do comparador" : "+ Comparar"}</button>` : ""}
+    const busca = `<div class="ctl" style="margin-bottom:16px"><label class="f busca" style="flex:1 1 280px"><span>Município</span><input type="search" id="fMun" list="lMun" placeholder="Digite o nome, por exemplo Sinop" value="${m ? esc(`${m.n} - ${m.uf}`) : ""}"></label>${m ? `<button type="button" class="btn" data-voltar>Ver ranking</button><button type="button" class="btn" data-comp="${m.c}">${st.comp.includes(m.c) ? "Retirar do comparador" : "+ Comparar"}</button><button type="button" class="btn" data-copiar="link" title="Copia o endereço desta ficha para mandar aos alunos ou pôr num slide">Copiar link da ficha</button>` : ""}
       <button type="button" class="btn" data-csv=";" title="Separador ponto e vírgula e vírgula decimal">Baixar CSV (Excel)</button><button type="button" class="btn" data-csv="," title="Separador vírgula e ponto decimal">CSV (R, Stata, Python)</button>${lista}</div>`;
     if (!m){
       const ords = { invpc: "Investimento por habitante", invdesp: "Investimento em % da despesa", tribpc: "Receita própria por habitante", transf: "Dependência de transferências" };
@@ -984,6 +984,7 @@
     const simples = XS.map(x => ok ? mqo(Y, [um, x], ids) : null);
     const vif = XS.map((x, j) => { if (!ok) return null; if (XS.length + dum.length < 2) return 1; const a = ajusta(x, [um, ...XS.filter((_, q) => q !== j), ...dum]); return a ? 1 / Math.max(1e-9, 1 - a.r2) : null; });
     const r2 = fit?.r2, r2a = fit ? 1 - (1 - r2) * (n - 1) / (n - k) : null;
+    ULTIMA_REG = full ? { rows, yi, xs, uf: dum.length > 0, z: st.regZ, n } : null;
     const pv = (b, e) => e ? normalP(b / e) : null;
     const cel = (r, j) => r ? `${fmtC(r.b[j])}${estrelas(r.b[j], r.ep[j])}<br><small style="color:var(--muted)">(${fmtC(r.ep[j])})</small>` : "—";
     const linhasT = xs.map((xj, q) => { const j = q + 1, p = full ? pv(full.b[j], full.ep[j]) : null;
@@ -1028,7 +1029,11 @@
         <p class="nota" style="font-family:var(--mono)">${eq}</p>
         <ul class="nota" style="padding-left:18px;line-height:1.6">${leitura}</ul>
         <p class="nota">${st.regZ ? "Com coeficientes padronizados, Y e X estão em desvios-padrão: os coeficientes podem ser comparados entre si." : "Coeficientes nas unidades originais: reais por habitante, km², pontos da escala ideológica etc. As variáveis marcadas como fração vão de 0 a 1 (0,25 = 25%). Para comparar a importância das variáveis, marque “coeficientes padronizados”."} Correlação condicional ainda não é causa: para isso, veja as abas Economia política e Eleições acirradas.</p></section>
-      <section class="panel" style="margin-top:16px"><h2>Resíduos × valores ajustados</h2><p class="sub">Num modelo bem especificado, os pontos se espalham ao redor do zero sem forma definida. Um funil indica heterocedasticidade (por isso o erro-padrão robusto); uma curva sugere relação não linear (experimente logaritmos ou outra variável). Clique num ponto para abrir o município.</p>${resid}${legGrupos()}</section>`}`;
+      <section class="panel" style="margin-top:16px"><h2>Resíduos × valores ajustados</h2><p class="sub">Num modelo bem especificado, os pontos se espalham ao redor do zero sem forma definida. Um funil indica heterocedasticidade (por isso o erro-padrão robusto); uma curva sugere relação não linear (experimente logaritmos ou outra variável). Clique num ponto para abrir o município.</p>${resid}${legGrupos()}</section>
+      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>Reproduzir no R, no Stata ou no Python</h2><p class="sub">Baixe os dados desta regressão (um município por linha, exatamente a amostra usada acima) e rode o código: os coeficientes, os erros-padrão robustos (HC1), o R² e o VIF devem bater com a tabela.</p></div>
+        ${segSt("regLang", [["r", "R"], ["stata", "Stata"], ["py", "Python"]])}</div>
+        <div class="ctl" style="margin-bottom:10px"><button type="button" class="btn" data-regcsv>Baixar os dados (${esc(arqReg())})</button><button type="button" class="btn" data-copiar="codigo">Copiar o código</button></div>
+        <pre class="codigo">${esc(codigoReg(st.regLang))}</pre></section>`}`;
   }
 
   /* ---------- Moran e LISA (autocorrelação espacial) ---------- */
@@ -1096,13 +1101,159 @@
     </div>`;
   }
 
+  /* ---------- reproduzir a regressão no R, no Stata e no Python ---------- */
+  const IDS = ["ideologia", "log_pop", "pib_pc", "peso_agro", "lavouras_hab", "expansao_lavouras", "invest_pc", "receita_propria_pc", "transf_pct",
+    "voluntarias_pc", "saude_pc", "educacao_pc", "pessoal_pct_rcl", "saude_fiscal", "desmatamento_km2", "queimadas", "emprego_agro_mil", "mort_infantil", "esgoto_pct", "alfabetizacao_pct"];
+  let ULTIMA_REG = null;
+  const arqReg = () => `regressao_${IDS[ULTIMA_REG.yi]}${st.uf ? "_" + st.uf : ""}.csv`;
+  function codigoReg(lang){
+    const R = ULTIMA_REG; if (!R) return "";
+    const y = IDS[R.yi], xs = R.xs.map(j => IDS[j]), vars = [y, ...xs], arq = arqReg(), uf = R.uf;
+    const cab = c => `${c} Regressão da página Finanças Municipais: ${VARS[R.yi].n} (${R.n} municípios${st.uf ? `, ${st.uf}` : ""})\n${c} https://cleitonfranco74.github.io/financas_municipais/#regressao\n${c} Dados: ${arq}, baixado pelo botão da página (um município por linha)\n`;
+    if (lang === "r") return `${cab("#")}# install.packages(c("sandwich", "lmtest", "car"))
+library(sandwich); library(lmtest); library(car)
+
+d <- read.csv("${arq}", fileEncoding = "UTF-8")
+${R.z ? `vars <- c(${vars.map(v => `"${v}"`).join(", ")})\nd[vars] <- scale(d[vars])   # coeficientes padronizados\n` : ""}
+m <- lm(${y} ~ ${xs.join(" + ")}${uf ? " + factor(uf)" : ""}, data = d)
+coeftest(m, vcov = vcovHC(m, type = "HC1"))   # erros-padrão robustos (HC1)
+coefci(m, vcov = vcovHC(m, type = "HC1"))     # intervalos de 95%
+c(R2 = summary(m)$r.squared, R2_ajustado = summary(m)$adj.r.squared, n = nobs(m))
+vif(m)                                         # com factor(uf), a coluna GVIF
+plot(fitted(m), resid(m)); abline(h = 0)       # resíduos × ajustados`;
+    if (lang === "stata") return `${cab("*")}import delimited "${arq}", clear encoding(utf8)
+${uf ? "encode uf, gen(uf_n)\n" : ""}${R.z ? `foreach v of varlist ${vars.join(" ")} {\n    quietly summarize \`v'\n    quietly replace \`v' = (\`v' - r(mean)) / r(sd)\n}\n` : ""}
+regress ${y} ${xs.join(" ")}${uf ? " i.uf_n" : ""}, vce(robust)
+
+* VIF (calculado na regressão sem a opção robust; os coeficientes são os mesmos)
+quietly regress ${y} ${xs.join(" ")}${uf ? " i.uf_n" : ""}
+estat vif
+
+* resíduos × ajustados
+predict ajustado, xb
+predict residuo, residuals
+scatter residuo ajustado, yline(0)`;
+    return `${cab("#")}# pip install pandas statsmodels
+import pandas as pd
+import statsmodels.formula.api as smf
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+
+d = pd.read_csv("${arq}")
+${R.z ? `cols = [${vars.map(v => `"${v}"`).join(", ")}]\nd[cols] = (d[cols] - d[cols].mean()) / d[cols].std(ddof=0)   # padronizados\n` : ""}
+m = smf.ols("${y} ~ ${xs.join(" + ")}${uf ? " + C(uf)" : ""}", data=d).fit(cov_type="HC1")
+print(m.summary())   # erros-padrão robustos (HC1), R² e R² ajustado
+
+X = m.model.exog
+for i, nome in enumerate(m.model.exog_names):
+    if i > 0:
+        print(nome, round(variance_inflation_factor(X, i), 2))`;
+  }
+  function baixarReg(){
+    const R = ULTIMA_REG; if (!R) return;
+    const cols = ["codigo_ibge", "municipio", "uf", IDS[R.yi], ...R.xs.map(j => IDS[j])];
+    const q = v => typeof v === "number" ? String(v) : /[",\n]/.test(v) ? `"${String(v).replace(/"/g, '""')}"` : v;
+    const linhasCsv = [cols.join(","), ...R.rows.map(r => [r.m.c, r.m.n, r.m.uf, r.y, ...r.x].map(q).join(","))];
+    salvar(new Blob([linhasCsv.join("\r\n")], { type: "text/csv;charset=utf-8" }), arqReg());
+  }
+  const salvar = (blob, nome) => { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nome; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); };
+  async function copiar(txt, botao){
+    const antes = botao.textContent;
+    try { await navigator.clipboard.writeText(txt); botao.textContent = "Copiado!"; }
+    catch { const t = document.createElement("textarea"); t.value = txt; document.body.appendChild(t); t.select(); try { document.execCommand("copy"); botao.textContent = "Copiado!"; } catch { window.prompt("Copie:", txt); } t.remove(); }
+    setTimeout(() => { botao.textContent = antes; }, 1600);
+  }
+
+  /* ---------- valores ao tocar nos gráficos (celular e tablet) ---------- */
+  const dica = document.createElement("div"); dica.className = "dica"; dica.hidden = true; document.body.appendChild(dica);
+  let porToque = false, alvoDica = null;
+  const escondeDica = () => { dica.hidden = true; alvoDica = null; };
+  document.addEventListener("pointerdown", e => { porToque = e.pointerType === "touch" || e.pointerType === "pen"; }, true);
+  window.addEventListener("scroll", () => { if (!dica.hidden) escondeDica(); }, { passive: true });
+  document.addEventListener("click", e => { if (!dica.hidden && !main.contains(e.target)) escondeDica(); });
+  main.addEventListener("click", e => {
+    if (!porToque) return;
+    let t = e.target;
+    while (t && t !== main && !(t.querySelector && t.querySelector(":scope > title"))) t = t.parentNode;
+    if (!t || t === main){ escondeDica(); return; }
+    const acao = t.closest("[data-mun],[data-st]");
+    if (acao && alvoDica === t){ escondeDica(); return; }   // segundo toque no mesmo elemento: segue a ação (abrir ficha etc.)
+    if (acao){ e.preventDefault(); e.stopImmediatePropagation(); }
+    alvoDica = t;
+    dica.textContent = t.querySelector(":scope > title").textContent + (acao ? "\n(toque de novo para abrir)" : "");
+    dica.hidden = false;
+    const w = dica.offsetWidth, h = dica.offsetHeight;
+    dica.style.left = `${Math.max(8, Math.min(window.innerWidth - w - 8, e.clientX - w / 2))}px`;
+    dica.style.top = `${e.clientY - h - 14 < 8 ? e.clientY + 18 : e.clientY - h - 14}px`;
+  }, true);
+
+  /* ---------- baixar gráficos em PNG (escuro ou claro, com título, legenda e fonte) ---------- */
+  const CLARO = { "--ink": "#111827", "--ink-2": "#374151", "--muted": "#4b5563", "--line": "#e5e7eb", "--axis": "#9ca3af", "--accent": "#4d7c0f", "--surface-2": "#f3f4f6", "--bg": "#ffffff", "--surface": "#ffffff" };
+  function pngDe(svg, claro){
+    const raiz = getComputedStyle(document.documentElement), cor = v => claro && CLARO[v] ? CLARO[v] : raiz.getPropertyValue(v).trim();
+    const vb = svg.viewBox.baseVal, w = vb.width, painel = svg.closest(".panel"), titulo = painel?.querySelector("h2")?.textContent.trim() || "Finanças Municipais";
+    const itens = [];
+    let viz = svg.nextElementSibling; if (viz?.classList.contains("leg")) viz.querySelectorAll("span").forEach(s => { const i = s.querySelector("i"); if (i){ let c = getComputedStyle(i).backgroundColor; if (claro) c = c.replace(/rgb\(228, 228, 231\)/, "#374151").replace(/rgb\(200, 242, 80\)/, "#4d7c0f"); itens.push([c, s.textContent.trim()]); } });
+    // legenda em linhas, com largura aproximada do texto
+    const lin = [[]]; let x = 0; itens.forEach(it => { const lw = 22 + it[1].length * 6.6; if (x + lw > w && lin[lin.length - 1].length){ lin.push([]); x = 0; } lin[lin.length - 1].push([...it, x]); x += lw + 10; });
+    const topo = 34, hLeg = itens.length ? lin.length * 18 + 8 : 0, h = vb.height, total = topo + h + hLeg + 26;
+    let corpo = new XMLSerializer().serializeToString(svg).replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "");
+    corpo = corpo.replace(/var\((--[a-z0-9-]+)\)/g, (_, v) => cor(v));
+    if (claro) corpo = corpo.replace(/#e4e4e7/gi, "#374151").replace(/#c8f250/gi, "#4d7c0f").replace(/stroke="#08090b"/g, 'stroke="#ffffff"');
+    const fonte = "'Spline Sans Mono', ui-monospace, monospace", fundo = claro ? "#ffffff" : cor("--bg");
+    const svgTxt = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${total}" width="${w}" height="${total}">
+      <style>.ax{fill:${cor("--muted")};font:11px ${fonte}}.gl{stroke:${cor("--line")}}.zero{stroke:${cor("--axis")}}.vl{fill:${cor("--ink")};font:700 11.5px ${fonte}}text{font-family:${fonte}}</style>
+      <rect width="100%" height="100%" fill="${fundo}"/>
+      <text x="4" y="20" style="font:700 15px system-ui,sans-serif;fill:${cor("--ink")}">${esc(titulo)}</text>
+      <g transform="translate(0 ${topo})">${corpo}</g>
+      ${lin.map((l, r) => l.map(([c, t, lx]) => `<rect x="${lx + 4}" y="${topo + h + 8 + r * 18}" width="10" height="10" rx="2" fill="${c}"/><text x="${lx + 19}" y="${topo + h + 17 + r * 18}" style="font:12px system-ui,sans-serif;fill:${cor("--ink-2")}">${esc(t)}</text>`).join("")).join("")}
+      <text x="4" y="${total - 8}" style="font:10.5px system-ui,sans-serif;fill:${cor("--muted")}">Fonte: Finanças Municipais (cleitonfranco74.github.io/financas_municipais), dados de ${new Date(D.atualizado + "T12:00").toLocaleDateString("pt-BR")}${st.uf ? ` · ${st.uf}` : ""}</text>
+    </svg>`;
+    const img = new Image(), esc2 = 2;
+    img.onload = () => {
+      const cv = document.createElement("canvas"); cv.width = w * esc2; cv.height = total * esc2;
+      const cx = cv.getContext("2d"); cx.scale(esc2, esc2); cx.drawImage(img, 0, 0);
+      const nome = titulo.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 60) || "grafico";
+      cv.toBlob(b => salvar(b, `${nome}${claro ? "_claro" : ""}.png`), "image/png");
+    };
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgTxt);
+  }
+  /* coloca os botões de PNG sob cada gráfico, inclusive nos que são redesenhados sem passar por render() */
+  let pondoBotoes = false;
+  new MutationObserver(() => {
+    if (pondoBotoes) return; pondoBotoes = true;
+    main.querySelectorAll("svg.ch").forEach(svg => {
+      if (svg.dataset.pngok) return; svg.dataset.pngok = "1";
+      const depois = svg.nextElementSibling?.classList.contains("leg") ? svg.nextElementSibling : svg;
+      depois.insertAdjacentHTML("afterend", `<div class="pngbar"><button type="button" data-png="escuro" title="Baixar o gráfico em PNG, fundo escuro">PNG</button><button type="button" data-png="claro" title="Baixar o gráfico em PNG, fundo branco (slides e impressão)">PNG claro</button></div>`);
+    });
+    pondoBotoes = false;
+  }).observe(main, { childList: true, subtree: true });
+  main.addEventListener("click", e => {
+    const b = e.target.closest("button[data-png],[data-regcsv],[data-copiar]"); if (!b) return;
+    e.stopImmediatePropagation();
+    if (b.dataset.png){ let el = b.parentElement.previousElementSibling; if (el?.classList.contains("leg")) el = el.previousElementSibling; if (el?.matches("svg.ch")) pngDe(el, b.dataset.png === "claro"); }
+    else if ("regcsv" in b.dataset) baixarReg();
+    else if (b.dataset.copiar === "link") copiar(location.href, b);
+    else if (b.dataset.copiar === "codigo") copiar(codigoReg(st.regLang), b);
+  });
+
   /* ---------- navegação ---------- */
   const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, resultados, correlacoes, regressao, mapa: mapaAba, mun: munAba, rdd: rddAba, metodo };
   function render(){
     document.querySelectorAll("nav.abas button").forEach(b => b.setAttribute("aria-selected", b.dataset.aba === st.aba));
     (ABAS[st.aba] || ABAS.geral)();
+    // o endereço acompanha a aba e, na aba Municípios, a ficha aberta (#mun=código do IBGE)
+    const h = st.aba === "mun" && st.mun ? `#mun=${st.mun}` : `#${st.aba}`;
+    if (location.hash !== h) history.replaceState(null, "", h);
   }
-  document.querySelector("nav.abas").addEventListener("click", e => { const b = e.target.closest("[data-aba]"); if (!b) return; st.aba = b.dataset.aba; history.replaceState(null, "", "#" + st.aba); render(); });
+  function leEndereco(){
+    const h = location.hash.slice(1), m = h.match(/^mun=(\d{7})$/);
+    if (m && M.some(x => x.c === +m[1])){ st.aba = "mun"; st.mun = +m[1]; return true; }
+    if (ABAS[h]){ st.aba = h; if (h === "mun") st.mun = null; return true; }
+    return false;
+  }
+  window.addEventListener("hashchange", () => { if (D && leEndereco()) render(); });
+  document.querySelector("nav.abas").addEventListener("click", e => { const b = e.target.closest("[data-aba]"); if (!b) return; st.aba = b.dataset.aba; render(); });
   ctl.addEventListener("change", e => { if (e.target.id === "fUf"){ st.uf = e.target.value; render(); } });
   ctl.addEventListener("click", e => { const b = e.target.closest("[data-modo]"); if (!b) return; st.modo = b.dataset.modo; controles(); render(); });
   main.addEventListener("click", e => {
@@ -1139,7 +1290,7 @@
 
   fetch("data/municipios.json").then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => {
     D = d; prepara();
-    const h = location.hash.slice(1); if (ABAS[h]) st.aba = h;
+    leEndereco();
     controles(); render();
   }).catch(() => { ctl.innerHTML = `<span class="status">Os dados dos municípios ainda não foram coletados ou não puderam ser carregados. Tente mais tarde.</span>`; });
 })();
