@@ -271,7 +271,7 @@ def _item_repasse(cod: str, conta: str) -> str | None:
         return None
     if re.search(r"FUNDO DE MANUTENCAO E DESENVOLVIMENTO|FUNDEB|COMPLEMENTACAO DA UNIAO", n):
         return "fundeb"
-    if re.search(r"SISTEMA UNICO DE SAUDE|\bSUS\b", n):
+    if re.search(r"SISTEMA UNICO DE SAUDE|\bSUS\b|PROGRAMAS DE SAUDE|SERVICOS PUBLICOS DE SAUDE", n):
         return "sus_uniao" if e == "U" else "sus_estado" if e == "E" else None
     if re.search(r"ASSISTENCIA SOCIAL", n):
         return "assist_uniao" if e == "U" else "assist_estado" if e == "E" else None

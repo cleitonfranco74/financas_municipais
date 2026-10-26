@@ -7,12 +7,12 @@ permissions:
 jobs:
   x:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
-      - run: pip install requests
+      - run: pip install requests shapely
       - run: which 7z 7za 7zr || true
       - run: python tmp/explorar.py
       - run: |
