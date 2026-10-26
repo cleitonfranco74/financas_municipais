@@ -31,7 +31,7 @@
   let D, M = [], ANOS = [], REF = null;
   const st = { aba: "geral", uf: "", modo: "4", met: "invpc", mun: null, x: "peso", y: "inv", h: 20, rddE: "2016+2020", rddY: "inv", rddC: "ideo", ord: "invpc", comp: [],
     fn: "10", polY: "invpc", polY2: "convEpc", amX: "expansao", amY: "desm", resX: "saude", resY: "tmi", mapa: "orient", cmet: "invpc", corr: "p", cxy: "6-3", cvar: "6",
-    regY: "6", regX: [0, 1, 2, 3], regUF: true, regZ: false, mapaModo: "v", regLang: "r", vac: "0" };
+    regY: "6", regX: [0, 1, 2, 3], regUF: true, regZ: false, mapaModo: "v", regLang: "r", vac: "0", reg: "", metP: "invpc", metP2: "convEpc" };
 
   const nota = sg => { if (!sg) return null; const s = sg.trim().toUpperCase(); return D.escala[D.sinonimos[s] || s] ?? null; };
   const cat7 = sc => sc == null ? null : CATS.find(c => sc <= c[2])[0];
@@ -962,6 +962,124 @@
       <p class="nota">Fontes: Receita Federal (CNPJ, fotografia de ${esc(meta.cnpj_mes || "—")}), RAIS e Novo Caged (Ministério do Trabalho e Emprego), IBGE (Cempre e PIB dos Municípios). Os setores seguem a CNAE: agropecuária (seção A), indústria (B a E), construção (F), comércio (G), administração pública (O) e serviços (as demais).</p>`;
   }
 
+  /* ---------- abas: municípios pequenos de todo o Brasil (até 20 mil e até 50 mil habitantes) ---------- */
+  let BR = null, BRfalhou = false, BRcarregando = false;
+  const REGIOES = { "1": "Norte", "2": "Nordeste", "3": "Sudeste", "4": "Sul", "5": "Centro-Oeste" };
+  const CORES_REG = { "1": "#22c55e", "2": "#f5b83d", "3": "#60a5fa", "4": "#a78bfa", "5": "#fb923c" };
+  function carregaBrasil(){
+    if (BR || BRcarregando || BRfalhou) return;
+    BRcarregando = true;
+    fetch("data/brasil.json").then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => {
+      // mesmos derivados da página: valores em reais de REF (IPCA) e repasses na ordem de tr_nomes
+      const defl = a => d.ipca?.[REF] && d.ipca?.[a] ? d.ipca[REF] / d.ipca[a] : deflator(a);
+      const recorte = new Set(d.recorte || []);
+      BR = { gov: d.gov || {}, atualizado: d.atualizado, ms: d.municipios.map(m => {
+        const pib = Object.entries(m.pib || {}).filter(([, v]) => v && v[0] > 0 && v[1] != null).slice(-3);
+        return { ...m, reg: String(m.c)[0], recorte: recorte.has(m.c), peso: pib.length ? media(pib.map(([, v]) => v[1] / v[0])) : null,
+          f: Object.fromEntries(Object.entries(m.fin || {}).map(([a, v]) => { const k = 1e3 * defl(a), rc = m.rc?.[a], rp = m.tr?.[a], fn = m.fn?.[a];
+            return [a, { rec: v[0] * k, tr: v[1] * k, trib: v[2] * k, desp: v[3] * k, inv: v[4] * k, pop: m.pop?.[a] || null,
+              rc: rc ? rc.map(x => x * k) : null, conv: rc ? (rc[6] + rc[7] + rc[8]) * k : null, convE: rc ? rc[7] * k : null,
+              fn: fn ? Object.fromEntries(Object.entries(fn).map(([q, x]) => [q, x * k])) : null, rp: rp ? rp.map(x => x * k) : null, lrf: null }]; })) };
+      }) };
+      BRcarregando = false;
+      if (/^porte/.test(st.aba)) render();
+    }).catch(() => { BRfalhou = true; BRcarregando = false; if (/^porte/.test(st.aba)) render(); });
+  }
+  const govBR = (uf, a) => { const e = a <= 2018 ? "2014" : a <= 2022 ? "2018" : "2022"; return BR.gov?.[uf]?.[e] || null; };
+  const alinhadoBR = (m, a) => { const e = m.ele?.[eleicaoDo(+a)], g = govBR(m.uf, +a); return e && g ? sigla(e[0]) === sigla(g) : null; };
+  function porteAba(lim){
+    if (!BR){
+      carregaBrasil();
+      main.innerHTML = `<p class="nota">${BRfalhou ? "O painel nacional ainda não foi coletado: a primeira carga de todos os municípios do Brasil leva algumas execuções da coleta." : "Carregando os dados de todos os municípios do Brasil…"}</p>`;
+      return;
+    }
+    const todos = BR.ms.filter(m => !st.reg || m.reg === st.reg);
+    // ano de referência: o último com contas de pelo menos 60% dos municípios
+    const anosB = [...new Set(todos.flatMap(m => Object.keys(m.f)))].map(Number).filter(a => a >= 2016).sort();
+    const aR = String([...anosB].reverse().find(a => todos.filter(m => m.f[a]).length >= .6 * todos.length) || anosB[anosB.length - 1]);
+    const popRef = m => m.pop?.[aR] || Object.values(m.pop || {}).pop() || 0;
+    const peq = todos.filter(m => popRef(m) > 0 && popRef(m) <= lim), dem = todos.filter(m => popRef(m) > lim);
+    const nomeL = `até ${nf(lim / 1e3)} mil habitantes`, nomeD = `acima de ${nf(lim / 1e3)} mil`;
+    const ag = (ms, a, met) => agrega(ms, a, met).v;
+    const popP = peq.reduce((s, m) => s + popRef(m), 0), popT = todos.reduce((s, m) => s + popRef(m), 0);
+    const comp = (met, f) => `${f(ag(peq, aR, met))} <small style="color:var(--muted)">× ${f(ag(dem, aR, met))} nos demais</small>`;
+    const kpi = (rot, met, f, nota) => `<div class="kpi"><span>${rot}</span><b>${f(ag(peq, aR, met))}</b><small>${f(ag(dem, aR, met))} nos municípios ${nomeD}${nota ? ` · ${nota}` : ""}</small></div>`;
+    // 1) evolução: pequenos × demais
+    const serie = (ms, met) => Object.fromEntries(anosB.map(a => [a, ag(ms, a, met)]));
+    const evol = met => linhas([{ n: `Municípios ${nomeL}`, c: "#c8f250", v: serie(peq, met) }, { n: `Municípios ${nomeD}`, c: "#60a5fa", v: serie(dem, met) }], { anos: anosB, fmt: MET[met].f, alto: 230, w: meia() });
+    // 2) por região
+    const regs = Object.keys(REGIOES).filter(r => !st.reg || r === st.reg);
+    const porReg = colunas(regs.map(r => REGIOES[r]), [
+      { n: "Investimento/hab.", c: "#c8f250", v: regs.map(r => ag(peq.filter(m => m.reg === r), aR, "invpc")) },
+      { n: "Receita própria/hab.", c: "#60a5fa", v: regs.map(r => ag(peq.filter(m => m.reg === r), aR, "tribpc")) },
+      { n: "Saúde/hab.", c: "#f87171", v: regs.map(r => ag(peq.filter(m => m.reg === r), aR, "saudepc")) },
+      { n: "Educação/hab.", c: "#f5b83d", v: regs.map(r => ag(peq.filter(m => m.reg === r), aR, "educpc")) }], { fmt: brl, alto: 260 });
+    // 3) por orientação do prefeito
+    const orient = porGrupo(peq, anosB, (gs, a) => ag(gs, a, st.metP));
+    // 4) dependência de transferências e do FPM
+    const dep = peq.map(m => m.f[aR] && m.f[aR].rec ? 100 * m.f[aR].tr / m.f[aR].rec : null).filter(v => v != null);
+    const fpm = peq.map(m => m.f[aR]?.rc && m.f[aR].rec ? 100 * m.f[aR].rc[0] / m.f[aR].rec : null).filter(v => v != null);
+    // 5) o recorte do painel (Amazônia Legal, GO e MS) × o resto do Brasil, entre os pequenos
+    const recorteL = linhas([{ n: "Amazônia Legal, GO e MS", c: "#22c55e", v: serie(peq.filter(m => m.recorte), st.metP) }, { n: "Demais estados", c: "#a1a1aa", v: serie(peq.filter(m => !m.recorte), st.metP) }], { anos: anosB, fmt: MET[st.metP].f, alto: 230, w: meia() });
+    // 6) eleições acirradas entre os pequenos: esquerda × direita, mandatos 2017–2020 e 2021–2024, faixa de ±20 p.p.
+    const rddLinha = met => {
+      const pts = [];
+      peq.forEach(m => [2016, 2020].forEach(E => { const v = m.ele?.[String(E)]; if (!v || !v[2] || !v[4]) return;
+        const l1 = lado(nota(v[0])), l2 = lado(nota(v[2])); if (!l1 || !l2 || l1 === l2) return;
+        const vE = l1 === "E" ? v[1] : v[3], vD = l1 === "E" ? v[3] : v[1], y = periodoMandato(m, E, met);
+        if (y != null && isFinite(y)) pts.push({ x: 100 * (vE - vD) / (vE + vD), y }); }));
+      const d = wls(pts.filter(p => p.x >= 0), 20), e = wls(pts.filter(p => p.x < 0), 20);
+      if (!d || !e) return `<tr><td style="text-align:left">${esc(MET[met].n)}</td><td class="num" colspan="4">poucas eleições</td></tr>`;
+      const tau = d.a - e.a, ep = Math.sqrt(d.ep ** 2 + e.ep ** 2), p = normalP(tau / ep);
+      return `<tr><td style="text-align:left">${esc(MET[met].n)}</td><td class="num"><b>${tau >= 0 ? "+" : "−"}${MET[met].f(Math.abs(tau))}</b>${estrelas(tau, ep)}</td><td class="num">${MET[met].f(ep)}</td><td class="num">${nf(p, 3)}</td><td class="num">${d.n + e.n}</td></tr>`;
+    };
+    // 7) painel com efeitos fixos entre os pequenos: prefeito de esquerda e do partido do governador
+    const obs = [];
+    peq.forEach(m => anosB.forEach(a => { const y = indiv(m, a, st.metP2), l = lado(scoreAno(m, a)), al = alinhadoBR(m, a); if (y == null || !l || al == null) return; obs.push([m.c, a, y, l === "E" ? 1 : 0, al ? 1 : 0]); }));
+    let fe = null;
+    if (obs.length > 100){ const [y2, x1, x2] = semEfeitos([obs.map(o => o[2]), obs.map(o => o[3]), obs.map(o => o[4])], obs.map(o => o[0]), obs.map(o => o[1])); fe = mqo(y2, [x1, x2], obs.map(o => o[0])); }
+    const P2 = MET[st.metP2], celFe = j => fe ? `${fe.b[j] >= 0 ? "+" : "−"}${P2.f(Math.abs(fe.b[j]))}${estrelas(fe.b[j], fe.ep[j])} <small style="color:var(--muted)">(${P2.f(fe.ep[j])})</small>` : "—";
+    const top = peq.map(m => ({ m, v: indiv(m, aR, "invpc") })).filter(o => o.v != null).sort((a, b) => b.v - a.v);
+    const linhaTop = o => `<tr ${M.some(x => x.c === o.m.c) ? `data-mun="${o.m.c}" style="cursor:pointer"` : ""}><td><b>${esc(o.m.n)}</b> <small style="color:var(--muted)">${o.m.uf}</small></td><td class="num">${nf(popRef(o.m))}</td><td class="num">${brl(o.v)}</td><td class="num">${pct(indiv(o.m, aR, "transf"), 0)}</td><td>${o.m.ele?.[eleicaoDo(+aR)] ? esc(o.m.ele[eleicaoDo(+aR)][0]) : "—"}</td></tr>`;
+    const METP = ["invpc", "recpc", "tribpc", "transf", "saudepc", "educpc", "convpc"].map(k => [k, MET[k].n.replace(" por habitante", "/hab.").replace("Transferências em % da receita", "Transferências %").replace("Receita tributária própria", "Receita própria")]);
+    main.innerHTML = `
+      <div class="explica"><h3>Municípios ${nomeL}, em todo o Brasil</h3><p>Esta aba usa <b>todos os municípios brasileiros</b> (não só o recorte da Amazônia Legal, GO e MS) e separa os de até ${nf(lim)} habitantes em ${aR}. São <b>${nf(peq.length)}</b> de ${nf(todos.length)} municípios${st.reg ? ` da região ${REGIOES[st.reg]}` : ""}, com ${pct(popT ? popP / popT : null, 0)} da população. Valores a preços de ${REF} (IPCA), médias ponderadas pela população.</p>
+        <div class="ctl" style="margin-top:8px;padding:8px 12px"><div class="f"><span>Região</span>${segSt("reg", [["", "Brasil"], ...Object.entries(REGIOES)])}</div></div></div>
+      <div class="kpis" style="margin-top:16px">
+        ${kpi(`Investimento/hab. ${aR}`, "invpc", brl)}
+        ${kpi("Receita própria/hab.", "tribpc", brl)}
+        ${kpi("Transferências na receita", "transf", v => pct(v, 0))}
+        ${kpi("Saúde/hab.", "saudepc", brl, `educação: ${brl(ag(peq, aR, "educpc"))}`)}
+      </div>
+      <div class="grid" style="margin-top:16px">
+        <section class="panel"><h2>Investimento por habitante</h2><p class="sub">Municípios ${nomeL} × ${nomeD}.</p>${evol("invpc")}</section>
+        <section class="panel"><h2>Receita própria por habitante</h2><p class="sub">Impostos e taxas municipais (IPTU, ISS, ITBI, taxas).</p>${evol("tribpc")}</section>
+      </div>
+      <section class="panel" style="margin-top:16px"><h2>Por região, ${aR}</h2><p class="sub">Municípios ${nomeL}, por habitante.</p>${porReg}</section>
+      <div class="grid" style="margin-top:16px">
+        <section class="panel"><h2>Quanto da receita vem de transferências</h2><p class="sub">Transferências da União e do estado em % da receita, municípios ${nomeL}, ${aR}. Mediana: <b>${nf(mediana(dep), 0)}%</b>.</p>${histograma(dep, { lo: 40, hi: 100, passo: 2, fmt: v => `${nf(v)}%`, w: meia() })}</section>
+        <section class="panel"><h2>Peso do FPM</h2><p class="sub">Fundo de Participação dos Municípios em % da receita, ${aR}. Mediana: <b>${nf(mediana(fpm), 0)}%</b>. Nos pequenos, o FPM costuma ser a principal receita.</p>${histograma(fpm, { lo: 0, hi: 80, passo: 2, fmt: v => `${nf(v)}%`, cor: () => "#a78bfa", w: meia() })}</section>
+      </div>
+      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>Por orientação do prefeito</h2><p class="sub">Municípios ${nomeL}, por orientação do prefeito em exercício em cada ano.</p></div>${segSt("metP", METP)}</div>
+        ${linhas(orient, { anos: anosB, fmt: MET[st.metP].f })}${legGrupos()}</section>
+      <div class="grid" style="margin-top:16px">
+        <section class="panel"><h2>O recorte do painel × o resto do Brasil</h2><p class="sub">${esc(MET[st.metP].n)}, municípios ${nomeL}: Amazônia Legal, Goiás e Mato Grosso do Sul × demais estados.</p>${recorteL}</section>
+        <section class="panel"><h2>Eleições acirradas entre os pequenos</h2><p class="sub">Regressão descontínua esquerda × direita (eleições de 2016 e 2020, média do mandato seguinte, faixa de ±20 p.p., núcleo triangular, erro-padrão robusto). Com todo o Brasil, a amostra é bem maior que a da aba Eleições acirradas.</p>
+          <div class="tbwrap"><table class="tb"><thead><tr><th style="text-align:left">Resultado</th><th>Efeito (salto)</th><th>Erro-padrão</th><th>Valor-p</th><th>Eleições</th></tr></thead><tbody>
+          ${["invpc", "tribpc", "convpc", "saudepc", "educpc"].map(rddLinha).join("")}</tbody></table></div>
+          <p class="nota">*** p &lt; 0,01; ** p &lt; 0,05; * p &lt; 0,1. Efeito positivo: eleger um prefeito de esquerda está associado a um valor maior.</p></section>
+      </div>
+      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>Painel com efeitos fixos entre os pequenos</h2><p class="sub">Município-ano, efeitos fixos de município e ano, erros agrupados por município (${fe ? `${nf(fe.n)} observações, ${nf(fe.G)} municípios` : "poucas observações"}).</p></div>
+        <div class="ctl" style="padding:8px 12px">${selSt("metP2", "Resultado", { convEpc: MET.convEpc, convUpc: MET.convUpc, susEpc: MET.susEpc, invpc: MET.invpc, tribpc: MET.tribpc, fundebpc: MET.fundebpc })}</div></div>
+        <div class="tbwrap"><table class="tb"><thead><tr><th style="text-align:left">Variável</th><th>Coeficiente (erro-padrão)</th></tr></thead><tbody>
+          <tr><td style="text-align:left">Prefeito de esquerda (contra direita)</td><td class="num">${celFe(0)}</td></tr>
+          <tr><td style="text-align:left">Prefeito do partido do governador</td><td class="num">${celFe(1)}</td></tr></tbody></table></div></section>
+      <section class="panel" style="margin-top:16px"><h2>Maior e menor investimento por habitante, ${aR}</h2><p class="sub">Municípios ${nomeL}${st.reg ? ` do ${REGIOES[st.reg]}` : ""}. Os do recorte do painel abrem a ficha.</p>
+        <div class="tbwrap"><table class="tb"><thead><tr><th>Município</th><th>População</th><th>Invest./hab.</th><th>Transf. %</th><th>Partido do prefeito</th></tr></thead><tbody>
+        ${top.slice(0, 8).map(linhaTop).join("")}${top.length > 16 ? `<tr><td colspan="5" style="text-align:center;color:var(--muted)">⋯</td></tr>` : ""}${top.slice(Math.max(8, top.length - 8)).map(linhaTop).join("")}</tbody></table></div></section>
+      <p class="nota">Fontes: Tesouro Nacional (Siconfi, DCA), TSE, IBGE e Banco Central; painel nacional atualizado em ${BR.atualizado ? new Date(BR.atualizado + "T12:00").toLocaleDateString("pt-BR") : "—"}. Municípios que não entregaram a DCA de um ano ficam fora daquele ano.</p>`;
+  }
+
   /* ---------- aba: correlações ---------- */
   /* uma linha por município; períodos médios para suavizar anos atípicos */
   const mediaLrf = (m, i) => { const v = ULT().map(a => m.f[a]?.lrf?.[i]).filter(x => x != null); return v.length >= 2 ? media(v) : null; };
@@ -1240,7 +1358,7 @@
   function codigoReg(lang){
     const R = ULTIMA_REG; if (!R) return "";
     const y = IDS[R.yi], xs = R.xs.map(j => IDS[j]), vars = [y, ...xs], arq = arqReg(), uf = R.uf;
-    const cab = c => `${c} Regressão da página Finanças Municipais: ${VARS[R.yi].n} (${R.n} municípios${st.uf ? `, ${st.uf}` : ""})\n${c} https://cleitonfranco74.github.io/financas_municipais/#regressao\n${c} Dados: ${arq}, baixado pelo botão da página (um município por linha)\n`;
+    const cab = c => `${c} Regressão da página Finanças Públicas Municipais: ${VARS[R.yi].n} (${R.n} municípios${st.uf ? `, ${st.uf}` : ""})\n${c} https://cleitonfranco74.github.io/financas_municipais/#regressao\n${c} Dados: ${arq}, baixado pelo botão da página (um município por linha)\n`;
     if (lang === "r") return `${cab("#")}# install.packages(c("sandwich", "lmtest", "car"))
 library(sandwich); library(lmtest); library(car)
 
@@ -1321,7 +1439,7 @@ for i, nome in enumerate(m.model.exog_names):
   const CLARO = { "--ink": "#111827", "--ink-2": "#374151", "--muted": "#4b5563", "--line": "#e5e7eb", "--axis": "#9ca3af", "--accent": "#4d7c0f", "--surface-2": "#f3f4f6", "--bg": "#ffffff", "--surface": "#ffffff" };
   function pngDe(svg, claro){
     const raiz = getComputedStyle(document.documentElement), cor = v => claro && CLARO[v] ? CLARO[v] : raiz.getPropertyValue(v).trim();
-    const vb = svg.viewBox.baseVal, w = vb.width, painel = svg.closest(".panel"), titulo = painel?.querySelector("h2")?.textContent.trim() || "Finanças Municipais";
+    const vb = svg.viewBox.baseVal, w = vb.width, painel = svg.closest(".panel"), titulo = painel?.querySelector("h2")?.textContent.trim() || "Finanças Públicas Municipais";
     const itens = [];
     let viz = svg.nextElementSibling; if (viz?.classList.contains("leg")) viz.querySelectorAll("span").forEach(s => { const i = s.querySelector("i"); if (i){ let c = getComputedStyle(i).backgroundColor; if (claro) c = c.replace(/rgb\(228, 228, 231\)/, "#374151").replace(/rgb\(200, 242, 80\)/, "#4d7c0f"); itens.push([c, s.textContent.trim()]); } });
     // legenda em linhas, com largura aproximada do texto
@@ -1337,7 +1455,7 @@ for i, nome in enumerate(m.model.exog_names):
       <text x="4" y="20" style="font:700 15px system-ui,sans-serif;fill:${cor("--ink")}">${esc(titulo)}</text>
       <g transform="translate(0 ${topo})">${corpo}</g>
       ${lin.map((l, r) => l.map(([c, t, lx]) => `<rect x="${lx + 4}" y="${topo + h + 8 + r * 18}" width="10" height="10" rx="2" fill="${c}"/><text x="${lx + 19}" y="${topo + h + 17 + r * 18}" style="font:12px system-ui,sans-serif;fill:${cor("--ink-2")}">${esc(t)}</text>`).join("")).join("")}
-      <text x="4" y="${total - 8}" style="font:10.5px system-ui,sans-serif;fill:${cor("--muted")}">Fonte: Finanças Municipais (cleitonfranco74.github.io/financas_municipais), dados de ${new Date(D.atualizado + "T12:00").toLocaleDateString("pt-BR")}${st.uf ? ` · ${st.uf}` : ""}</text>
+      <text x="4" y="${total - 8}" style="font:10.5px system-ui,sans-serif;fill:${cor("--muted")}">Fonte: Finanças Públicas Municipais (cleitonfranco74.github.io/financas_municipais), dados de ${new Date(D.atualizado + "T12:00").toLocaleDateString("pt-BR")}${st.uf ? ` · ${st.uf}` : ""}</text>
     </svg>`;
     const img = new Image(), esc2 = 2;
     img.onload = () => {
@@ -1369,7 +1487,7 @@ for i, nome in enumerate(m.model.exog_names):
   });
 
   /* ---------- navegação ---------- */
-  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, economia, resultados, correlacoes, regressao, mapa: mapaAba, mun: munAba, rdd: rddAba, metodo };
+  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, economia, resultados, correlacoes, regressao, mapa: mapaAba, porte20: () => porteAba(20000), porte50: () => porteAba(50000), mun: munAba, rdd: rddAba, metodo };
   function render(){
     document.querySelectorAll("nav.abas button").forEach(b => b.setAttribute("aria-selected", b.dataset.aba === st.aba));
     (ABAS[st.aba] || ABAS.geral)();
