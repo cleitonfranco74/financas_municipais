@@ -1,304 +1,111 @@
-== cempre 6450 Sinop (0s)
-Número de unidades locais | 2021 | 117897 | Total | 8125
-Número de unidades locais | 2021 | 116830 | A Agricultura, pecuária, produção florestal, pesca e aquicultura | 178
-Número de unidades locais | 2021 | 116831 | 01 Agricultura, pecuária e serviços relacionados | 140
-Número de unidades locais | 2021 | 116832 | 01.1 Produção de lavouras temporárias | 37
-Número de unidades locais | 2021 | 116833 | 01.11-3 Cultivo de cereais | -
-Número de unidades locais | 2021 | 116834 | 01.12-1 Cultivo de algodão herbáceo e de outras fibras de lavoura temporária | -
-Número de unidades locais | 2021 | 116835 | 01.13-0 Cultivo de cana-de-açúcar | -
-Número de unidades locais | 2021 | 116836 | 01.14-8 Cultivo de fumo | -
-Número de unidades locais | 2021 | 116837 | 01.15-6 Cultivo de soja | 37
-Número de unidades locais | 2021 | 116838 | 01.16-4 Cultivo de oleaginosas de lavoura temporária, exceto soja | -
-Número de unidades locais | 2021 | 116839 | 01.19-9 Cultivo de plantas de lavoura temporária não especificadas anteriormente | -
-Número de unidades locais | 2021 | 116840 | 01.2 Horticultura e floricultura | 1
-Número de unidades locais | 2021 | 116841 | 01.21-1 Horticultura | 1
-Número de unidades locais | 2021 | 116842 | 01.22-9 Cultivo de flores e plantas ornamentais | -
-Número de unidades locais | 2021 | 116843 | 01.3 Produção de lavouras permanentes | 4
-Número de unidades locais | 2021 | 116844 | 01.31-8 Cultivo de laranja | -
-Número de unidades locais | 2021 | 116845 | 01.32-6 Cultivo de uva | -
-Número de unidades locais | 2021 | 116846 | 01.33-4 Cultivo de frutas de lavoura permanente, exceto laranja e uva | 2
-Número de unidades locais | 2021 | 116847 | 01.34-2 Cultivo de café | -
-Número de unidades locais | 2021 | 116848 | 01.35-1 Cultivo de cacau | -
-Número de unidades locais | 2021 | 116849 | 01.39-3 Cultivo de plantas de lavoura permanente não especificadas anteriormente | 2
-Número de unidades locais | 2021 | 116850 | 01.4 Produção de sementes e mudas certificadas | 1
-Número de unidades locais | 2021 | 116851 | 01.41-5 Produção de sementes certificadas | 1
-Número de unidades locais | 2021 | 116852 | 01.42-3 Produção de mudas e outras formas de propagação vegetal, certificadas | -
-Número de unidades locais | 2021 | 116853 | 01.5 Pecuária | 11
-Número de unidades locais | 2021 | 116854 | 01.51-2 Criação de bovinos | 11
-Número de unidades locais | 2021 | 116855 | 01.52-1 Criação de outros animais de grande porte | -
-Número de unidades locais | 2021 | 116856 | 01.53-9 Criação de caprinos e ovinos | -
-Número de unidades locais | 2021 | 116857 | 01.54-7 Criação de suínos | -
-Número de unidades locais | 2021 | 116858 | 01.55-5 Criação de aves | -
-Número de unidades locais | 2021 | 116859 | 01.59-8 Criação de animais não especificados anteriormente | -
-Número de unidades locais | 2021 | 116860 | 01.6 Atividades de apoio à agricultura e à pecuária; atividades de pós-colheita | 86
-Número de unidades locais | 2021 | 116861 | 01.61-0 Atividades de apoio à agricultura | 75
-Número de unidades locais | 2021 | 116862 | 01.62-8 Atividades de apoio à pecuária | 7
-Número de unidades locais | 2021 | 116863 | 01.63-6 Atividades de pós-colheita | 4
-Número de unidades locais | 2021 | 116864 | 01.7 Caça e serviços relacionados | -
-Número de unidades locais | 2021 | 116865 | 01.70-9 Caça e serviços relacionados | -
-Número de unidades locais | 2021 | 116866 | 02 Produção florestal | 37
-Número de unidades locais | 2021 | 116867 | 02.1 Produção florestal - florestas plantadas | 2
-Número de unidades locais | 2021 | 116868 | 02.10-1 Produção florestal - florestas plantadas | 2
-Número de unidades locais | 2021 | 116869 | 02.2 Produção florestal - florestas nativas | 16
-Número de unidades locais | 2021 | 116870 | 02.20-9 Produção florestal - florestas nativas | 16
-Número de unidades locais | 2021 | 116871 | 02.3 Atividades de apoio à produção florestal | 19
-Número de unidades locais | 2021 | 116872 | 02.30-6 Atividades de apoio à produção florestal | 19
-Número de unidades locais | 2021 | 116873 | 03 Pesca e aquicultura | 1
-Número de unidades locais | 2021 | 116874 | 03.1 Pesca | -
-Número de unidades locais | 2021 | 116875 | 03.11-6 Pesca em água salgada | -
-Número de unidades locais | 2021 | 116876 | 03.12-4 Pesca em água doce | -
-Número de unidades locais | 2021 | 116877 | 03.2 Aquicultura | 1
-Número de unidades locais | 2021 | 116878 | 03.21-3 Aquicultura em água salgada e salobra | -
-Número de unidades locais | 2021 | 116879 | 03.22-1 Aquicultura em água doce | 1
-Número de unidades locais | 2021 | 116880 | B Indústrias extrativas | 17
-Número de unidades locais | 2021 | 116881 | 05 Extração de carvão mineral | -
-Número de unidades locais | 2021 | 116882 | 05.0 Extração de carvão mineral | -
-Número de unidades locais | 2021 | 116883 | 05.00-3 Extração de carvão mineral | -
-Número de unidades locais | 2021 | 116884 | 06 Extração de petróleo e gás natural | -
-Número de unidades locais | 2021 | 116885 | 06.0 Extração de petróleo e gás natural | -
-Número de unidades locais | 2021 | 116886 | 06.00-0 Extração de petróleo e gás natural | -
-Número de unidades locais | 2021 | 116887 | 07 Extração de minerais metálicos | 2
-Número de unidades locais | 2021 | 116888 | 07.1 Extração de minério de ferro | -
-Número de unidades locais | 2021 | 116889 | 07.10-3 Extração de minério de ferro | -
-Número de unidades locais | 2021 | 116890 | 07.2 Extração de minerais metálicos não-ferrosos | 2
-Número de unidades locais | 2021 | 116891 | 07.21-9 Extração de minério de alumínio | -
-Número de unidades locais | 2021 | 116892 | 07.22-7 Extração de minério de estanho | -
-Número de unidades locais | 2021 | 116893 | 07.23-5 Extração de minério de manganês | -
-Número de unidades locais | 2021 | 116894 | 07.24-3 Extração de minério de metais preciosos | -
-Número de unidades locais | 2021 | 116895 | 07.25-1 Extração de minerais radioativos | -
-Número de unidades locais | 2021 | 116896 | 07.29-4 Extração de minerais metálicos não-ferrosos não especificados anter
-== cempre 6449? (0s)
-Número de empresas e outras organizações | 2021 | 117897 | Total | 7370
-Número de empresas e outras organizações - percentual do total geral | 2021 | 117897 | Total | 100.00
-Pessoal ocupado total | 2021 | 117897 | Total | 51642
-Pessoal ocupado total - percentual do total geral | 2021 | 117897 | Total | 100.00
-Pessoal ocupado assalariado | 2021 | 117897 | Total | 41449
-Pessoal ocupado assalariado - percentual do total geral | 2021 | 117897 | Total | 100.00
-Salários e outras remunerações | 2021 | 117897 | Total | 1308618
-Salários e outras remunerações - percentual do total geral | 2021 | 117897 | Total | 100.00
-== pib 5938 Sinop (0s)
-Produto Interno Bruto a preços correntes | 2020 | None | None | 8076306
-Produto Interno Bruto a preços correntes | 2021 | None | None | 9623193
-Produto Interno Bruto a preços correntes | 2022 | None | None | 11650411
-Produto Interno Bruto a preços correntes | 2023 | None | None | 11736047
-Valor adicionado bruto a preços correntes total | 2020 | None | None | 6934440
-Valor adicionado bruto a preços correntes total | 2021 | None | None | 8280191
-Valor adicionado bruto a preços correntes total | 2022 | None | None | ...
-Valor adicionado bruto a preços correntes total | 2023 | None | None | ...
-Valor adicionado bruto a preços correntes da agropecuária | 2020 | None | None | 573319
-Valor adicionado bruto a preços correntes da agropecuária | 2021 | None | None | 998734
-Valor adicionado bruto a preços correntes da agropecuária | 2022 | None | None | ...
-Valor adicionado bruto a preços correntes da agropecuária | 2023 | None | None | ...
-Valor adicionado bruto a preços correntes da indústria | 2020 | None | None | 1365862
-Valor adicionado bruto a preços correntes da indústria | 2021 | None | None | 1687806
-Valor adicionado bruto a preços correntes da indústria | 2022 | None | None | ...
-Valor adicionado bruto a preços correntes da indústria | 2023 | None | None | ...
-Valor adicionado bruto a preços correntes dos serviços, exclusive administração, defesa, educação e saúde públicas e seguridade social | 2020 | None | None | 4006975
-Valor adicionado bruto a preços correntes dos serviços, exclusive administração, defesa, educação e saúde públicas e seguridade social | 2021 | None | None | 4579648
-Valor adicionado bruto a preços correntes dos serviços, exclusive administração, defesa, educação e saúde públicas e seguridade social | 2022 | None | None | ...
-Valor adicionado bruto a preços correntes dos serviços, exclusive administração, defesa, educação e saúde públicas e seguridade social | 2023 | None | None | ...
-Valor adicionado bruto a preços correntes da administração, defesa, educação e saúde públicas e seguridade social | 2020 | None | None | 988284
-Valor adicionado bruto a preços correntes da administração, defesa, educação e saúde públicas e seguridade social | 2021 | None | None | 1014002
-Valor adicionado bruto a preços correntes da administração, defesa, educação e saúde públicas e seguridade social | 2022 | None | None | ...
-Valor adicionado bruto a preços correntes da administração, defesa, educação e saúde públicas e seguridade social | 2023 | None | None | ...
-== dca 2017 transferências (0s)
-RO1.7.0.0.00.00.00 | 1.7.0.0.00.00.00 - Transferências Correntes | 210343052
-RO1.7.2.0.00.00.00 | 1.7.2.0.00.00.00 - Transferências Intergovernamentais | 208462658
-RO1.7.2.1.00.00.00 | 1.7.2.1.00.00.00 - Transferências da União | 70488708
-RO1.7.2.1.01.00.00 | 1.7.2.1.01.00.00 - Participação na Receita da União | 41325790
-RO1.7.2.1.01.02.00 | 1.7.2.1.01.02.00 - Cota-Parte do Fundo de Participação dos Municípios ¿ FPM | 36406340
-RO1.7.2.1.01.03.00 | 1.7.2.1.01.03.00 - Cota-Parte do Fundo de Participação dos Municípios - 1%  | 1618098
-RO1.7.2.1.01.04.00 | 1.7.2.1.01.04.00 - Cota-Parte do Fundo de Participação dos Municípios - 1%  | 1669447
-RO1.7.2.1.01.05.00 | 1.7.2.1.01.05.00 - Cota-Parte do Imposto Sobre a Propriedade Territorial Ru | 1631905
-RO1.7.2.1.22.00.00 | 1.7.2.1.22.00.00 - Transferências da Compensação Financeira pela Exploração | 491975
-RO1.7.2.1.22.20.00 | 1.7.2.1.22.20.00 - Cota-Parte da Compensação Financeira de Recursos Minerai | 68580
-RO1.7.2.1.22.70.00 | 1.7.2.1.22.70.00 - Cota-Parte do Fundo Especial do Petróleo ¿ FEP | 423395
-RO1.7.2.1.33.00.00 | 1.7.2.1.33.00.00 - Transferências de Recursos do Sistema Único de Saúde - S | 18695648
-RO1.7.2.1.34.00.00 | 1.7.2.1.34.00.00 - Transferências de Recursos do Fundo Nacional de Assistên | 1231352
-RO1.7.2.1.35.00.00 | 1.7.2.1.35.00.00 - Transferências de Recursos do Fundo Nacional do Desenvol | 4840712
-RO1.7.2.1.36.00.00 | 1.7.2.1.36.00.00 - Transferências Financeiras do ICMS ¿ Desoneração ¿ L.C.  | 274719
-RO1.7.2.1.99.00.00 | 1.7.2.1.99.00.00 - Outras Transferências da União | 3628514
-RO1.7.2.2.00.00.00 | 1.7.2.2.00.00.00 - Transferências dos Estados | 89771095
-RO1.7.2.2.01.00.00 | 1.7.2.2.01.00.00 - Participação na Receita dos Estados | 88741094
-RO1.7.2.2.01.01.00 | 1.7.2.2.01.01.00 - Cota-Parte do ICMS | 65910272
-RO1.7.2.2.01.02.00 | 1.7.2.2.01.02.00 - Cota-Parte do IPVA | 19921297
-RO1.7.2.2.01.04.00 | 1.7.2.2.01.04.00 - Cota-Parte do IPI - Municípios | 462929
-RO1.7.2.2.01.13.00 | 1.7.2.2.01.13.00 - Cota-Parte da Contribuição de Intervenção no Domínio Eco | 450886
-RO1.7.2.2.01.99.00 | 1.7.2.2.01.99.00 - Outras Participações na Receita dos Estados | 1995710
-RO1.7.2.2.33.00.00 | 1.7.2.2.33.00.00 - Transferências de Recursos do Estado para Programas de S | 1030001
-RO1.7.2.4.00.00.00 | 1.7.2.4.00.00.00 - Transferências Multigovernamentais | 48202855
-RO1.7.2.4.01.00.00 | 1.7.2.4.01.00.00 - Transferências de Recursos do Fundo de Manutenção e Dese | 48202855
-RO1.7.6.0.00.00.00 | 1.7.6.0.00.00.00 - Transferências de Convênios | 1880393
-RO1.7.6.1.00.00.00 | 1.7.6.1.00.00.00 - Transferências de Convênios da União e de Suas Entidades | 333362
-RO1.7.6.1.99.00.00 | 1.7.6.1.99.00.00 - Outras Transferências de Convênios da União | 333362
-RO1.7.6.2.00.00.00 | 1.7.6.2.00.00.00 - Transferências de Convênios dos Estados e do Distrito Fe | 1547032
-RO1.7.6.2.02.00.00 | 1.7.6.2.02.00.00 - Transferências de Convênios dos Estados Destinadas a Pro | 1547032
-RO2.4.0.0.00.00.00 | 2.4.0.0.00.00.00 - Transferências de Capital | 7682700
-RO2.4.2.0.00.00.00 | 2.4.2.0.00.00.00 - Transferências Intergovernamentais | 1155673
-RO2.4.2.1.00.00.00 | 2.4.2.1.00.00.00 - Transferências da União | 1155673
-RO2.4.2.1.01.00.00 | 2.4.2.1.01.00.00 - Participação na Receita da União | 322400
-RO2.4.2.1.02.00.00 | 2.4.2.1.02.00.00 - Transferências de Recursos Destinados a Programas de Edu | 751863
-RO2.4.2.1.99.00.00 | 2.4.2.1.99.00.00 - Outras Transferências da União | 81410
-RO2.4.7.0.00.00.00 | 2.4.7.0.00.00.00 - Transferências de Convênios | 6527028
-RO2.4.7.1.00.00.00 | 2.4.7.1.00.00.00 - Transferências de Convênios da União e de suas Entidades | 6027028
-RO2.4.7.1.02.00.00 | 2.4.7.1.02.00.00 - Transferências de Convênios da União Destinadas a Progra | 642774
-RO2.4.7.1.05.00.00 | 2.4.7.1.05.00.00 - Transferências de Convênios da União Destinadas a Progra | 3527935
-RO2.4.7.1.99.00.00 | 2.4.7.1.99.00.00 - Outras Transferências de Convênios da União | 1856318
-RO2.4.7.2.00.00.00 | 2.4.7.2.00.00.00 - Transferências de Convênios dos Estados e do Distrito Fe | 500000
-RO2.4.7.2.05.00.00 | 2.4.7.2.05.00.00 - Transferências de Convênios dos Estados Destinadas a Pro | 500000
-== dca 2020 transferências (0s)
-RO1.7.0.0.00.0.0 | 1.7.0.0.00.0.0 - Transferências Correntes | 370572707
-RO1.7.1.0.00.0.0 | 1.7.1.0.00.0.0 - Transferências da União e de suas Entidades | 156083648
-RO1.7.1.8.00.0.0 | 1.7.1.8.00.0.0 Transferências da União - Específicas de Estados, DF e Munic | 156083648
-RO1.7.1.8.01.0.0 | 1.7.1.8.01.0.0 Participação na Receita da União | 63834689
-RO1.7.1.8.01.2.0 | 1.7.1.8.01.2.0 Cota-Parte do Fundo de Participação dos Municípios - Cota Me | 56334219
-RO1.7.1.8.01.3.0 | 1.7.1.8.01.3.0 Cota-Parte do Fundo de Participação do Municípios ¿ 1% Cota  | 2536046
-RO1.7.1.8.01.4.0 | 1.7.1.8.01.4.0 Cota-Parte do Fundo de Participação dos Municípios - 1% Cota | 2541453
-RO1.7.1.8.01.5.0 | 1.7.1.8.01.5.0 Cota-Parte do Imposto Sobre a Propriedade Territorial Rural | 2422970
-RO1.7.1.8.02.0.0 | 1.7.1.8.02.0.0 Transferência da Compensação Financeira pela Exploração de R | 4104792
-RO1.7.1.8.02.1.0 | 1.7.1.8.02.1.0 Cota-parte da Compensação Financeira de Recursos Hídricos | 3132882
-RO1.7.1.8.02.2.0 | 1.7.1.8.02.2.0 Cota-parte da Compensação Financeira de Recursos Minerais -  | 66134
-RO1.7.1.8.02.6.0 | 1.7.1.8.02.6.0 Cota-Parte do Fundo Especial do Petróleo ¿ FEP | 905775
-RO1.7.1.8.03.0.0 | 1.7.1.8.03.0.0 Transferência de Recursos do Sistema Único de Saúde ¿ 
- SUS  | 33729301
-RO1.7.1.8.03.1.0 | 1.7.1.8.03.1.0 - Transferência de Recursos do SUS ¿ Atenção Básica | 13000826
-RO1.7.1.8.03.2.0 | 1.7.1.8.03.2.0 - Transferência de Recursos do SUS ¿ Atenção de Média e Alta | 8331581
-RO1.7.1.8.03.3.0 | 1.7.1.8.03.3.0 - Transferência de Recursos do SUS ¿ Vigilância em Saúde | 1813050
-RO1.7.1.8.03.4.0 | 1.7.1.8.03.4.0 - Transferência de Recursos do SUS ¿ Assistência Farmacêutic | 873676
-RO1.7.1.8.03.5.0 | 1.7.1.8.03.5.0 - Transferência de Recursos do SUS ¿ Gestão do SUS | 124000
-RO1.7.1.8.03.9.0 | 1.7.1.8.03.9.0 - Transferência de Recursos do SUS ¿ Outros Programas Financ | 9586168
-RO1.7.1.8.04.0.0 | 1.7.1.8.04.0.0 Transferências de Recursos do Sistema Único de Saúde ¿ SUS - | 231023
-RO1.7.1.8.04.1.0 | 1.7.1.8.04.1.0 - Transferências de Recursos do Sistema Único de Saúde ¿ SUS | 17740
-RO1.7.1.8.04.6.0 | 1.7.1.8.04.6.0 - Outras Transferências de Recursos do Sistema Único de Saúd | 213283
-RO1.7.1.8.05.0.0 | 1.7.1.8.05.0.0 Transferências de Recursos do Fundo Nacional do Desenvolvime | 6794249
-RO1.7.1.8.05.1.0 | 1.7.1.8.05.1.0 Transferências do Salário-Educação | 4426742
-RO1.7.1.8.05.3.0 | 1.7.1.8.05.3.0 Transferências Diretas do FNDE referentes ao Programa Nacion | 2194601
-RO1.7.1.8.05.4.0 | 1.7.1.8.05.4.0 Transferências Diretas do FNDE referentes ao Programa Nacion | 162674
-RO1.7.1.8.05.9.0 | 1.7.1.8.05.9.0 Outras Transferências Diretas do Fundo Nacional do Desenvolv | 10231
-RO1.7.1.8.12.0.0 | 1.7.1.8.12.0.0 - Transferências de Recursos do Fundo Nacional de Assistênci | 2399812
-RO1.7.1.8.99.0.0 | 1.7.1.8.99.0.0 Outras Transferências da União | 44989783
-RO1.7.2.0.00.0.0 | 1.7.2.0.00.0.0 - Transferências dos Estados e do Distrito Federal e de suas | 134057794
-RO1.7.2.8.00.0.0 | 1.7.2.8.00.0.0 Transferências dos Estados - Específicas de Estados, DF e Mu | 134057794
-RO1.7.2.8.01.0.0 | 1.7.2.8.01.0.0 Participação na Receita dos Estados | 128561237
-RO1.7.2.8.01.1.0 | 1.7.2.8.01.1.0 Cota-Parte do ICMS | 100887134
-RO1.7.2.8.01.2.0 | 1.7.2.8.01.2.0 Cota-Parte do IPVA | 25319000
-RO1.7.2.8.01.3.0 | 1.7.2.8.01.3.0 Cota-Parte do IPI - Municípios | 449682
-RO1.7.2.8.01.4.0 | 1.7.2.8.01.4.0 Cota-Parte da Contribuição de Intervenção no Domínio Econômi | 214894
-RO1.7.2.8.01.5.0 | 1.7.2.8.01.5.0 Outras Participações na Receita dos Estados | 1690527
-RO1.7.2.8.03.0.0 | 1.7.2.8.03.0.0 Transferência de Recursos do Estado para Programas de Saúde  | 3274696
-RO1.7.2.8.07.0.0 | 1.7.2.8.07.0.0 Transferências de Estados destinadas à Assistência Social | 591538
-RO1.7.2.8.10.0.0 | 1.7.2.8.10.0.0 Transferência de Convênios dos Estados e do Distrito Federal | 12287
-RO1.7.2.8.10.9.0 | 1.7.2.8.10.9.0 Outras Transferências de Convênio dos Estados | 12287
-RO1.7.2.8.99.0.0 | 1.7.2.8.99.0.0 Outras Transferências dos Estados | 1618036
-RO1.7.5.0.00.0.0 | 1.7.5.0.00.0.0 - Transferências de Outras Instituições Públicas | 80431266
-RO1.7.5.8.00.0.0 | 1.7.5.8.00.0.0 Transferências de Outras Instituições Públicas - Específicas | 80431266
-RO1.7.5.8.01.0.0 | 1.7.5.8.01.0.0 Transferências de Recursos do Fundo de Manutenção e Desenvol | 80431266
-RO2.4.0.0.00.0.0 | 2.4.0.0.00.0.0 - Transferências de Capital | 8111042
-RO2.4.1.0.00.0.0 | 2.4.1.0.00.0.0 - Transferências da União e de suas Entidades | 7502329
-RO2.4.1.8.00.0.0 | 2.4.1.8.00.0.0 Transferências da União - Específicas de Estados, DF e Munic | 7502329
-RO2.4.1.8.10.0.0 | 2.4.1.8.10.0.0 Transferência de Convênios da União e de suas Entidades | 7502329
-RO2.4.1.8.10.7.0 | 2.4.1.8.10.7.0 - Transferências de Convênios da União destinadas a Programa | 7252329
-RO2.4.1.8.10.9.0 | 2.4.1.8.10.9.0 - Outras Transferências de Convênios da União | 250000
-RO2.4.2.0.00.0.0 | 2.4.2.0.00.0.0 - Transferências dos Estados e do Distrito Federal e de suas | 608713
-RO2.4.2.8.00.0.0 | 2.4.2.8.00.0.0 Transferências dos Estados, Distrito Federal, e de suas Enti | 608713
-RO2.4.2.8.10.0.0 | 2.4.2.8.10.0.0 Transferências de Convênios dos Estados e do Distrito Federa | 608713
-RO2.4.2.8.10.7.0 | 2.4.2.8.10.7.0 - Transferências de Convênios dos Estados destinadas a Progr | 600000
-RO2.4.2.8.10.9.0 | 2.4.2.8.10.9.0 - Outras Transferências de Convênio dos Estados | 8713
-== dca 2023 transferências (0s)
-RO1.7.0.0.00.0.0 | 1.7.0.0.00.0.0 - Transferências Correntes | 571883910
-RO1.7.1.0.00.0.0 | 1.7.1.0.00.0.0 - Transferências da União e de suas Entidades | 179501065
-RO1.7.1.1.00.0.0 | 1.7.1.1.00.0.0 - Transferências Decorrentes de Participação na Receita da U | 114166067
-RO1.7.1.1.51.0.0 | 1.7.1.1.51.0.0 -Cota-Parte do Fundo de Participação dos Municípios - FPM | 110396628
-RO1.7.1.1.51.1.0 | 1.7.1.1.51.1.0 - Cota-Parte do Fundo de Participação dos Municípios - Cota  | 102703898
-RO1.7.1.1.51.2.0 | 1.7.1.1.51.2.0 - Cota-Parte do Fundo de Participação dos Municípios - Cotas | 7692730
-RO1.7.1.1.52.0.0 | 1.7.1.1.52.0.0 - Cota-Parte do Imposto Sobre a Propriedade Territorial Rura | 3769439
-RO1.7.1.2.00.0.0 | 1.7.1.2.00.0.0 -Transferências das Compensações Financeiras pela Exploração | 7013134
-RO1.7.1.2.50.0.0 | 1.7.1.2.50.0.0 - Cota-parte da Compensação Financeira pela Exploração de Re | 4666506
-RO1.7.1.2.51.0.0 | 1.7.1.2.51.0.0 -Cota-parte da Compensação Financeira pela Exploração de Rec | 203175
-RO1.7.1.2.52.0.0 | 1.7.1.2.52.0.0 - Cota-parte da Compensação Financeira pela Produção de Petr | 2143453
-RO1.7.1.2.52.4.0 | 1.7.1.2.52.4.0 - Cota-Parte do Fundo Especial do Petróleo ¿ FEP | 2143453
-RO1.7.1.3.00.0.0 | 1.7.1.3.00.0.0 -Transferências de Recursos do Sistema Único de Saúde ¿ SUS  | 32372979
-RO1.7.1.3.50.0.0 | 1.7.1.3.50.0.0 - Transferências de Recursos do Sistema Único de Saúde ¿ SUS | 32372979
-RO1.7.1.3.50.1.0 | 1.7.1.3.50.1.0 - Transferências de Recursos do Bloco de Manutenção das Açõe | 19701206
-RO1.7.1.3.50.2.0 | 1.7.1.3.50.2.0 - Transferências de Recursos do Bloco de Manutenção das Açõe | 8584223
-RO1.7.1.3.50.3.0 | 1.7.1.3.50.3.0 - Transferências de Recursos do Bloco de Manutenção das Açõe | 3208873
-RO1.7.1.3.50.4.0 | 1.7.1.3.50.4.0 -Transferências de Recursos do Bloco de Manutenção das Ações | 855676
-RO1.7.1.3.50.5.0 | 1.7.1.3.50.5.0 - Transferências de Recursos do Bloco de Manutenção das Açõe | 23000
-RO1.7.1.4.00.0.0 | 1.7.1.4.00.0.0 -Transferências de Recursos do Fundo Nacional do Desenvolvim | 11389645
-RO1.7.1.4.50.0.0 | 1.7.1.4.50.0.0 - Transferências do Salário-Educação | 6177470
-RO1.7.1.4.52.0.0 | 1.7.1.4.52.0.0 - Transferências referentes ao Programa Nacional de Alimenta | 2762331
-RO1.7.1.4.53.0.0 | 1.7.1.4.53.0.0 - Transferências referentes ao Programa Nacional de Apoio ao | 229883
-RO1.7.1.4.99.0.0 | 1.7.1.4.99.0.0 - Outras Transferências Diretas do Fundo Nacional do Desenvo | 2219962
-RO1.7.1.5.00.0.0 | 1.7.1.5.00.0.0 - Transferências de Recursos de Complementação da União ao F | 2069356
-RO1.7.1.6.00.0.0 | 1.7.1.6.00.0.0 - Transferências de Recursos do Fundo Nacional de Assistênci | 1831889
-RO1.7.1.9.00.0.0 | 1.7.1.9.00.0.0 - Outras Transferências de Recursos da União e de suas Entid | 10657995
-RO1.7.1.9.60.0.0 | 1.7.1.9.60.0.0 - Transferências da Política Nacional Aldir Blanc de Fomento | 1335442
-RO1.7.1.9.99.0.0 | 1.7.1.9.99.0.0 - Outras Transferências de Recursos da União e de suas Entid | 9322554
-RO1.7.2.0.00.0.0 | 1.7.2.0.00.0.0 - Transferências dos Estados e do Distrito Federal e de suas | 253193097
-RO1.7.2.1.00.0.0 | 1.7.2.1.00.0.0 - Participação na Receita dos Estados e Distrito Federal | 234079443
-RO1.7.2.1.50.0.0 | 1.7.2.1.50.0.0 - Cota-Parte do ICMS | 178621143
-RO1.7.2.1.51.0.0 | 1.7.2.1.51.0.0 - Cota-Parte do IPVA | 54500606
-RO1.7.2.1.52.0.0 | 1.7.2.1.52.0.0 - Cota-Parte do IPI - Municípios | 907170
-RO1.7.2.1.53.0.0 | 1.7.2.1.53.0.0 - Cota-Parte da Contribuição de Intervenção no Domínio Econô | 50523
-RO1.7.2.3.00.0.0 | 1.7.2.3.00.0.0 - Transferências de Recursos do Sistema Único de Saúde ¿ SUS | 3642876
-RO1.7.2.4.00.0.0 | 1.7.2.4.00.0.0 - Transferências de Convênios dos Estados e DF e de Suas Ent | 617576
-RO1.7.2.4.99.0.0 | 1.7.2.4.99.0.0 - Outras Transferências de Convênios dos Estados e DF e de S | 617576
-RO1.7.2.9.00.0.0 | 1.7.2.9.00.0.0 - Outras Transferências dos Estados e Distrito Federal | 14853202
-RO1.7.2.9.51.0.0 | 1.7.2.9.51.0.0 - Transferências de Estados destinadas à Assistência Social | 935745
-RO1.7.2.9.52.0.0 | 1.7.2.9.52.0.0 - Transferências de Recursos Destinados a Programas de Educa | 4828446
-RO1.7.2.9.53.0.0 | 1.7.2.9.53.0.0 - Cota-Parte da Transferência da Compensação Financeira das  | 6428244
-RO1.7.2.9.99.0.0 | 1.7.2.9.99.0.0 - Outras Transferências dos Estados e DF | 2660768
-RO1.7.4.0.00.0.0 | 1.7.4.0.00.0.0 - Transferências de Instituições Privadas | 1531635
-RO1.7.4.1.00.0.0 | 1.7.4.1.00.0.0 - Transferências de Instituições Privadas | 1531635
-RO1.7.4.1.99.0.0 | 1.7.4.1.99.0.0 - Outras Transferências de Instituições Privadas | 1531635
-RO1.7.5.0.00.0.0 | 1.7.5.0.00.0.0 - Transferências de Outras Instituições Públicas | 137598114
-RO1.7.5.1.00.0.0 | 1.7.5.1.00.0.0 - Transferências de Recursos do Fundo de Manutenção e Desenv | 137598114
-RO1.7.9.0.00.0.0 | 1.7.9.0.00.0.0 - Demais Transferências Correntes | 60000
-RO1.7.9.1.00.0.0 | 1.7.9.1.00.0.0 - Transferências de Pessoas Físicas | 60000
-RO1.7.9.1.99.0.0 | 1.7.9.1.99.0.0 - Outras Transferências de Pessoas Físicas | 60000
-RO2.4.0.0.00.0.0 | 2.4.0.0.00.0.0 - Transferências de Capital | 28497043
-RO2.4.1.0.00.0.0 | 2.4.1.0.00.0.0 - Transferências da União e de suas Entidades | 10768373
-RO2.4.1.1.00.0.0 | 2.4.1.1.00.0.0 - Transferências de Recursos do Sistema Único de Saúde - SUS | 500000
-RO2.4.1.1.50.0.0 | 2.4.1.1.50.0.0 - Transferências de Recursos do Sistema Único de Saúde ¿ SUS | 500000
-RO2.4.1.1.50.1.0 | 2.4.1.1.50.1.0 - Transferências de Recursos do Bloco de Manutenção das Açõe | 500000
-RO2.4.1.2.00.0.0 | 2.4.1.2.00.0.0 - Transferências de Recursos do Fundo Nacional do Desenvolvi | 292470
-RO2.4.1.2.50.0.0 | 2.4.1.2.50.0.0 - Transferências de Recursos Destinados a Programas de Educa | 292470
-RO2.4.1.2.50.2.0 | 2.4.1.2.50.2.0 - Transferências para o Programa Nacional de Reestruturação  | 292470
-RO2.4.1.4.00.0.0 | 2.4.1.4.00.0.0 - Transferências de Convênios da União e de suas Entidades  | 9735902
-RO2.4.1.4.53.0.0 | 2.4.1.4.53.0.0 - Transferências de Convênios da União destinadas a Programa | 5545960
-RO2.4.1.4.54.0.0 | 2.4.1.4.54.0.0 - Transferências de Convênios da União destinadas a Programa | 4189942
-RO2.4.1.9.00.0.0 | 2.4.1.9.00.0.0 - Outras Transferências de Recursos da União e de suas Entid | 240000
-RO2.4.1.9.51.0.0 | 2.4.1.9.51.0.0 - Transferência Especial da União | 240000
-RO2.4.2.0.00.0.0 | 2.4.2.0.00.0.0 - Transferências dos Estados e do Distrito Federal e de suas | 17728671
-RO2.4.2.2.00.0.0 | 2.4.2.2.00.0.0 - Transferências de Convênios dos Estados e DF e de Suas Ent | 17728671
-RO2.4.2.2.54.0.0 | 2.4.2.2.54.0.0 - Transferências de Convênios dos Estados destinadas a Progr | 13975113
-RO2.4.2.2.99.0.0 | 2.4.2.2.99.0.0 - Outras Transferências de Convênios dos Estados e DF e de S | 3753558
-== rreo 2023 RREO-Anexo 12 (0s)
-0 linhas
-
-== rreo 2023 RREO-Anexo 08 (0s)
-0 linhas
-
-== cnpj https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj/ (0s)
-(404, ['/index.php/apps/side_menu/css/stylesheet?v=0', '/index.php/apps/theming/theme/default.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/light.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/light-highcontrast.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark-highcontrast.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/light.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/light-highcontrast.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark-highcontrast.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/opendyslexic.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming_customcss/styles?v=1770896115422', 'https://www.enable-javascript.com/', '/index.php', 'https://arquivos.receitafederal.gov.br/'])
-== cnpj https://dadosabertos.rfb.gov.br/CNPJ/ ERRO ConnectTimeout: HTTPSConnectionPool(host='dadosabertos.rfb.gov.br', port=443): Max retries exceeded with url: /CNPJ/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='dadosabertos.rfb.gov.br', port=443) at 0x7f4db8910f20>, 'Connection to dadosabertos.rfb.gov.br timed out. (connect timeout=60)'))
-== pni pni/cnv/cpnimt.def (0s)
-(200, [], [], [])
-== pni pni/cnv/cpniuf.def ERRO ReadTimeout: HTTPConnectionPool(host='tabnet.datasus.gov.br', port=80): Read timed out. (read timeout=60)
-== pni pni/cnv/dpnimt.def (0s)
-(200, [], [], [])
-== tesouro ckan ERRO KeyError: 'result'
-== pdet ftp (0s)
-['/pdet/microdados/CAGED', '/pdet/microdados/CAGED_AJUSTES', '/pdet/microdados/COMUNICADO_microdados.pdf', '/pdet/microdados/NOTA_TECNICA_microdados.pdf', '/pdet/microdados/NOVO CAGED', '/pdet/microdados/RAIS', '/pdet/microdados/TRABALHO_DOMESTICO']
-== fnde ckan (0s)
-<!DOCTYPE html><html><head><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-KCSRLH2P');</script><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-PWDNGXV9');</script><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="/"><link rel="shortcut icon" href="img/favicon-32x32.png" type="image/x-icon"><meta name="format-detection" content="telephone=no"><title>Portal de Dados Abertos</title><link href="/static/css/chunk-0a22edd2.a7a99686.css" rel="prefetch"><link href="/static/css/chunk-0c44c0a4.d7456cf8.css" rel="prefetch"><link href="/static/css/chunk-0d8b2d42.ecd6b5e7.css" rel="prefetch"><link href="/static/css/chunk-1281cb9e.f1d3eec1.css" rel="prefetch"><link href="/static/css/chunk-13d0055b.5578bbdc.css" rel="prefetch"><link hr
-== siops (0s)
-200
+== pni deftohtm pni/cnv/cpniuf.def (0s)
+(200, 317, '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">\r\n\r\n<html lang="pt-BR">\r\n<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">\r\n<head><h1>ERRO:</h1></head>\r\n<html><body>\r\n<h3>Arquivo DEF não encontrado: pni/cnv/cpniuf.def</h3>\r\n</body></html>\r\n')
+== pni deftohtm pni/cnv/cpnimt.def (0s)
+(200, 317, '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">\r\n\r\n<html lang="pt-BR">\r\n<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">\r\n<head><h1>ERRO:</h1></head>\r\n<html><body>\r\n<h3>Arquivo DEF não encontrado: pni/cnv/cpnimt.def</h3>\r\n</body></html>\r\n')
+== pni deftohtm pni/cnv/cpnimun.def (0s)
+(200, 318, '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">\r\n\r\n<html lang="pt-BR">\r\n<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">\r\n<head><h1>ERRO:</h1></head>\r\n<html><body>\r\n<h3>Arquivo DEF não encontrado: pni/cnv/cpnimun.def</h3>\r\n</body></html>\r\n')
+== pni dhdat (4s)
+(200, '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">\r\n<html lang=\'pt-BR\'>\r\n<META HTTP-EQUIV=\'Content-Type\' CONTENT=\'text/html; charset=iso-8859-1\'>\r\n<title>  Imunizações - Cobertura - Brasil </title>\r\n\r\n<script language="Javascript">\r\n<!--\r\nfunction OnButton1()\r\n{\r\n    document.Form1.action = "webtabx.exe?bd_pni/cpnibr.def"\r\n    document.Form1.target = "_blank";    // Open in a new window\r\n    document.Form1.method = "post"\r\n    document.Form1.submit();             // Submit the page\r\n    return true;\r\n}\r\nfunction OnButton2()\r\n{\r\n    document.Form1.action = "geralinkdatasus.exe?bd_pni/cpnibr.def"\r\n    document.Form1.target = "_blank";    // Open in a new window\r\n    document.Form1.method = "get"\r\n    document.Form1.submit();             // Submit the page\r\n    return true;\r\n}\r\n-->\r\n</script>\r\n<noscript>You need Javascript enabled for this to work</noscript>\r\n\r\n<body><center>\r\n<LINK REL="stylesheet" HREF="CITO/tabnet2.min.css" TYPE="text/css">\r\n<script type="text/javascript" src="/tabnet/tabalfa.js"></script>\r\n</center>\r\n\r\n<link rel="stylesheet" href="CITO/tabnet2.min.css" type="text/css">\r\n\r\n        <div name="governo" class="todalargura">\r\n\r\n                    <div class="Escondido" style="background-color: #ffcc00;">\r\n\r\n                       <div>\r\n\r\n                           <a href="http://www.saude.gov.br" target="_blank">\r\n\r\n                               <img alt="Ministério da Saúde" src="http://www.datasus.gov.br/g')
+== sipni web ERRO ConnectTimeout: HTTPConnectionPool(host='sipni.datasus.gov.br', port=80): Max retries exceeded with url: /si-pni-web/faces/relatorio/consolidado/coberturaVacinal.jsf (Caused by ConnectTimeoutError(<HTTPConnection(host='sipni.datasus.gov.br', port=80) at 0x7ff3b66cfa40>, 'Connection to sipni.datasus.gov.br timed out
+== opendatasus pni ERRO ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+== cnpj https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj/ (59s)
+(404, 'https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj/', ['/index.php/apps/theming/favicon?v=a30b40ce', '/index.php/apps/theming/icon?v=a30b40ce', '/core/img/favicon-mask.svg', '/index.php/apps/theming/manifest?v=a30b40ce', '/core/css/server.css?v=3cc9e3f2-27', '/apps/theming/css/default.css?v=18d79733-27', '/core/css/guest.css?v=3cc9e3f2-27', '/index.php/apps/side_menu/css/stylesheet?v=0', '/index.php/apps/theming/theme/default.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/light.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/light-highcontrast.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark-highcontrast.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/light.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/light-highcontrast.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark-highcontrast.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/opendyslexic.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming_customcss/styles?v=1770896115422', 'https://www.enable-javascript.com/', '/index.php', 'https://arquivos.receitafederal.gov.br/'])
+== cnpj https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj/2026-09/ (17s)
+(404, 'https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj/2026-09/', ['/index.php/apps/theming/favicon?v=a30b40ce', '/index.php/apps/theming/icon?v=a30b40ce', '/core/img/favicon-mask.svg', '/index.php/apps/theming/manifest?v=a30b40ce', '/core/css/server.css?v=3cc9e3f2-27', '/apps/theming/css/default.css?v=18d79733-27', '/core/css/guest.css?v=3cc9e3f2-27', '/index.php/apps/side_menu/css/stylesheet?v=0', '/index.php/apps/theming/theme/default.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/light.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/light-highcontrast.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark-highcontrast.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/light.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/light-highcontrast.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark-highcontrast.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/opendyslexic.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming_customcss/styles?v=1770896115422', 'https://www.enable-javascript.com/', '/index.php', 'https://arquivos.receitafederal.gov.br/'])
+== cnpj https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9 (2s)
+(200, 'https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9', ['/index.php/apps/theming/favicon/files?v=a30b40ce', '/index.php/apps/theming/icon/files?v=a30b40ce', '/index.php/apps/theming/icon/files?v=a30b40ce', '/core/img/favicon-mask.svg', '/index.php/apps/theming/manifest/files?v=a30b40ce', '/core/css/server.css?v=3cc9e3f2-27', '/apps/viewer/css/viewer-init.css?v=3e724b3f-27', '/apps/viewer/css/viewer-main.css?v=3e724b3f-27', '/apps/theming/css/default.css?v=18d79733-27', '/index.php/apps/side_menu/css/stylesheet?v=0', '/index.php/apps/theming/theme/default.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/light.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/light-highcontrast.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark-highcontrast.css?plain=1&amp;v=a30b40ce', '/index.php/apps/theming/theme/light.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/light-highcontrast.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/dark-highcontrast.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming/theme/opendyslexic.css?plain=0&amp;v=a30b40ce', '/index.php/apps/theming_customcss/styles?v=1770896115422', 'https://www.enable-javascript.com/', '#content', 'https://arquivos.receitafederal.gov.br/'])
+== cnpj https://dados-abertos-rf-cnpj.casadosdados.com.br/ (0s)
+(200, 'https://dados-abertos-rf-cnpj.casadosdados.com.br/', ['/arquivos', 'mailto:contato@casadosdados.com.br', 'https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9', 'https://dados.gov.br/dados/conjuntos-dados/cadastro-nacional-da-pessoa-juridica---cnpj', 'https://www.gov.br/receitafederal/dados/cnpj-metadados.pdf', '/arquivos'])
+== rais (3s)
+04-24-26  02:29PM       <DIR>          1989
+04-24-26  02:32PM       <DIR>          1990
+04-24-26  02:34PM       <DIR>          1991
+04-24-26  02:35PM       <DIR>          1992
+04-24-26  02:38PM       <DIR>          1993
+04-24-26  02:40PM       <DIR>          1994
+04-24-26  02:43PM       <DIR>          1995
+04-24-26  02:45PM       <DIR>          1996
+04-24-26  02:47PM       <DIR>          1997
+04-24-26  02:49PM       <DIR>          1998
+04-24-26  02:51PM       <DIR>          1999
+04-24-26  04:09PM       <DIR>          2000
+04-24-26  03:01PM       <DIR>          2001
+04-24-26  04:27PM       <DIR>          2002
+04-24-26  03:11PM       <DIR>          2003
+04-24-26  03:15PM       <DIR>          2004
+04-24-26  04:18PM       <DIR>          2005
+04-24-26  04:20PM       <DIR>          2006
+04-24-26  03:38PM       <DIR>          2007
+04-24-26  03:40PM       <DIR>          2008
+04-24-26  03:42PM       <DIR>          2009
+04-24-26  03:44PM       <DIR>          2010
+08-08-25  09:56AM       <DIR>          2011
+04-17-26  03:01PM       <DIR>          2012
+04-24-26  03:45PM       <DIR>          2013
+08-08-25  09:57AM       <DIR>          2014
+08-08-25  09:57AM       <DIR>          2015
+08-08-25  09:57AM       <DIR>          2016
+04-24-26  03:48PM       <DIR>          2017
+02-12-26  11:40AM       <DIR>          2018
+04-24-26  04:13PM       <DIR>          2019
+04-24-26  04:07PM       <DIR>          2020
+11-19-25  03:36PM       <DIR>          2021
+08-12-25  11:46AM       <DIR>          2022
+05-18-26  05:35PM       <DIR>          2023
+08-12-25  11:30AM       <DIR>          2023 Parcial
+05-18-26  05:02PM       <DIR>          2024
+09-25-25  11:14AM       <DIR>          2024 Parcial
+05-13-26  12:00PM       <DIR>          2025
+08-08-25  10:00AM       <DIR>          Layouts
+== rais 2023 (2s)
+12-30-25  04:01PM               275623 Comunicado - Microdados RAIS 2024  Ministério do Trabalho e Emprego.htm
+12-30-25  03:39PM       <DIR>          Legado
+05-18-26  05:35PM            127348274 RAIS_ESTAB_PUB.7z
+05-18-26  05:38PM            329177897 RAIS_VINC_PUB_CENTRO_OESTE.7z
+05-18-26  05:16PM            715072048 RAIS_VINC_PUB_MG_ES_RJ.7z
+05-18-26  05:16PM                56135 RAIS_VINC_PUB_NI.7z
+05-18-26  05:20PM            567231199 RAIS_VINC_PUB_NORDESTE.7z
+05-18-26  05:22PM            186321412 RAIS_VINC_PUB_NORTE.7z
+05-18-26  05:30PM           1020986980 RAIS_VINC_PUB_SP.7z
+05-18-26  05:34PM            654290597 RAIS_VINC_PUB_SUL.7z
+== rais 2024 (2s)
+12-30-25  03:08PM               275623 Comunicado - Microdados RAIS 2024  Ministério do Trabalho e Emprego.htm
+05-18-26  04:21PM            140661991 RAIS_ESTAB_PUB.7z
+05-18-26  04:40PM            343753235 RAIS_VINC_PUB_CENTRO_OESTE.7z
+05-18-26  04:55PM            747149815 RAIS_VINC_PUB_MG_ES_RJ.7z
+05-18-26  04:55PM               597127 RAIS_VINC_PUB_NI.7z
+05-18-26  04:59PM            595420317 RAIS_VINC_PUB_NORDESTE.7z
+05-18-26  05:01PM            196258746 RAIS_VINC_PUB_NORTE.7z
+05-18-26  05:11PM           1066197453 RAIS_VINC_PUB_SP.7z
+05-18-26  04:13PM            680693192 RAIS_VINC_PUB_SUL.7z
+== novo caged (2s)
+08-08-25  09:52AM       <DIR>          2020
+08-08-25  09:52AM       <DIR>          2021
+08-12-25  11:01AM       <DIR>          2022
+08-12-25  10:56AM       <DIR>          2023
+08-12-25  10:54AM       <DIR>          2024
+01-29-26  02:31PM       <DIR>          2025
+09-29-26  02:42PM       <DIR>          2026
+06-05-20  05:49PM               345046 Comunicado - Grupamento de Atividades Econômicas.pdf
+08-31-22  11:59AM               293931 Layout Não-identificado Novo Caged Movimentação.xlsx
+08-08-25  09:53AM       <DIR>          Legado
+11-30-21  03:56PM                 1084 Leia-me.txt
+11-30-21  03:56PM                83781 Sobre o Novo Caged.pdf
+== novo caged 2025 (2s)
+06-16-26  02:14PM       <DIR>          202501
+06-16-26  02:15PM       <DIR>          202502
+06-16-26  02:17PM       <DIR>          202503
+06-16-26  02:19PM       <DIR>          202504
+06-16-26  02:19PM       <DIR>          202505
+06-16-26  02:22PM       <DIR>          202506
+06-16-26  02:24PM       <DIR>          202507
+06-16-26  02:25PM       <DIR>          202508
+06-16-26  02:27PM       <DIR>          202509
+11-27-25  02:27PM       <DIR>          202510
+06-16-26  02:48PM       <DIR>          202511
+06-16-26  02:50PM       <DIR>          202512
+== siops http://siops-asp.datasus.gov.br/CGI/deftohtm.exe?SIOPS/serhist/municipio/indicMun.def ERRO ConnectTimeout: HTTPConnectionPool(host='siops-asp.datasus.gov.br', port=80): Max retries exceeded with url: /CGI/deftohtm.exe?SIOPS/serhist/municipio/indicMun.def (Caused by ConnectTimeoutError(<HTTPConnection(host='siops-asp.datasus.gov.br', port=80) at 0x7ff3b6716600>, 'Connection to siops-asp.datasus.gov.br tim
+== siops http://siops.datasus.gov.br/rel_indicadores.php (1s)
+(404, '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> \n<html xmlns="http://www.w3.org/1999/xhtml"> \n<head> \n<title>IIS 8.5 Detailed Error - 404.0 - Not Found</title> \n<style type="text/css"> \n<!-- \nbody{margin:0;font-size:.7em;font-family:Verdana,Arial,Helvetica,sans-serif;} \ncode{margin:0;color:#006600;font-size:1.1em;font-weight:bold;} \n.config_source code{font-size:.8em;color:#000000;} \npre{margin:0;font-size:1.4em;word-wrap:break-word;} \nul,ol{margin:10px 0 10px 5px;} \nul.first,ol.first{margin-top:5px;} \nfieldset{padding:0 15px 10px 15px;word-break:break-all;} \n.summary-container fieldset{padding-bottom:5px;margin-top:4px;} \nlegend.no-expand-all{padding:2px 15px 4px 10px;margin:0 0 0 -12px;} \nlegend{color:#333333;;margin:4px 0 8px -12px;_margin-top:0px; \nfont-weight:bold;font-size:1em;} \na:link,a:visited{color:#007EFF;font-weight:bold;} \na:hover{text-decoration:none;} \nh1{font-size:2.4em;margin:0;color:#FFF;} \nh2{font-size:1.7em;margin:0;color:#CC0000;} \nh3{font-size:1.4em;margin:10px 0 0 0;color:#CC0000;} \nh4{font-size:1.2em;margin:10px 0 5px 0; \n}#header{width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:"trebuchet MS",Verdana,sans-serif; \n color:#FFF;background-color:#5C87B2; \n}#content{margin:0 0 0 2%;position:relative;} \n.summary-container,.content-container{background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;} \n.content-container p{margin:0 0 10px 0; \n}#details-left{width:35%;float:l')
+== msc (1s)
+(5000, True, [{'tipo_matriz': 'MSCC', 'cod_ibge': 5107909, 'classe_conta': 6, 'conta_contabil': '611100000', 'poder_orgao': '10131', 'ano_fonte_recursos': None, 'fonte_recursos': None, 'funcao': None, 'subfuncao': None, 'exercicio': 2023, 'mes_referencia': 12, 'educacao_saude': None, 'data_referencia': '2023-12-31T00:00:00Z', 'entrada_msc': 12414, 'natureza_despesa': None, 'ano_inscricao': None, 'natureza_receita': None, 'valor': 10988810.82, 'natureza_conta': 'C', 'tipo_valor': 'period_change', 'complemento_fonte': None}, {'tipo_matriz': 'MSCC', 'cod_ibge': 5107909, 'classe_conta': 6, 'conta_contabil': '611100000', 'poder_orgao': '10131', 'ano_fonte_recursos': None, 'fonte_recursos': None, 'funcao': None, 'subfuncao': None, 'exercicio': 2023, 'mes_referencia': 12, 'educacao_saude': None, 'data_referencia': '2023-12-31T00:00:00Z', 'entrada_msc': 12415, 'natureza_despesa': None, 'ano_inscricao': None, 'natureza_receita': None, 'valor': 13488810.82, 'natureza_conta': 'D', 'tipo_valor': 'period_change', 'complemento_fonte': None}, {'tipo_matriz': 'MSCC', 'cod_ibge': 5107909, 'classe_conta': 6, 'conta_contabil': '611200000', 'poder_orgao': '10131', 'ano_fonte_recursos': None, 'fonte_recursos': None, 'funcao': None, 'subfuncao': None, 'exercicio': 2023, 'mes_referencia': 12, 'educacao_saude': None, 'data_referencia': '2023-12-31T00:00:00Z', 'entrada_msc': 12416, 'natureza_despesa': None, 'ano_inscricao': None, 'natureza_receita': None, 'valor': 49518360.76, 'natureza_conta': 'C', 'tipo_valor': 'period_change', 'complemento_fonte': None}], [('622110000', '31', '10'), ('622110000', '31', '12'), ('622110000', '33', '10'), ('622110000', '33', '12'), ('622110000', '44', '10'), ('622110000', '44', '12'), ('622130100', '31', '10'), ('622130100', '31', '12'), ('622130100', '33', '10'), ('622130100', '33', '12'), ('622130100', '44', '10'), ('622130100', '44', '12'), ('622130200', '33', '10'), ('622130300', '31', '10'), ('622130300', '31', '12'), ('622130300', '33', '10'), ('622130300', '33', '12'), ('622130300', '44', '10'), ('622130300', '44', '12'), ('622130400', '31', '10'), ('622130400', '31', '12'), ('622130400', '33', '10'), ('622130400', '33', '12'), ('622130400', '44', '10'), ('622130400', '44', '12')])
