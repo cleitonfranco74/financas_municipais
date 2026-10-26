@@ -31,7 +31,7 @@
   let D, M = [], ANOS = [], REF = null;
   const st = { aba: "geral", uf: "", modo: "4", met: "invpc", mun: null, x: "peso", y: "inv", h: 20, rddE: "2016+2020", rddY: "inv", rddC: "ideo", ord: "invpc", comp: [],
     fn: "10", polY: "invpc", polY2: "convEpc", amX: "expansao", amY: "desm", resX: "saude", resY: "tmi", mapa: "orient", cmet: "invpc", corr: "p", cxy: "6-3", cvar: "6",
-    regY: "6", regX: [0, 1, 2, 3], regUF: true, regZ: false, mapaModo: "v", regLang: "r" };
+    regY: "6", regX: [0, 1, 2, 3], regUF: true, regZ: false, mapaModo: "v", regLang: "r", vac: "0" };
 
   const nota = sg => { if (!sg) return null; const s = sg.trim().toUpperCase(); return D.escala[D.sinonimos[s] || s] ?? null; };
   const cat7 = sc => sc == null ? null : CATS.find(c => sc <= c[2])[0];
@@ -56,10 +56,12 @@
         area0: area(a0), area1: area(a1), anoAgro: a1,
         // valores do ano em reais de REF; rc segue D.rc_nomes; fn é a despesa por função
         f: Object.fromEntries(Object.entries(m.fin || {}).map(([a, v]) => {
-          const d = 1e3 * deflator(a), rc = m.rc?.[a], fn = m.fn?.[a];
+          const d = 1e3 * deflator(a), rc = m.rc?.[a], fn = m.fn?.[a], rp = m.tr?.[a];
           return [a, { rec: v[0] * d, tr: v[1] * d, trib: v[2] * d, desp: v[3] * d, inv: v[4] * d, pop: m.pop?.[a] || null,
             rc: rc ? rc.map(x => x * d) : null, conv: rc ? (rc[6] + rc[7] + rc[8]) * d : null, convE: rc ? rc[7] * d : null,
-            fn: fn ? Object.fromEntries(Object.entries(fn).map(([k, x]) => [k, x * d])) : null, lrf: m.lrf?.[a] || null }];
+            fn: fn ? Object.fromEntries(Object.entries(fn).map(([k, x]) => [k, x * d])) : null, lrf: m.lrf?.[a] || null,
+            // repasses vinculados (D.tr_nomes): FUNDEB, SUS da União e do estado, FNDE, educação estadual, assistência social
+            rp: rp ? rp.map(x => x * d) : null }];
         })) };
     });
   }
@@ -87,6 +89,13 @@
     educpc: { n: "Educação por habitante", f: brl, num: x => x.fn?.["12"], den: x => x.pop },
     desppc: { n: "Despesa por habitante", f: brl, num: x => x.desp, den: x => x.pop },
     convUpc: { n: "Transferências voluntárias da União por habitante", f: brl, num: x => x.rc ? x.rc[6] + x.rc[8] : null, den: x => x.pop },
+    fundebpc: { n: "FUNDEB por habitante", f: brl, num: x => x.rp?.[0], den: x => x.pop },
+    susUpc: { n: "SUS da União por habitante", f: brl, num: x => x.rp?.[1], den: x => x.pop },
+    susEpc: { n: "SUS do estado por habitante", f: brl, num: x => x.rp?.[2], den: x => x.pop },
+    fndepc: { n: "FNDE por habitante", f: brl, num: x => x.rp?.[3], den: x => x.pop },
+    educEstpc: { n: "Educação: repasses do estado por habitante", f: brl, num: x => x.rp?.[4], den: x => x.pop },
+    assistUpc: { n: "Assistência social da União por habitante", f: brl, num: x => x.rp?.[5], den: x => x.pop },
+    assistEpc: { n: "Assistência social do estado por habitante", f: brl, num: x => x.rp?.[6], den: x => x.pop },
   };
   Object.assign(MET, MET_EXTRA);
   const agrega = (ms, a, met) => {
@@ -291,6 +300,13 @@
           <div class="kpi"><span>Desmatamento PRODES</span><b>${desmAcum(m) == null ? "—" : `${nf(desmAcum(m), 1)} km²`}</b><small>acumulado ${Object.keys(m.desm || {})[0] || ""}–${Object.keys(m.desm || {}).pop() || ""}; ${nf(fogoMedio(m))} focos de queimadas por ano</small></div>
           <div class="kpi"><span>Mortalidade infantil</span><b>${nf(tmiMun(m), 1)}</b><small>por mil nascidos vivos, últimos 5 anos</small></div>
           <div class="kpi"><span>Censo 2022</span><b>${m.censo ? `${nf(m.censo[0], 0)}%` : "—"}</b><small>ligados à rede de esgoto; alfabetização ${m.censo ? `${nf(m.censo[1], 1)}%` : "—"}</small></div>
+        </div></section>
+      <section class="panel" style="margin-top:16px"><h2>Economia local e repasses</h2><div class="kpis" style="margin-top:10px">
+          <div class="kpi"><span>Estabelecimentos ativos</span><b>${m.cnpj ? nf(m.cnpj.ativos.reduce((s2, v) => s2 + v, 0)) : "—"}</b><small>${m.cnpj ? `${nf(ativosMil(m), 0)} por mil habitantes · ${nf(m.cnpj.abertos?.[String(anoHoje() - 1)] || 0)} abertos e ${nf(m.cnpj.fechados?.[String(anoHoje() - 1)] || 0)} fechados em ${anoHoje() - 1}` : "CNPJ ainda não coletado"}</small></div>
+          <div class="kpi"><span>Emprego formal ${raisUlt() || ""}</span><b>${nf(m.rais?.[raisUlt()]?.[1])}</b><small>${m.rais?.[raisUlt()] ? `${nf(empRais(m, raisUlt()), 0)} vínculos por mil habitantes (RAIS)` : "RAIS ainda não coletada"}</small></div>
+          <div class="kpi"><span>Indústria no valor adicionado</span><b>${pct(indVab21(m), 0)}</b><small>agro ${pct(m.peso, 0)} (PIB dos Municípios)</small></div>
+          <div class="kpi"><span>FUNDEB ${REF}</span><b>${brl(indiv(m, REF, "fundebpc"))}</b><small>por habitante; SUS da União ${brl(indiv(m, REF, "susUpc"))}, do estado ${brl(indiv(m, REF, "susEpc"))}</small></div>
+          <div class="kpi"><span>Vacinação (penta)</span><b>${vacMedia(m, 0) == null ? "—" : `${nf(vacMedia(m, 0), 0)}%`}</b><small>cobertura média 2019–2022 (meta 95%)</small></div>
         </div></section>
       <section class="panel" style="margin-top:16px"><h2>Prefeitos</h2><p class="sub">Partido do prefeito eleito, posição na escala de 0 (esquerda) a 10 (direita) e margem sobre o segundo colocado.</p>
         <div class="tbwrap"><table class="tb"><thead><tr><th>Mandato</th><th>Partido</th><th>Orientação</th><th>Escala</th><th>Margem</th></tr></thead><tbody>${prefeitos}</tbody></table></div></section>
@@ -514,6 +530,7 @@
     if (caixa != null) partes.push(clip(caixa / rcl / .1));
     return media(partes);
   }
+  const REPASSES = [["fundebpc", "#c8f250"], ["susUpc", "#60a5fa"], ["susEpc", "#93c5fd"], ["fndepc", "#f5b83d"], ["educEstpc", "#fb923c"], ["assistUpc", "#a78bfa"], ["assistEpc", "#f472b6"]];
   function fiscal(){
     const ms = sel();
     const aF = anoCom(ms, x => x.fn), aL = anoCom(ms, x => x.lrf && x.lrf[1] != null);
@@ -566,6 +583,9 @@
         <section class="panel"><h2>Pessoal / RCL ao longo do tempo</h2><p class="sub">Mediana por orientação do prefeito em exercício.</p>${linhas(pesG, { anos: ANOS, fmt: v => `${nf(v, 0)}%`, alto: 220 })}</section>
       </div>
       <section class="panel" style="margin-top:16px"><h2>Fontes de receita por habitante</h2><p class="sub">Receitas brutas do recorte, a preços de ${REF}. Transferências voluntárias: convênios e transferências especiais (as “emendas Pix”).</p>${fontes}</section>
+      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>Repasses vinculados por habitante</h2><p class="sub">Recursos da União e do estado que chegam carimbados para educação, saúde e assistência social (DCA, receitas brutas), a preços de ${REF}. O FUNDEB inclui a complementação da União.</p></div></div>
+        ${linhas(REPASSES.map(([k, c]) => ({ n: MET[k].n.replace(" por habitante", ""), c, v: Object.fromEntries(ANOS.map(a => [a, agrega(ms, a, k).v])) })), { anos: ANOS, fmt: brl, alto: 260 })}
+        <p class="nota">A classificação usa o nome de cada conta, porque os códigos da DCA mudaram em 2018 e em 2022. Repasses por convênio ficam de fora (estão em “Fontes de receita”).</p></section>
       <div class="grid" style="margin-top:16px">
         <section class="panel"><h2>Índice de saúde fiscal</h2><p class="sub">Média, de 0 a 1, de quatro notas: autonomia (receita própria em % da receita; 25% vale 1), folga com pessoal (40% da RCL ou menos vale 1; 60%, zero), investimento (15% da receita vale 1) e liquidez (caixa líquido de 10% da RCL vale 1).</p>
           ${linhas(isfG, { anos: ANOS, fmt: v => nf(v, 2), alto: 220 })}<p class="nota">Inspirado no Índice Firjan de Gestão Fiscal, com pesos e cortes próprios: não é o IFGF.</p></section>
@@ -580,7 +600,8 @@
   const PRESIDENTE = { 2016: "MDB", 2017: "MDB", 2018: "MDB", 2019: "PSL", 2022: "PL", 2023: "PT", 2024: "PT", 2025: "PT", 2026: "PT" };
   const alinhadoPres = (m, a) => { const e = m.ele?.[eleicaoDo(+a)], p = PRESIDENTE[a]; return e && p ? sigla(e[0]) === sigla(p) : null; };
   const POLY = { invpc: MET.invpc, desppc: MET.desppc, convpc: MET.convpc, tribpc: MET.tribpc };
-  const PAINELY = { convEpc: MET.convEpc, convUpc: MET.convUpc, invpc: MET.invpc, tribpc: MET.tribpc, saudepc: MET.saudepc, educpc: MET.educpc };
+  const PAINELY = { convEpc: MET.convEpc, convUpc: MET.convUpc, susEpc: MET.susEpc, educEstpc: MET.educEstpc, assistEpc: MET.assistEpc,
+    fundebpc: { ...MET.fundebpc, n: "FUNDEB por habitante (placebo: segue a fórmula das matrículas)" }, invpc: MET.invpc, tribpc: MET.tribpc, saudepc: MET.saudepc, educpc: MET.educpc };
   function politica(){
     const ms = sel(), Y = POLY[st.polY];
     const ciclo = [];
@@ -612,7 +633,9 @@
         <p class="nota">Como cada município é comparado com ele mesmo, diferenças de tamanho e de região saem da conta. ${nR < 30 ? "Há poucos prefeitos em segundo mandato com o dado de reeleição; a barra amarela é pouco precisa." : ""}</p></section>
       <div class="grid" style="margin-top:16px">
         <section class="panel"><h2>Convênios do estado por habitante</h2><p class="sub">Prefeito do mesmo partido do governador em exercício × outro partido. A preços de ${REF}. ${nAl} prefeituras alinhadas em ${REF}.</p>${linhas(serieAl(alinhado, "convEpc"), { anos: ANOS, fmt: brl, alto: 230 })}</section>
-        <section class="panel"><h2>Transferências voluntárias da União por habitante</h2><p class="sub">Prefeito do mesmo partido do presidente × outro partido (2020 e 2021 ficam de fora: presidente sem partido).</p>${linhas(serieAl(alinhadoPres, "convUpc"), { anos: ANOS, fmt: brl, alto: 230 })}</section>
+        <section class="panel"><h2>Transferências voluntárias da União por habitante</h2><p class="sub">Prefeito do mesmo partido do presidente × outro partido (2020 e 2021 ficam de fora: presidente sem partido).</p>${linhas(serieAl(alinhadoPres, "convUpc"), { anos: ANOS, fmt: brl, alto: 230 })}
+        <section class="panel"><h2>SUS do estado por habitante</h2><p class="sub">Repasses do fundo estadual de saúde: prefeito do partido do governador × outro partido. Parte desses repasses depende de decisão do governo estadual.</p>${linhas(serieAl(alinhado, "susEpc"), { anos: ANOS, fmt: brl, alto: 230 })}</section>
+        <section class="panel"><h2>FUNDEB por habitante (comparação de controle)</h2><p class="sub">O FUNDEB segue uma fórmula (matrículas e valor por aluno): o alinhamento político não deveria mudá-lo. Se as linhas se afastam, a diferença vem do perfil dos municípios, não de favorecimento.</p>${linhas(serieAl(alinhado, "fundebpc"), { anos: ANOS, fmt: brl, alto: 230 })}</section>
       </div>
       <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>Painel com efeitos fixos</h2><p class="sub">Regressão no painel município-ano: o resultado contra duas variáveis binárias. Erros-padrão agrupados por município entre parênteses.</p></div>
         <div class="ctl" style="padding:8px 12px">${selSt("polY2", "Resultado", PAINELY)}</div></div>
@@ -683,7 +706,22 @@
     tmi: { n: "Mortalidade infantil (por mil nascidos vivos, últimos 5 anos)", v: tmiMun, f: v => nf(v, 1) },
     esgoto: { n: "Domicílios ligados à rede de esgoto (Censo 2022, %)", v: m => m.censo?.[0], f: v => `${nf(v, 0)}%` },
     alfab: { n: "Taxa de alfabetização, 15 anos ou mais (Censo 2022, %)", v: m => m.censo?.[1], f: v => `${nf(v, 1)}%` },
+    vac: { n: "Cobertura vacinal da penta, média 2019–2022 (%)", v: m => vacMedia(m, 0), f: v => `${nf(v, 0)}%` },
   };
+  function vacinacao(ms){
+    const anosV = [...new Set(ms.flatMap(m => Object.keys(m.vac || {})))].sort();
+    if (!anosV.length) return "";
+    const [nome, i, metaV] = VACINAS.find(v => String(v[1]) === st.vac) || VACINAS[0];
+    // cobertura do grupo: média ponderada pelos nascidos vivos (o denominador do Ministério da Saúde)
+    const cob = (gs, a) => { let s = 0, q = 0; gs.forEach(m => { const v = m.vac?.[a]?.[i], nv = m.tmi?.[a]?.[1] || m.pop?.[a] / 70; if (v != null && nv){ s += v * nv; q += nv; } }); return q ? s / q : null; };
+    const serie = porGrupo(ms, anosV, cob);
+    serie.push({ n: "Todos os municípios", c: "#e4e4e7", dash: true, v: Object.fromEntries(anosV.map(a => [a, cob(ms, a)])) });
+    const uV = anosV[anosV.length - 1], comDado = ms.filter(m => m.vac?.[uV]?.[i] != null), naMeta = comDado.filter(m => m.vac[uV][i] >= metaV).length;
+    return `<section class="panel" style="margin-top:16px"><div class="hd"><div><h2>Cobertura vacinal: ${esc(nome)}</h2><p class="sub">Doses aplicadas em % da população-alvo (SI-PNI, DATASUS), por orientação do prefeito em exercício; média ponderada pelos nascidos vivos. Meta do Ministério da Saúde: ${metaV}%. Em ${uV}, <b>${naMeta}</b> de ${comDado.length} municípios atingiram a meta.</p></div>
+      ${segSt("vac", VACINAS.map(([n, k]) => [String(k), n]))}</div>
+      ${linhas(serie, { anos: anosV, fmt: v => `${nf(v, 0)}%`, alto: 240 })}
+      <p class="nota">Coberturas acima de 100% acontecem quando o município vacina crianças de fora ou quando a estimativa da população-alvo fica baixa. A série termina em ${uV}: a partir de 2023 o Ministério da Saúde passou a usar outro sistema (RNDS), sem download aberto por município.</p></section>`;
+  }
   function resultados(){
     const ms = sel(), anosT = anosTmi();
     const uT = anosT[anosT.length - 1];
@@ -705,6 +743,7 @@
       <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>Gasto público e resultados</h2><p class="sub">Cor: orientação do prefeito eleito em 2020. Tamanho: população. Clique num ponto para abrir o município.</p></div></div>
         <div class="ctl" style="margin-bottom:12px">${selSt("resX", "Eixo horizontal", RX)}${selSt("resY", "Eixo vertical", RY)}</div>
         ${typeof d === "string" ? d : `${d.svg}${legGrupos()}<p class="nota">Correlação de Pearson: <b>r = ${nf(d.r, 2)}</b> com ${d.n} municípios. Gasto maior pode ser resposta a problemas maiores (causalidade reversa), e municípios ricos gastam e têm melhores indicadores ao mesmo tempo (variável omitida).</p>`}</section>
+      ${vacinacao(ms)}
       <div class="explica" style="margin-top:16px"><h3>E o Ideb?</h3><p>O Inep não permite a coleta automática dos arquivos do Ideb a partir dos servidores usados na atualização desta página; o indicador de educação fica, por ora, na taxa de alfabetização do Censo 2022. A mortalidade infantil em municípios pequenos oscila muito de um ano para outro (poucos nascimentos); por isso a dispersão usa os últimos cinco anos juntos e só municípios com 100 nascimentos ou mais.</p></div>`;
   }
 
@@ -727,6 +766,11 @@
       peso: { n: "Peso da agropecuária no PIB", v: m => m.peso, f: v => pct(v, 0) },
       desm: { n: "Desmatamento PRODES acumulado (km²)", v: desmAcum, f: v => nf(v, 0) },
       tmi: RY.tmi, esgoto: RY.esgoto,
+      ativos: { n: "Estabelecimentos ativos por mil habitantes (CNPJ)", v: ativosMil, f: v => nf(v, 0) },
+      liquida: { n: "Abertura líquida de estabelecimentos por mil habitantes (média de 3 anos)", v: liquidaMedia, f: v => nf(v, 1) },
+      emprego: { n: "Emprego formal por mil habitantes (RAIS)", v: m => empRais(m, raisUlt()), f: v => nf(v, 0) },
+      vac: RY.vac, fundeb: { n: "FUNDEB por habitante (média 2021–2024)", v: m => periodo(m, ULT(), "fundebpc"), f: brl },
+      susE: { n: "SUS do estado por habitante (média 2021–2024)", v: m => periodo(m, ULT(), "susEpc"), f: brl },
     };
     const I = IND[st.mapa] || IND.orient;
     let x0 = 180, x1 = -180, y0 = 90, y1 = -90;
@@ -820,26 +864,102 @@
       <div class="tbwrap"><table class="tb"><thead><tr><th>Indicador</th>${cs.map(m => `<th>${esc(m.n)}</th>`).join("")}</tr></thead><tbody>${linhasC.map(([n, f]) => `<tr><td>${esc(n)}</td>${cs.map(m => `<td class="num">${f(m)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></section>`;
   }
   /* painel município-ano para o Excel (";" e vírgula decimal) ou para R, Stata e Python ("," e ponto) */
+  const SETORES_ID = ["agro", "industria", "construcao", "comercio", "servicos", "adm_publica"];
   function baixarCsv(sep){
     const ms = sel(), dec = v => v == null || v === "" ? "" : typeof v === "number" ? (sep === ";" ? String(v).replace(".", ",") : String(v)) : /[";,\n]/.test(v) ? `"${String(v).replace(/"/g, '""')}"` : v;
-    const anos = [...new Set(ms.flatMap(m => [...Object.keys(m.fin || {}), ...Object.keys(m.desm || {}), ...Object.keys(m.tmi || {})]))].filter(a => +a >= 2016).sort();
+    const anos = [...new Set(ms.flatMap(m => [...Object.keys(m.fin || {}), ...Object.keys(m.desm || {}), ...Object.keys(m.tmi || {}), ...Object.keys(m.rais || {}), ...Object.keys(m.cnpj?.abertos || {})]))].filter(a => +a >= 2016).sort();
     const rc = D.rc_nomes || [];
     const cab = ["codigo_ibge", "municipio", "uf", "ano", "populacao", "partido_prefeito", "escala_ideologica", "orientacao", "prefeito_2o_mandato", "partido_governador", "alinhado_governador",
       "receita_rs_mil", "transferencias_rs_mil", "receita_tributaria_rs_mil", "despesa_rs_mil", "investimento_rs_mil", ...rc.map(n => `rec_${n}_rs_mil`), "saude_rs_mil", "educacao_rs_mil",
       "rcl_rs_mil", "pessoal_pct_rcl", "dcl_pct_rcl", "restos_pagar_np_rs_mil", "caixa_liquido_rs_mil", "resultado_primario_rs_mil", "meta_primario_rs_mil", "saude_pct_impostos", "educacao_mde_pct_impostos",
-      "pib_rs_mil", "pib_agro_rs_mil", "emprego_total", "emprego_agro", "obitos_infantis", "nascidos_vivos", "desmatamento_km2", "focos_queimadas", "esgoto_rede_2022_pct", "alfabetizacao_2022_pct", "ipca_indice"];
+      "pib_rs_mil", "pib_agro_rs_mil", "vab_industria_rs_mil", "vab_servicos_rs_mil", "vab_adm_publica_rs_mil",
+      ...(D.tr_nomes || []).map(n => `repasse_${n}_rs_mil`), "cempre_empresas", "cempre_pessoal_ocupado", "cempre_assalariados", "cempre_salarios_rs_mil",
+      ...SETORES_ID.map(n => `rais_vinculos_${n}`), "rais_estabelecimentos", "rais_vinculos_total", "caged_admissoes", "caged_desligamentos", "caged_saldo",
+      "cnpj_abertos", "cnpj_fechados", ...VACINAS.map(([, i]) => `vacina_${["penta", "polio", "triplice_viral", "bcg"][i]}_pct`), "emprego_total", "emprego_agro", "obitos_infantis", "nascidos_vivos", "desmatamento_km2", "focos_queimadas", "esgoto_rede_2022_pct", "alfabetizacao_2022_pct", "ipca_indice"];
     const out = [cab.join(sep)];
     ms.forEach(m => anos.forEach(a => {
       const fi = m.fin?.[a] || [], r = m.rc?.[a] || [], fn = m.fn?.[a] || {}, l = m.lrf?.[a] || [], E = eleicaoDo(+a), e = m.ele?.[E], sc = e ? nota(e[0]) : null, c7 = cat7(sc), g = govDo(m.uf, +a);
       const al = alinhado(m, a);
       out.push([m.c, m.n, m.uf, +a, m.pop?.[a], e?.[0], sc, c7 ? CATS.find(c => c[0] === c7)[1] : "", m.reel?.[E], g, al == null ? "" : +al,
         fi[0], fi[1], fi[2], fi[3], fi[4], ...rc.map((_, i) => r[i]), m.fn?.[a] ? fn["10"] || 0 : "", m.fn?.[a] ? fn["12"] || 0 : "",
-        l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8], m.pib?.[a]?.[0], m.pib?.[a]?.[1], m.emp?.[a]?.[0], m.emp?.[a]?.[1], m.tmi?.[a]?.[0], m.tmi?.[a]?.[1],
+        l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8], m.pib?.[a]?.[0], m.pib?.[a]?.[1], m.pib?.[a]?.[2], m.pib?.[a]?.[3], m.pib?.[a]?.[4],
+        ...(D.tr_nomes || []).map((_, i) => m.tr?.[a]?.[i]), ...[0, 1, 2, 3].map(i => m.cempre?.[a]?.[i]),
+        ...SETORES_ID.map((_, i) => m.rais?.[a]?.[2 + i]), m.rais?.[a]?.[0], m.rais?.[a]?.[1], m.caged?.[a]?.[0], m.caged?.[a]?.[1], m.caged?.[a]?.[2],
+        m.cnpj?.abertos?.[a], m.cnpj?.fechados?.[a], ...VACINAS.map(([, i]) => m.vac?.[a]?.[i]), m.emp?.[a]?.[0], m.emp?.[a]?.[1], m.tmi?.[a]?.[0], m.tmi?.[a]?.[1],
         m.desm?.[a], m.fogo?.[a], m.censo?.[0], m.censo?.[1], D.ipca?.[a]].map(dec).join(sep));
     }));
     const blob = new Blob([(sep === ";" ? "﻿" : "") + out.join("\r\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `financas_municipais${st.uf ? "_" + st.uf : ""}${sep === ";" ? "_excel" : ""}.csv`;
     document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+
+  /* ---------- aba: economia local (empresas, emprego e produção) ---------- */
+  const NOMES_SETOR = ["Agropecuária", "Indústria", "Construção", "Comércio", "Serviços", "Administração pública"];
+  const CORES_SETOR = ["#22c55e", "#60a5fa", "#f5b83d", "#fb923c", "#a78bfa", "#a1a1aa"];
+  const meia = () => Math.min(largura(), 560);   // gráficos que ocupam meia largura na grade
+  const popUlt = m => m.pop?.[REF] || Object.values(m.pop || {}).pop() || null;
+  const anoHoje = () => new Date().getFullYear();
+  /* abertos menos fechados (CNPJ) por mil habitantes num ano */
+  const liquidaAno = (m, a) => { const c = m.cnpj, p = m.pop?.[a] || popUlt(m); return c && p ? 1000 * ((c.abertos?.[a] || 0) - (c.fechados?.[a] || 0)) / p : null; };
+  const liquidaMedia = m => { const h = anoHoje(), v = [h - 3, h - 2, h - 1].map(a => liquidaAno(m, String(a))).filter(x => x != null); return v.length ? media(v) : null; };
+  const raisUlt = () => [...new Set(M.flatMap(m => Object.keys(m.rais || {})))].sort().pop();
+  const empRais = (m, a) => { const r = m.rais?.[a], p = m.pop?.[a] || popUlt(m); return r && p ? 1000 * r[1] / p : null; };
+  const ativosMil = m => m.cnpj && popUlt(m) ? 1000 * m.cnpj.ativos.reduce((s, x) => s + x, 0) / popUlt(m) : null;
+  const indVab = (m, a) => { const v = m.pib?.[a]; return v && v[0] && v[2] != null ? v[2] / v[0] : null; };
+  const indVab21 = m => { const a = Object.keys(m.pib || {}).filter(k => m.pib[k]?.[2] != null).pop(); return a ? indVab(m, a) : null; };
+  const VACINAS = [["Penta", 0, 95], ["Poliomielite", 1, 95], ["Tríplice viral (1ª dose)", 2, 95], ["BCG", 3, 90]];
+  const vacMedia = (m, i = 0) => { const v = Object.entries(m.vac || {}).filter(([a]) => +a >= 2019).map(([, x]) => x[i]).filter(x => x != null); return v.length ? media(v) : null; };
+  function economia(){
+    const ms = sel(), h = anoHoje(), meta = D.comp || {};
+    const anosC = [...new Set(ms.flatMap(m => [...Object.keys(m.cnpj?.abertos || {}), ...Object.keys(m.cnpj?.fechados || {})]))].sort();
+    const anosR = [...new Set(ms.flatMap(m => Object.keys(m.rais || {})))].sort(), uR = anosR[anosR.length - 1];
+    const anosG = [...new Set(ms.flatMap(m => Object.keys(m.caged || {})))].sort();
+    const anosE = [...new Set(ms.flatMap(m => Object.keys(m.cempre || {})))].sort(), uE = anosE[anosE.length - 1];
+    if (!anosC.length && !anosR.length && !anosE.length){ main.innerHTML = `<p class="nota">Os dados de empresas e emprego ainda não foram coletados.</p>`; return; }
+    const soma = f => ms.reduce((s, m) => s + (f(m) || 0), 0);
+    const popT = soma(popUlt), ativos = soma(m => m.cnpj ? m.cnpj.ativos.reduce((s, x) => s + x, 0) : 0);
+    const uC = String(h - 1), ab = soma(m => m.cnpj?.abertos?.[uC]), fe = soma(m => m.cnpj?.fechados?.[uC]);
+    const vinc = soma(m => m.rais?.[uR]?.[1]), popR = soma(m => m.rais?.[uR] ? m.pop?.[uR] || popUlt(m) : 0);
+    const uG = anosG[anosG.length - 1], saldoG = soma(m => m.caged?.[uG]?.[2]);
+    const abertura = linhas([{ n: "Abertos", c: "#34d399", v: Object.fromEntries(anosC.map(a => [a, soma(m => m.cnpj?.abertos?.[a])])) },
+      { n: "Fechados (baixados)", c: "#f87171", v: Object.fromEntries(anosC.map(a => [a, soma(m => m.cnpj?.fechados?.[a])])) }], { anos: anosC, fmt: v => nf(v), alto: 240, w: meia() });
+    const liqG = porGrupo(ms, anosC.filter(a => +a >= 2016), (gs, a) => { let n = 0, p = 0; gs.forEach(m => { if (!m.cnpj) return; n += (m.cnpj.abertos?.[a] || 0) - (m.cnpj.fechados?.[a] || 0); p += m.pop?.[a] || popUlt(m) || 0; }); return p ? 1000 * n / p : null; });
+    const raisL = linhas(NOMES_SETOR.map((n, i) => ({ n, c: CORES_SETOR[i], v: Object.fromEntries(anosR.map(a => [a, soma(m => m.rais?.[a]?.[2 + i]) / 1e3])) })), { anos: anosR, fmt: v => `${nf(v, 0)} mil`, alto: 260 });
+    const caged = colunas(anosG.map(a => a + (+a === h ? "*" : "")), NOMES_SETOR.map((n, i) => ({ n, c: CORES_SETOR[i], v: anosG.map(a => soma(m => m.caged?.[a]?.[3 + i])) })), { fmt: v => nf(v), alto: 260 });
+    // estrutura produtiva: valor adicionado × emprego formal no último ano com os setores do PIB
+    const aV = String(Math.max(...ms.flatMap(m => Object.keys(m.pib || {}).filter(k => m.pib[k]?.[2] != null).map(Number)), 0));
+    const vab = [1, 2, 3, 4].map(i => soma(m => m.pib?.[aV]?.[i])), vabT = vab.reduce((s, x) => s + x, 0);
+    const er = m => m.rais?.[aV] || m.rais?.[uR];
+    const emp = [soma(m => er(m)?.[2]), soma(m => (er(m)?.[3] || 0) + (er(m)?.[4] || 0)), soma(m => (er(m)?.[5] || 0) + (er(m)?.[6] || 0)), soma(m => er(m)?.[7])], empT = emp.reduce((s, x) => s + x, 0);
+    const estrutura = vabT && empT ? colunas(["Agropecuária", "Indústria e construção", "Comércio e serviços", "Adm. pública"],
+      [{ n: `Valor adicionado (${aV})`, c: "#c8f250", v: vab.map(x => 100 * x / vabT) }, { n: `Emprego formal (RAIS ${ms.some(m => m.rais?.[aV]) ? aV : uR})`, c: "#60a5fa", v: emp.map(x => 100 * x / empT) }], { fmt: v => `${nf(v, 0)}%`, alto: 240, w: meia() }) : `<p class="nota">Sem dados de valor adicionado por setor.</p>`;
+    const empresas = linhas([{ n: "Empresas e outras organizações por mil habitantes", c: "#c8f250", v: Object.fromEntries(anosE.map(a => { let e = 0, p = 0; ms.forEach(m => { const x = m.cempre?.[a]; if (x?.[0] != null && m.pop?.[a]){ e += x[0]; p += m.pop[a]; } }); return [a, p ? 1000 * e / p : null]; })) }], { anos: anosE, fmt: v => nf(v, 0), alto: 220, w: meia() });
+    const salario = linhas([{ n: "Salário médio mensal", c: "#f5b83d", v: Object.fromEntries(anosE.map(a => { let s = 0, q = 0; ms.forEach(m => { const x = m.cempre?.[a]; if (x?.[3] != null && x[2]){ s += x[3] * 1e3 * deflator(a); q += x[2]; } }); return [a, q ? s / q / 13.3 : null]; })) }], { anos: anosE, fmt: brl, alto: 220, w: meia() });
+    const top = ms.map(m => ({ m, v: liquidaMedia(m) })).filter(o => o.v != null && popUlt(o.m) >= 5000).sort((a, b) => b.v - a.v).slice(0, 12);
+    main.innerHTML = `
+      <div class="kpis">
+        <div class="kpi"><span>Estabelecimentos ativos</span><b>${nf(ativos)}</b><small>${popT ? `${nf(1000 * ativos / popT, 0)} por mil habitantes` : ""} · CNPJ ${esc(meta.cnpj_mes || "")}</small></div>
+        <div class="kpi"><span>Abertos em ${uC}</span><b>${nf(ab)}</b><small>${nf(fe)} fechados · saldo de ${ab - fe >= 0 ? "+" : "−"}${nf(Math.abs(ab - fe))}</small></div>
+        <div class="kpi"><span>Emprego formal ${uR || ""}</span><b>${nf(vinc)}</b><small>${popR ? `${nf(1000 * vinc / popR, 0)} vínculos por mil habitantes (RAIS)` : ""}</small></div>
+        <div class="kpi"><span>Saldo do Caged ${uG || ""}</span><b>${saldoG >= 0 ? "+" : "−"}${nf(Math.abs(saldoG))}</b><small>${+uG === h ? `até ${esc(meta.caged_ate || "")} (parcial)` : "admissões menos desligamentos"}</small></div>
+      </div>
+      <div class="grid" style="margin-top:16px">
+        <section class="panel"><h2>Estabelecimentos abertos e fechados</h2><p class="sub">Cadastro de CNPJ da Receita Federal (matrizes e filiais, inclusive MEI), pela data de início de atividade e pela data da baixa. O ano corrente é parcial.</p>${abertura}</section>
+        <section class="panel"><h2>Abertura líquida por mil habitantes</h2><p class="sub">Abertos menos fechados, por orientação do prefeito em exercício.</p>${linhas(liqG, { anos: anosC.filter(a => +a >= 2016), fmt: v => nf(v, 1), alto: 240, w: meia() })}</section>
+      </div>
+      <section class="panel" style="margin-top:16px"><h2>Emprego formal por setor</h2><p class="sub">Vínculos ativos em 31 de dezembro, em milhares (RAIS, Ministério do Trabalho).</p>${raisL}</section>
+      <section class="panel" style="margin-top:16px"><h2>Saldo do emprego formal por ano e setor</h2><p class="sub">Admissões menos desligamentos (Novo Caged).${anosG.some(a => +a === h) ? ` * ${h}: até ${esc(meta.caged_ate || "o último mês publicado")}.` : ""}</p>${caged}</section>
+      <div class="grid" style="margin-top:16px">
+        <section class="panel"><h2>Estrutura produtiva: valor adicionado × emprego</h2><p class="sub">Parcela de cada setor no valor adicionado (PIB dos Municípios, IBGE) e no emprego formal. Onde a barra do valor supera a do emprego, cada trabalhador gera mais valor (agro mecanizado, por exemplo).</p>${estrutura}</section>
+        <section class="panel"><h2>Empresas (Cempre)</h2><p class="sub">Empresas e outras organizações ativas por mil habitantes (IBGE, Cadastro Central de Empresas).</p>${empresas}</section>
+      </div>
+      <div class="grid" style="margin-top:16px">
+        <section class="panel"><h2>Salário médio mensal (Cempre)</h2><p class="sub">Salários e outras remunerações por pessoa assalariada, divididos por 13,3 (inclui o 13º e um terço de férias), a preços de ${REF}.</p>${salario}</section>
+        <section class="panel"><h2>Onde mais se abrem negócios</h2><p class="sub">Abertura líquida média de ${h - 3} a ${h - 1}, por mil habitantes (municípios com 5 mil habitantes ou mais).</p>
+          <div class="tbwrap"><table class="tb"><thead><tr><th>Município</th><th>Abertura líq./mil</th><th>Ativos/mil</th><th>Emprego formal/mil</th><th>Agro no PIB</th></tr></thead><tbody>
+          ${top.map(o => `<tr data-mun="${o.m.c}" style="cursor:pointer"><td><b>${esc(o.m.n)}</b> <small style="color:var(--muted)">${o.m.uf}</small></td><td class="num">${nf(o.v, 1)}</td><td class="num">${nf(ativosMil(o.m), 0)}</td><td class="num">${nf(empRais(o.m, uR), 0)}</td><td class="num">${pct(o.m.peso, 0)}</td></tr>`).join("")}</tbody></table></div></section>
+      </div>
+      <p class="nota">Fontes: Receita Federal (CNPJ, fotografia de ${esc(meta.cnpj_mes || "—")}), RAIS e Novo Caged (Ministério do Trabalho e Emprego), IBGE (Cempre e PIB dos Municípios). Os setores seguem a CNAE: agropecuária (seção A), indústria (B a E), construção (F), comércio (G), administração pública (O) e serviços (as demais).</p>`;
   }
 
   /* ---------- aba: correlações ---------- */
@@ -866,6 +986,13 @@
     { n: "Mortalidade infantil", a: (m, a) => { const v = m.tmi?.[a]; return v && v[1] >= 50 ? 1000 * v[0] / v[1] : null; },  l: RY.tmi.n, v: RY.tmi.v, f: RY.tmi.f },
     { n: "Rede de esgoto", l: RY.esgoto.n, v: RY.esgoto.v, f: RY.esgoto.f },
     { n: "Alfabetização", l: RY.alfab.n, v: RY.alfab.v, f: RY.alfab.f },
+    { n: "Estabelecimentos ativos/mil hab.", l: "Estabelecimentos ativos no CNPJ por mil habitantes (fotografia mais recente)", v: ativosMil, f: v => nf(v, 0) },
+    { n: "Abertura líquida/mil hab.", a: (m, a) => liquidaAno(m, String(a)), l: "Estabelecimentos abertos menos fechados por mil habitantes, média dos três últimos anos (CNPJ)", v: liquidaMedia, f: v => nf(v, 1) },
+    { n: "Emprego formal/mil hab.", a: (m, a) => empRais(m, String(a)), l: "Vínculos formais ativos em 31/12 por mil habitantes, último ano da RAIS", v: m => empRais(m, raisUlt()), f: v => nf(v, 0) },
+    { n: "Indústria no VAB", a: (m, a) => indVab(m, String(a)), l: "Participação da indústria no valor adicionado bruto (último ano com setores, fração)", v: indVab21, f: v => pct(v, 0) },
+    { n: "Cobertura vacinal (penta)", a: (m, a) => m.vac?.[a]?.[0] ?? null, l: "Cobertura vacinal da pentavalente, média 2019–2022 (%)", v: m => vacMedia(m, 0), f: v => `${nf(v, 0)}%` },
+    { n: "FUNDEB/hab.", a: (m, a) => indiv(m, a, "fundebpc"), l: "FUNDEB recebido por habitante, média 2021–2024", v: m => periodo(m, ULT(), "fundebpc"), f: brl },
+    { n: "SUS da União/hab.", a: (m, a) => indiv(m, a, "susUpc"), l: "Repasses do SUS da União por habitante, média 2021–2024", v: m => periodo(m, ULT(), "susUpc"), f: brl },
   ];
   const postos = a => { const o = a.map((v, i) => [v, i]).sort((x, y) => x[0] - y[0]), r = Array(a.length);
     for (let i = 0; i < o.length;){ let j = i; while (j + 1 < o.length && o[j + 1][0] === o[i][0]) j++; for (let k = i; k <= j; k++) r[o[k][1]] = (i + j) / 2 + 1; i = j + 1; } return r; };
@@ -1091,6 +1218,9 @@
         <p><b>Reeleição e governadores:</b> cadastro de candidatos do TSE (prefeito eleito que concorria à reeleição; partido do governador eleito em 2014, 2018 e 2022).</p>
         <p><b>Amazônia:</b> PRODES (Inpe, TerraBrasilis), polígonos anuais de desmatamento da Amazônia e do Cerrado atribuídos ao município pelo ponto central; focos de queimadas do satélite de referência do Inpe; emprego assalariado na agropecuária do Cadastro Central de Empresas do IBGE.</p>
         <p><b>Resultados:</b> mortalidade infantil do SIM e do Sinasc (DATASUS, TabNet), por residência; esgotamento sanitário e alfabetização do Censo 2022. O Ideb não entra porque o Inep bloqueia a coleta automática.</p>
+        <p><b>Repasses:</b> FUNDEB (com a complementação da União), SUS da União e do estado, FNDE (salário-educação, alimentação e transporte escolar), repasses estaduais para educação e assistência social, classificados pelo nome das contas do anexo I-C da DCA (os códigos mudaram em 2018 e 2022).</p>
+        <p><b>Economia local:</b> IBGE: Cadastro Central de Empresas (empresas, pessoal ocupado, salários e emprego por seção da CNAE, até 2021) e valor adicionado por setor (até 2021; em 2022 e 2023 o IBGE publicou só o PIB total). Ministério do Trabalho: RAIS (estabelecimentos e vínculos ativos em 31/12 por setor) e Novo Caged (admissões e desligamentos). Receita Federal: cadastro do CNPJ (estabelecimentos ativos, abertos e baixados por ano, inclusive MEI).</p>
+        <p><b>Vacinação:</b> coberturas vacinais do SI-PNI (DATASUS, TabNet) por município, de 2016 a 2022.</p>
         <p><b>Dados para baixar:</b> na aba Municípios, o painel município-ano completo em CSV, em valores correntes (R$ mil) e com o IPCA para deflacionar.</p>
         <p><b>Recorte:</b> Amazônia Legal (AC, AM, AP, MA, MT, PA, RO, RR e TO) e, por escolha, Goiás e Mato Grosso do Sul.</p>
         <p>Atualização automática toda semana. Fontes: ${esc(D.fontes)}.</p></div>
@@ -1103,7 +1233,8 @@
 
   /* ---------- reproduzir a regressão no R, no Stata e no Python ---------- */
   const IDS = ["ideologia", "log_pop", "pib_pc", "peso_agro", "lavouras_hab", "expansao_lavouras", "invest_pc", "receita_propria_pc", "transf_pct",
-    "voluntarias_pc", "saude_pc", "educacao_pc", "pessoal_pct_rcl", "saude_fiscal", "desmatamento_km2", "queimadas", "emprego_agro_mil", "mort_infantil", "esgoto_pct", "alfabetizacao_pct"];
+    "voluntarias_pc", "saude_pc", "educacao_pc", "pessoal_pct_rcl", "saude_fiscal", "desmatamento_km2", "queimadas", "emprego_agro_mil", "mort_infantil", "esgoto_pct", "alfabetizacao_pct",
+    "estab_ativos_mil", "abertura_liquida_mil", "emprego_formal_mil", "industria_vab", "vacina_penta", "fundeb_pc", "sus_uniao_pc"];
   let ULTIMA_REG = null;
   const arqReg = () => `regressao_${IDS[ULTIMA_REG.yi]}${st.uf ? "_" + st.uf : ""}.csv`;
   function codigoReg(lang){
@@ -1238,7 +1369,7 @@ for i, nome in enumerate(m.model.exog_names):
   });
 
   /* ---------- navegação ---------- */
-  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, resultados, correlacoes, regressao, mapa: mapaAba, mun: munAba, rdd: rddAba, metodo };
+  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, economia, resultados, correlacoes, regressao, mapa: mapaAba, mun: munAba, rdd: rddAba, metodo };
   function render(){
     document.querySelectorAll("nav.abas button").forEach(b => b.setAttribute("aria-selected", b.dataset.aba === st.aba));
     (ABAS[st.aba] || ABAS.geral)();
@@ -1288,7 +1419,12 @@ for i, nome in enumerate(m.model.exog_names):
   let rt, larg = 0;
   window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (D && main.clientWidth !== larg){ larg = main.clientWidth; render(); } }, 200); });
 
-  fetch("data/municipios.json").then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => {
+  const complementar = fetch("data/complementos.json").then(r => r.ok ? r.json() : null).catch(() => null);
+  fetch("data/municipios.json").then(r => r.ok ? r.json() : Promise.reject(r.status)).then(async d => {
+    // RAIS, Caged, CNPJ e vacinação vêm de outra coleta (mensal); juntam-se a cada município pelo código do IBGE
+    const comp = await complementar;
+    if (comp?.municipios) d.municipios.forEach(m => Object.assign(m, comp.municipios[m.c] || {}));
+    d.comp = comp ? { cnpj_mes: comp.cnpj_mes, caged_ate: comp.caged_ate, atualizado: comp.atualizado } : {};
     D = d; prepara();
     leEndereco();
     controles(); render();
