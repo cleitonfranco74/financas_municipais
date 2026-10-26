@@ -568,7 +568,7 @@ def cempre(ms: dict) -> None:
     """Cadastro Central de Empresas (IBGE): cempre[ano] = [empresas e outras organizações, pessoal ocupado total,
     assalariado, salários (R$ mil)] e cempre_set[ano] = pessoal assalariado por setor (SETORES)."""
     tot: dict = {}
-    for l in sidra("t/6449/{}/v/all/p/all/c12762/117897"):
+    for l in sidra("t/6449/{}/v/all/p/last%208/c12762/117897"):
         if int(l["D3C"]) < INICIO or "percentual" in l.get("D2N", "").lower():
             continue
         i = next((k for k, txt in enumerate(("número de empresas", "pessoal ocupado total", "pessoal ocupado assalariado", "salários")) if l["D2N"].lower().startswith(txt)), None)
@@ -578,7 +578,7 @@ def cempre(ms: dict) -> None:
     d = get(SIDRA + "t/6450/n1/all/v/708/p/last%201/c12762/all", timeout=240).json()[1:]
     secoes = {l["D4C"]: l["D4N"][0] for l in d if re.match(r"^[A-U] ", l.get("D4N", ""))}
     setor: dict = {}
-    for l in sidra("t/6450/{}/v/708/p/all/c12762/" + ",".join(secoes)):
+    for l in sidra("t/6450/{}/v/708/p/last%208/c12762/" + ",".join(secoes)):   # 21 seções × 8 anos cabem no limite do Sidra
         if int(l["D3C"]) < INICIO or l.get("D4C") not in secoes:
             continue
         x = setor.setdefault(int(l["D1C"]), {}).setdefault(l["D3C"], [0] * len(SETORES))
