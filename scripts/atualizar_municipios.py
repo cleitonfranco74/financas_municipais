@@ -242,7 +242,7 @@ RC_CODIGOS = {
 }
 
 
-def siconfi(cod: int, ano: int, so_lrf: bool = False) -> dict:
+def siconfi(cod: int, ano: int, so_lrf: bool = False, pequeno: bool = False) -> dict:
     """Contas de um município num ano, em R$ mil:
     fin: [receita líquida, transferências, receita tributária, despesa liquidada, investimento liquidado];
     rc: fontes de receita na ordem de RC_NOMES; fn: {função: despesa liquidada};
@@ -279,13 +279,16 @@ def siconfi(cod: int, ano: int, so_lrf: bool = False) -> dict:
     # RGF do Executivo, Anexo 6 (demonstrativo simplificado): 3º quadrimestre ou 2º semestre. Municípios com menos
     # de 50 mil habitantes podem publicar o "RGF Simplificado", semestral, e o "RREO Simplificado".
     rgf = []
-    for tipo, periodicidade, periodo in (("RGF", "Q", 3), ("RGF Simplificado", "S", 2), ("RGF", "S", 2), ("RGF Simplificado", "Q", 3)):
+    tentativas = (("RGF", "Q", 3), ("RGF Simplificado", "S", 2), ("RGF", "S", 2), ("RGF Simplificado", "Q", 3))
+    if pequeno:   # quem tem menos de 50 mil habitantes costuma publicar o simplificado: tenta ele primeiro
+        tentativas = (tentativas[1], tentativas[0], tentativas[2], tentativas[3])
+    for tipo, periodicidade, periodo in tentativas:
         rgf = itens(get(SICONFI + "rgf", {"an_exercicio": ano, "in_periodicidade": periodicidade, "nr_periodo": periodo,
                                          "co_tipo_demonstrativo": tipo, "no_anexo": "RGF-Anexo 06", "co_poder": "E", "id_ente": cod}, timeout=90))
         if rgf:
             break
     rreo = []
-    for tipo in ("RREO", "RREO Simplificado"):
+    for tipo in (("RREO Simplificado", "RREO") if pequeno else ("RREO", "RREO Simplificado")):
         rreo = itens(get(SICONFI + "rreo", {"an_exercicio": ano, "nr_periodo": 6, "co_tipo_demonstrativo": tipo,
                                            "no_anexo": "RREO-Anexo 14", "id_ente": cod}, timeout=90))
         if rreo:
@@ -331,7 +334,8 @@ def financas(ms: dict, antes: dict) -> None:
     pendentes = (sorted(pendentes, key=lambda p: -p[1]) + sorted(revisar, key=lambda p: -p[1]))[:MAX_PARES]
     limite = time.monotonic() + PRAZO_SICONFI * 60
     def tarefa(c, a, so_lrf):
-        return siconfi(c, a, so_lrf) if time.monotonic() < limite else None
+        pop = ms[c].get("pop", {}).get(str(a)) or 0
+        return siconfi(c, a, so_lrf, 0 < pop < 50000) if time.monotonic() < limite else None
     log(f"Siconfi: {len(pendentes)} pares município-ano a consultar.")
     feitos = erros = adiados = 0
     with ThreadPoolExecutor(TRABALHADORES) as ex:

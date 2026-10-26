@@ -87,6 +87,10 @@ h3.mini{margin:10px 0 2px;font-size:13px;color:var(--ink-2)}
 .btn{height:40px;padding:0 14px;border-radius:11px;border:1px solid var(--line);background:var(--bg);font-weight:700;font-size:13px}
 .btn:hover{border-color:var(--ink-2)}
 button.chip{background:var(--bg);color:var(--ink-2)}
+.chks{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:4px}
+label.chk{display:inline-flex;gap:7px;align-items:center;font-size:13px;color:var(--ink-2);cursor:pointer}
+label.chk input{accent-color:var(--accent);width:16px;height:16px}
+.ctl .f > span.lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 svg.mapa path:hover{stroke:var(--ink);stroke-width:1.2}
 .bar-el{display:grid;grid-template-columns:44px minmax(0,1fr) 92px;gap:10px;align-items:center;margin:9px 0;font-size:12.5px;color:var(--ink-2)}
 .pb{display:flex;height:18px;border-radius:6px;overflow:hidden;gap:1px;background:var(--surface-2)} .pb i{display:block;height:100%}
@@ -133,6 +137,7 @@ html{--tbh:64px}
     <button role="tab" data-aba="amazonia" aria-selected="false">Amazônia</button>
     <button role="tab" data-aba="resultados" aria-selected="false">Resultados</button>
     <button role="tab" data-aba="correlacoes" aria-selected="false">Correlações</button>
+    <button role="tab" data-aba="regressao" aria-selected="false">Regressão</button>
     <button role="tab" data-aba="mapa" aria-selected="false">Mapa</button>
     <button role="tab" data-aba="mun" aria-selected="false">Municípios</button>
     <button role="tab" data-aba="rdd" aria-selected="false">Eleições acirradas</button>
@@ -145,7 +150,7 @@ html{--tbh:64px}
   <span>Desenvolvido por <b>Prof. Dr. Cleiton Franco</b> · Doutor em Economia · Professor Adjunto da UNEMAT, Câmpus de Sinop</span>
   <span>© 2026 · Ferramenta educacional: correlações não são, por si, relações de causa e efeito</span>
 </footer>
-<script src="assets/municipios.js?v=2026-10-25d" defer></script>
+<script src="assets/municipios.js?v=2026-10-25e" defer></script>
 <script src="assets/feedback.js" data-site="Finanças Municipais" data-cor="#c8f250" defer></script>
 </body>
 </html>
