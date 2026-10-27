@@ -969,18 +969,21 @@
   function carregaBrasil(){
     if (BR || BRcarregando || BRfalhou) return;
     BRcarregando = true;
-    fetch("data/brasil.json").then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => {
+    // emprego (RAIS e Caged) de todo o Brasil vem de outro arquivo, gravado pela coleta mensal; é opcional
+    const emp = fetch("data/emprego_brasil.json").then(r => r.ok ? r.json() : null).catch(() => null);
+    Promise.all([fetch("data/brasil.json").then(r => r.ok ? r.json() : Promise.reject(r.status)), emp]).then(([d, e]) => {
+      const E = e?.municipios || {};
       // mesmos derivados da página: valores em reais de REF (IPCA) e repasses na ordem de tr_nomes
       const defl = a => d.ipca?.[REF] && d.ipca?.[a] ? d.ipca[REF] / d.ipca[a] : deflator(a);
       const recorte = new Set(d.recorte || []);
       BR = { gov: d.gov || {}, atualizado: d.atualizado, ms: d.municipios.map(m => {
         const pib = Object.entries(m.pib || {}).filter(([, v]) => v && v[0] > 0 && v[1] != null).slice(-3);
-        return { ...m, reg: String(m.c)[0], recorte: recorte.has(m.c), peso: pib.length ? media(pib.map(([, v]) => v[1] / v[0])) : null,
+        return { ...m, reg: String(m.c)[0], recorte: recorte.has(m.c), rais: E[m.c]?.rais || null, caged: E[m.c]?.caged || null, peso: pib.length ? media(pib.map(([, v]) => v[1] / v[0])) : null,
           f: Object.fromEntries(Object.entries(m.fin || {}).map(([a, v]) => { const k = 1e3 * defl(a), rc = m.rc?.[a], rp = m.tr?.[a], fn = m.fn?.[a];
             return [a, { rec: v[0] * k, tr: v[1] * k, trib: v[2] * k, desp: v[3] * k, inv: v[4] * k, pop: m.pop?.[a] || null,
               rc: rc ? rc.map(x => x * k) : null, conv: rc ? (rc[6] + rc[7] + rc[8]) * k : null, convE: rc ? rc[7] * k : null,
               fn: fn ? Object.fromEntries(Object.entries(fn).map(([q, x]) => [q, x * k])) : null, rp: rp ? rp.map(x => x * k) : null, lrf: null }]; })) };
-      }) };
+      }), emprego: e ? { caged_ate: e.caged_ate, atualizado: e.atualizado } : null };
       BRcarregando = false;
       if (/^porte/.test(st.aba)) render();
     }).catch(() => { BRfalhou = true; BRcarregando = false; if (/^porte/.test(st.aba)) render(); });
@@ -1041,6 +1044,29 @@
     const P2 = MET[st.metP2], celFe = j => fe ? `${fe.b[j] >= 0 ? "+" : "−"}${P2.f(Math.abs(fe.b[j]))}${estrelas(fe.b[j], fe.ep[j])} <small style="color:var(--muted)">(${P2.f(fe.ep[j])})</small>` : "—";
     const top = peq.map(m => ({ m, v: indiv(m, aR, "invpc") })).filter(o => o.v != null).sort((a, b) => b.v - a.v);
     const linhaTop = o => `<tr ${M.some(x => x.c === o.m.c) ? `data-mun="${o.m.c}" style="cursor:pointer"` : ""}><td><b>${esc(o.m.n)}</b> <small style="color:var(--muted)">${o.m.uf}</small></td><td class="num">${nf(popRef(o.m))}</td><td class="num">${brl(o.v)}</td><td class="num">${pct(indiv(o.m, aR, "transf"), 0)}</td><td>${o.m.ele?.[eleicaoDo(+aR)] ? esc(o.m.ele[eleicaoDo(+aR)][0]) : "—"}</td></tr>`;
+    // 8) emprego formal (RAIS e Caged), quando o arquivo nacional já foi coletado
+    const porMil = (ms, a, f) => { let v = 0, p = 0; ms.forEach(m => { const x = f(m, a), q = m.pop?.[a]; if (x != null && q){ v += x; p += q; } }); return p ? 1000 * v / p : null; };
+    const anosRB = [...new Set(todos.flatMap(m => Object.keys(m.rais || {})))].sort(), uRB = anosRB[anosRB.length - 1];
+    const anosGB = [...new Set(todos.flatMap(m => Object.keys(m.caged || {})))].sort();
+    const vinc = (m, a) => m.rais?.[a]?.[0] ?? null, saldo = (m, a) => m.caged?.[a]?.[2] ?? null;
+    const hoje = new Date().getFullYear(), rotG = a => a + (+a === hoje ? "*" : "");
+    const empregoHTML = !anosRB.length && !anosGB.length ? `<section class="panel" style="margin-top:16px"><h2>Emprego formal</h2><p class="nota">Os dados de emprego de todos os municípios do Brasil (RAIS e Novo Caged) ainda estão sendo coletados.</p></section>` : (() => {
+      const evolE = linhas([{ n: `Municípios ${nomeL}`, c: "#c8f250", v: Object.fromEntries(anosRB.map(a => [a, porMil(peq, a, vinc)])) }, { n: `Municípios ${nomeD}`, c: "#60a5fa", v: Object.fromEntries(anosRB.map(a => [a, porMil(dem, a, vinc)])) }], { anos: anosRB, fmt: v => nf(v, 0), alto: 230, w: meia() });
+      const cagE = colunas(anosGB.map(rotG), [{ n: `Municípios ${nomeL}`, c: "#c8f250", v: anosGB.map(a => porMil(peq, a, saldo)) }, { n: `Municípios ${nomeD}`, c: "#60a5fa", v: anosGB.map(a => porMil(dem, a, saldo)) }], { fmt: v => nf(v, 1), alto: 230, w: meia() });
+      const parte = ms => { const t = Array(6).fill(0); let T = 0; ms.forEach(m => { const r = m.rais?.[uRB]; if (!r) return; T += r[0]; for (let i = 0; i < 6; i++) t[i] += r[1 + i] || 0; }); return T ? t.map(x => 100 * x / T) : t; };
+      const setE = colunas(NOMES_SETOR, [{ n: `Municípios ${nomeL}`, c: "#c8f250", v: parte(peq) }, { n: `Municípios ${nomeD}`, c: "#60a5fa", v: parte(dem) }], { fmt: v => `${nf(v, 0)}%`, alto: 240, w: meia() });
+      const regE = colunas(regs.map(r => REGIOES[r]), [{ n: `Vínculos por mil hab. (${uRB})`, c: "#c8f250", v: regs.map(r => porMil(peq.filter(m => m.reg === r), uRB, vinc)) }], { fmt: v => nf(v, 0), alto: 220, w: meia() });
+      const pP = porMil(peq, uRB, vinc), pD = porMil(dem, uRB, vinc), adm = parte(peq)[5];
+      return `<section class="panel" style="margin-top:16px"><h2>Emprego formal</h2><p class="sub">Vínculos formais ativos em 31 de dezembro (RAIS) e saldo de admissões menos desligamentos (Novo Caged), por mil habitantes. Em ${uRB}, <b>${pP == null ? "—" : nf(pP, 0)}</b> vínculos por mil habitantes nos municípios ${nomeL}, contra <b>${pD == null ? "—" : nf(pD, 0)}</b> nos demais; a administração pública responde por <b>${nf(adm, 0)}%</b> do emprego formal dos pequenos.</p></section>
+      <div class="grid" style="margin-top:16px">
+        <section class="panel"><h2>Vínculos formais por mil habitantes</h2><p class="sub">RAIS, ${anosRB[0]} a ${uRB}.</p>${evolE}</section>
+        <section class="panel"><h2>Saldo do emprego formal por mil habitantes</h2><p class="sub">Novo Caged, admissões menos desligamentos.${anosGB.some(a => +a === hoje) ? ` * ${hoje}: até ${esc(BR.emprego?.caged_ate || "o último mês publicado")}.` : ""}</p>${cagE}</section>
+      </div>
+      <div class="grid" style="margin-top:16px">
+        <section class="panel"><h2>Emprego formal por setor, ${uRB}</h2><p class="sub">Parcela de cada setor nos vínculos formais. Nos pequenos, a prefeitura costuma ser o maior empregador.</p>${setE}</section>
+        <section class="panel"><h2>Vínculos por mil habitantes por região, ${uRB}</h2><p class="sub">Municípios ${nomeL}.</p>${regE}</section>
+      </div>`;
+    })();
     const METP = ["invpc", "recpc", "tribpc", "transf", "saudepc", "educpc", "convpc"].map(k => [k, MET[k].n.replace(" por habitante", "/hab.").replace("Transferências em % da receita", "Transferências %").replace("Receita tributária própria", "Receita própria")]);
     main.innerHTML = `
       <div class="explica"><h3>Municípios ${nomeL}, em todo o Brasil</h3><p>Esta aba usa <b>todos os municípios brasileiros</b> (não só o recorte da Amazônia Legal, GO e MS) e separa os de até ${nf(lim)} habitantes em ${aR}. São <b>${nf(peq.length)}</b> de ${nf(todos.length)} municípios${st.reg ? ` da região ${REGIOES[st.reg]}` : ""}, com ${pct(popT ? popP / popT : null, 0)} da população. Valores a preços de ${REF} (IPCA), médias ponderadas pela população.</p>
@@ -1056,6 +1082,7 @@
         <section class="panel"><h2>Receita própria por habitante</h2><p class="sub">Impostos e taxas municipais (IPTU, ISS, ITBI, taxas).</p>${evol("tribpc")}</section>
       </div>
       <section class="panel" style="margin-top:16px"><h2>Por região, ${aR}</h2><p class="sub">Municípios ${nomeL}, por habitante.</p>${porReg}</section>
+      ${empregoHTML}
       <div class="grid" style="margin-top:16px">
         <section class="panel"><h2>Quanto da receita vem de transferências</h2><p class="sub">Transferências da União e do estado em % da receita, municípios ${nomeL}, ${aR}. Mediana: <b>${nf(mediana(dep), 0)}%</b>.</p>${histograma(dep, { lo: 40, hi: 100, passo: 2, fmt: v => `${nf(v)}%`, w: meia() })}</section>
         <section class="panel"><h2>Peso do FPM</h2><p class="sub">Fundo de Participação dos Municípios em % da receita, ${aR}. Mediana: <b>${nf(mediana(fpm), 0)}%</b>. Nos pequenos, o FPM costuma ser a principal receita.</p>${histograma(fpm, { lo: 0, hi: 80, passo: 2, fmt: v => `${nf(v)}%`, cor: () => "#a78bfa", w: meia() })}</section>
@@ -1077,7 +1104,7 @@
       <section class="panel" style="margin-top:16px"><h2>Maior e menor investimento por habitante, ${aR}</h2><p class="sub">Municípios ${nomeL}${st.reg ? ` do ${REGIOES[st.reg]}` : ""}. Os do recorte do painel abrem a ficha.</p>
         <div class="tbwrap"><table class="tb"><thead><tr><th>Município</th><th>População</th><th>Invest./hab.</th><th>Transf. %</th><th>Partido do prefeito</th></tr></thead><tbody>
         ${top.slice(0, 8).map(linhaTop).join("")}${top.length > 16 ? `<tr><td colspan="5" style="text-align:center;color:var(--muted)">⋯</td></tr>` : ""}${top.slice(Math.max(8, top.length - 8)).map(linhaTop).join("")}</tbody></table></div></section>
-      <p class="nota">Fontes: Tesouro Nacional (Siconfi, DCA), TSE, IBGE e Banco Central; painel nacional atualizado em ${BR.atualizado ? new Date(BR.atualizado + "T12:00").toLocaleDateString("pt-BR") : "—"}. Municípios que não entregaram a DCA de um ano ficam fora daquele ano.</p>`;
+      <p class="nota">Fontes: Tesouro Nacional (Siconfi, DCA), TSE, IBGE, Banco Central e Ministério do Trabalho e Emprego (RAIS e Novo Caged); painel nacional atualizado em ${BR.atualizado ? new Date(BR.atualizado + "T12:00").toLocaleDateString("pt-BR") : "—"}. Municípios que não entregaram a DCA de um ano ficam fora daquele ano.</p>`;
   }
 
   /* ---------- aba: correlações ---------- */

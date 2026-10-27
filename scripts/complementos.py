@@ -13,6 +13,10 @@ por mês, por isso ficam fora da coleta semanal (scripts/atualizar_municipios.py
 
 Cada parte reaproveita o que já foi gravado e só baixa o que falta; se uma fonte falha, os dados anteriores
 ficam. Roda pela Action .github/workflows/complementos.yml.
+
+A RAIS e o Caged também vão, de forma enxuta, para data/emprego_brasil.json, com todos os municípios do Brasil
+(lista de data/brasil.json), usado pelas abas por porte: rais[ano] = [vínculos, vínculos por setor] e
+caged[ano] = [admissões, desligamentos, saldo]. Cada arquivo baixado serve às duas saídas.
 """
 from __future__ import annotations
 
@@ -36,6 +40,7 @@ import requests
 
 RAIZ = Path(__file__).resolve().parent.parent
 SAIDA = RAIZ / "data" / "complementos.json"
+SAIDA_BR = RAIZ / "data" / "emprego_brasil.json"
 UFS = {"AC": 12, "AM": 13, "AP": 16, "MA": 21, "MT": 51, "PA": 15, "RO": 11, "RR": 14, "TO": 17, "GO": 52, "MS": 50}
 INICIO = 2016
 SETORES = ("agro", "industria", "construcao", "comercio", "servicos", "adm_publica")
@@ -220,13 +225,15 @@ def cnpj(ms: dict, antes: dict, meta: dict) -> None:
 SUBSETOR = {**{i: 1 for i in range(1, 15)}, 15: 2, 16: 3, 17: 3, **{i: 4 for i in range(18, 24)}, 24: 5, 25: 0}
 
 
-def rais(ms: dict, antes: dict, meta: dict) -> None:
-    """rais[ano] = [estabelecimentos com vínculo ativo, vínculos ativos em 31/12, vínculos por setor (SETORES)]."""
+def rais(ms: dict, antes: dict, meta: dict, br: dict) -> None:
+    """rais[ano] = [estabelecimentos com vínculo ativo, vínculos ativos em 31/12, vínculos por setor (SETORES)].
+    No painel nacional (br), rais[ano] = [vínculos ativos, vínculos por setor]."""
     for c, m in ms.items():
         m["rais"] = dict(antes.get(c, {}).get("rais", {}))
     feitos, seis = set(meta.get("rais_anos") or []), {str(c)[:6]: c for c in ms}
+    feitos_br, seis_br = set(br["rais_anos"]), br["seis"]
     for ano in range(INICIO, date.today().year):
-        if str(ano) in feitos:
+        if str(ano) in feitos and (not seis_br or str(ano) in feitos_br):
             continue
         try:
             nomes = ftp_lista(f"/pdet/microdados/RAIS/{ano}/")
@@ -251,8 +258,8 @@ def rais(ms: dict, antes: dict, meta: dict) -> None:
                 for l in linhas:
                     if len(l) <= max(iM, iV):
                         continue
-                    c = seis.get(l[iM].strip()[:6])
-                    if c is None:
+                    k6 = l[iM].strip()[:6]
+                    if k6 not in seis and k6 not in seis_br:
                         continue
                     v = int(num(l[iV]))
                     if v <= 0:
@@ -263,14 +270,19 @@ def rais(ms: dict, antes: dict, meta: dict) -> None:
                     else:
                         sub = re.sub(r"\D", "", l[iS])[:2] if iS is not None else ""
                         st = SUBSETOR.get(int(sub), 4) if sub else 4
-                    x = conta.setdefault(c, [0, 0] + [0] * len(SETORES))
+                    x = conta.setdefault(k6, [0, 0] + [0] * len(SETORES))
                     x[0] += 1
                     x[1] += v
                     x[2 + st] += v
-            for c, m in ms.items():
-                if c in conta:
-                    m["rais"][str(ano)] = conta[c]
+            for k6, c in seis.items():
+                if k6 in conta:
+                    ms[c]["rais"][str(ano)] = conta[k6]
+            for k6, c in seis_br.items():
+                if k6 in conta:
+                    br["m"].setdefault(c, {}).setdefault("rais", {})[str(ano)] = conta[k6][1:]
             feitos.add(str(ano))
+            if seis_br:
+                feitos_br.add(str(ano))
             log(f"RAIS {ano}: {len(conta)} municípios, {sum(x[1] for x in conta.values())} vínculos ativos.")
         except Exception as e:  # noqa: BLE001
             log(f"RAIS {ano}: falha ({e})")
@@ -279,25 +291,28 @@ def rais(ms: dict, antes: dict, meta: dict) -> None:
     for m in ms.values():
         m["rais"] = dict(sorted(m["rais"].items()))
     meta["rais_anos"] = sorted(feitos)
+    br["rais_anos"] = sorted(feitos_br)
 
 
 # ---------------------------------------------------------------- Novo Caged (movimentações mensais)
 MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
 
 
-def caged(ms: dict, antes: dict, meta: dict) -> None:
+def caged(ms: dict, antes: dict, meta: dict, br: dict) -> None:
     """caged[ano] = [admissões, desligamentos, saldo, saldo por setor (SETORES)], somando as movimentações do mês
     (MOV), as declaradas fora do prazo (FOR) e descontando as exclusões (EXC), pelo mês de competência."""
     for c, m in ms.items():
         m["caged"] = {a: list(v) for a, v in antes.get(c, {}).get("caged", {}).items()}
     feitos, seis = set(meta.get("caged_meses") or []), {str(c)[:6]: c for c in ms}
+    feitos_br, seis_br = set(br["caged_meses"]), br["seis"]
     raiz = "/pdet/microdados/NOVO CAGED/"
     meses = []
     for ano in sorted(n.rsplit("/", 1)[-1] for n in ftp_lista(raiz) if re.fullmatch(r"\d{4}", n.rsplit("/", 1)[-1])):
         meses += sorted(n.rsplit("/", 1)[-1] for n in ftp_lista(f"{raiz}{ano}/") if re.fullmatch(r"\d{6}", n.rsplit("/", 1)[-1]))
     limite = time.monotonic() + PRAZO_CAGED * 60
     for mes in meses:
-        if mes in feitos or int(mes[:4]) < INICIO:
+        soma_r, soma_br = mes not in feitos, bool(seis_br) and mes not in feitos_br   # cada mês entra uma única vez em cada saída
+        if not (soma_r or soma_br) or int(mes[:4]) < INICIO:
             continue
         if time.monotonic() > limite:
             log(f"Caged: prazo esgotado; {mes} e seguintes ficam para a próxima execução.")
@@ -305,7 +320,7 @@ def caged(ms: dict, antes: dict, meta: dict) -> None:
         pasta = tempfile.mkdtemp()
         try:
             nomes = ftp_lista(f"{raiz}{mes[:4]}/{mes}/")
-            n = 0
+            n, mov_r, mov_br = 0, {}, {}   # o mês só entra nas somas depois de lido por inteiro
             for nome in nomes:
                 base = nome.rsplit("/", 1)[-1].upper()
                 tipo = next((t for t in ("MOV", "FOR", "EXC") if f"CAGED{t}" in base), None)
@@ -323,21 +338,40 @@ def caged(ms: dict, antes: dict, meta: dict) -> None:
                     for l in linhas:
                         if len(l) <= max(iM, iS, iT):
                             continue
-                        c = seis.get(l[iM].strip()[:6])
-                        if c is None:
+                        k6 = l[iM].strip()[:6]
+                        no_r, no_br = soma_r and k6 in seis, soma_br and k6 in seis_br
+                        if not (no_r or no_br):
                             continue
                         s = int(num(l[iT])) * sinal
                         ano = (l[iC].strip()[:4] if iC is not None else mes[:4]) or mes[:4]
-                        x = ms[c]["caged"].setdefault(ano, [0, 0, 0] + [0] * len(SETORES))
-                        x[0 if int(num(l[iT])) > 0 else 1] += sinal
-                        x[2] += s
-                        x[3 + setor_secao(l[iS])] += s
-                        n += 1
+                        i = 0 if int(num(l[iT])) > 0 else 1
+                        if no_r:
+                            x = mov_r.setdefault((seis[k6], ano), [0, 0, 0] + [0] * len(SETORES))
+                            x[i] += sinal
+                            x[2] += s
+                            x[3 + setor_secao(l[iS])] += s
+                            n += 1
+                        if no_br:
+                            x = mov_br.setdefault((seis_br[k6], ano), [0, 0, 0])
+                            x[i] += sinal
+                            x[2] += s
                 os.remove(os.path.join(pasta, base))
                 shutil.rmtree(sub, ignore_errors=True)
-            feitos.add(mes)
-            meta["caged_ate"] = f"{MESES[int(mes[4:]) - 1]}/{mes[:4]}"
-            log(f"Caged {mes}: {n} movimentações no recorte.")
+            for (c, ano), v in mov_r.items():
+                x = ms[c]["caged"].setdefault(ano, [0, 0, 0] + [0] * len(SETORES))
+                for j, y in enumerate(v):
+                    x[j] += y
+            for (c, ano), v in mov_br.items():
+                x = br["m"].setdefault(c, {}).setdefault("caged", {}).setdefault(ano, [0, 0, 0])
+                for j, y in enumerate(v):
+                    x[j] += y
+            if soma_r:
+                feitos.add(mes)
+                meta["caged_ate"] = f"{MESES[int(mes[4:]) - 1]}/{mes[:4]}"
+            if soma_br:
+                feitos_br.add(mes)
+                br["caged_ate"] = f"{MESES[int(mes[4:]) - 1]}/{mes[:4]}"
+            log(f"Caged {mes}: {n} movimentações no recorte" + (f", {sum(1 for _ in mov_br)} pares município-ano no Brasil." if soma_br else "."))
         except Exception as e:  # noqa: BLE001
             log(f"Caged {mes}: falha ({e}); fica para a próxima execução.")
         finally:
@@ -345,6 +379,7 @@ def caged(ms: dict, antes: dict, meta: dict) -> None:
     for m in ms.values():
         m["caged"] = dict(sorted(m["caged"].items()))
     meta["caged_meses"] = sorted(feitos)
+    br["caged_meses"] = sorted(feitos_br)
 
 
 # ---------------------------------------------------------------- cobertura vacinal (SI-PNI, TabNet)
@@ -434,6 +469,7 @@ def main() -> int:
     if not ms:
         log("Sem data/municipios.json: rode antes a coleta principal.")
         return 0
+    br = painel_brasil()
     so = set(sys.argv[1:])   # permite rodar só algumas partes: python complementos.py rais caged
     etapas = (("vacinacao", vacinacao), ("rais", rais), ("cnpj", cnpj), ("caged", caged))
     for nome, f in etapas:
@@ -445,7 +481,7 @@ def main() -> int:
             continue
         t0 = time.time()
         try:
-            f(ms, antes, meta)
+            f(ms, antes, meta, br) if nome in ("rais", "caged") else f(ms, antes, meta)
         except Exception as e:  # noqa: BLE001
             log(f"{nome}: falha ({e}); dados anteriores mantidos.")
             for c, m in ms.items():
@@ -465,7 +501,35 @@ def main() -> int:
     }
     SAIDA.write_text(json.dumps(saida, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     log(f"Complementos gravados: {sum(1 for m in ms.values() if m)} municípios.")
+    if br["seis"]:
+        grava_brasil(br)
     return 0
+
+
+def painel_brasil() -> dict:
+    """Estado do arquivo nacional de emprego; sem data/brasil.json, a parte nacional fica de fora."""
+    try:
+        cods = [m["c"] for m in json.loads((RAIZ / "data" / "brasil.json").read_text(encoding="utf-8"))["municipios"]]
+    except Exception:  # noqa: BLE001
+        cods = []
+    try:
+        ant = json.loads(SAIDA_BR.read_text(encoding="utf-8")) if SAIDA_BR.exists() else {}
+    except Exception:  # noqa: BLE001
+        ant = {}
+    return {"seis": {str(c)[:6]: c for c in cods}, "rais_anos": ant.get("rais_anos") or [], "caged_meses": ant.get("caged_meses") or [],
+            "caged_ate": ant.get("caged_ate"), "m": {int(c): v for c, v in (ant.get("municipios") or {}).items()}}
+
+
+def grava_brasil(br: dict) -> None:
+    saida = {
+        "atualizado": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "fontes": "Ministério do Trabalho e Emprego (RAIS e Novo Caged)",
+        "unidades": {"rais": "vínculos ativos em 31/12, vínculos por setor: " + ", ".join(SETORES), "caged": "admissões, desligamentos e saldo"},
+        "setores": list(SETORES), "rais_anos": br["rais_anos"], "caged_meses": br["caged_meses"], "caged_ate": br["caged_ate"],
+        "municipios": {str(c): {k: dict(sorted(v.items())) for k, v in m.items() if v} for c, m in sorted(br["m"].items()) if m},
+    }
+    SAIDA_BR.write_text(json.dumps(saida, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    log(f"Emprego do Brasil gravado: {len(saida['municipios'])} municípios, RAIS {br['rais_anos'][:1]}…{br['rais_anos'][-1:]}, Caged até {br['caged_ate']}.")
 
 
 if __name__ == "__main__":
