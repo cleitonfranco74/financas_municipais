@@ -1,0 +1,41 @@
+name: Sonda governos (temporário)
+on:
+  push:
+    branches: [claude/sweet-albattani-q7n9og]
+jobs:
+  t:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          pip -q install requests
+          python - <<'PY'
+          import requests, json
+          H={"User-Agent":"BrasilEmDados/1.0 (painel educacional; github.com/cleitonfranco74/financas_municipais)"}
+          def g(u,**k):
+              try:
+                  r=requests.get(u,headers=H,timeout=60,**k); return r
+              except Exception as e: print("ERRO",u,e)
+          print("### SGS")
+          for c in [7326,24369,13522,432,13762,4513,5793,4649,1619,3698,4380,22099,24380,1207,4192,21619]:
+              r=g(f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{c}/dados/ultimos/3?formato=json")
+              print(c, r.status_code if r is not None else "-", (r.text[:200] if r is not None else ""))
+          print("### WB")
+          for ind in ["NY.GDP.PCAP.CD","NY.GDP.MKTP.KD.ZG","SL.UEM.TOTL.ZS","VC.IHR.PSRC.P5","SI.POV.GINI","SI.POV.DDAY","SI.POV.UMIC","SP.DYN.LE00.IN","SP.DYN.IMRT.IN","SE.XPD.TOTL.GD.ZS","SH.XPD.GHED.GD.ZS","SE.TER.ENRR","EN.GHG.ALL.MT.CE.AR5","AG.LND.FRST.ZS","FP.CPI.TOTL.ZG","GC.DOD.TOTL.GD.ZS"]:
+              r=g(f"https://api.worldbank.org/v2/country/BRA/indicator/{ind}?format=json&per_page=80&date=1994:2026")
+              try:
+                  js=r.json(); d=[(x["date"],x["value"]) for x in js[1] if x["value"] is not None]
+                  print(ind, js[1][0]["indicator"]["value"], "| n",len(d), "| ultimos", d[:3], "| primeiro", d[-1:])
+              except Exception as e: print(ind,"ERRO",r.status_code if r is not None else "", str(e)[:100])
+          print("### Wiki")
+          for t in ["Fernando_Henrique_Cardoso","Luiz_Inácio_Lula_da_Silva","Dilma_Rousseff","Michel_Temer","Jair_Bolsonaro"]:
+              r=g("https://pt.wikipedia.org/w/api.php",params={"action":"query","titles":t,"prop":"pageimages","piprop":"original|name","format":"json"})
+              try:
+                  p=list(r.json()["query"]["pages"].values())[0]; nome=p.get("pageimage"); print(t, nome, p.get("original",{}).get("source"))
+                  r2=g("https://commons.wikimedia.org/w/api.php",params={"action":"query","titles":"File:"+nome,"prop":"imageinfo","iiprop":"url|extmetadata","iiurlwidth":400,"format":"json"})
+                  ii=list(r2.json()["query"]["pages"].values())[0]["imageinfo"][0]; m=ii["extmetadata"]
+                  print("   thumb", ii.get("thumburl"), "| autor", m.get("Artist",{}).get("value","")[:120], "| lic", m.get("LicenseShortName",{}).get("value"))
+              except Exception as e: print(t,"ERRO",e)
+          print("### PRODES")
+          for u in ["https://terrabrasilis.dpi.inpe.br/api/v1/deforestation/rates/legal-amazon","https://terrabrasilis.dpi.inpe.br/app/api/v1/deforestation/rates/legal-amazon"]:
+              r=g(u); print(u, r.status_code if r is not None else "-", r.text[:300] if r is not None else "")
+          PY
