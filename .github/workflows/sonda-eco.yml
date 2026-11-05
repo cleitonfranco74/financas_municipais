@@ -1,8 +1,0 @@
-name: Sonda economia (temporário)
-on: { push: { branches: [claude/sweet-albattani-q7n9og], paths: [scripts/sonda_eco.py, .github/workflows/sonda-eco.yml] } }
-jobs:
-  s:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: pip install requests && python scripts/sonda_eco.py
