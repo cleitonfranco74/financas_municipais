@@ -1,0 +1,35 @@
+name: Sonda MCMV (temporário)
+on:
+  push:
+    branches: [claude/sweet-albattani-q7n9og]
+jobs:
+  t:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          pip -q install requests
+          python - <<'PY'
+          import requests, re, json
+          H={"User-Agent":"Mozilla/5.0"}
+          def get(u, **k):
+              try:
+                  r=requests.get(u,headers=H,timeout=60,**k); print("==",u,r.status_code,r.headers.get("content-type"),len(r.content)); return r
+              except Exception as e: print("==",u,"ERRO",e)
+          for u in ["https://dados.gov.br/api/3/action/package_search?q=minha%20casa%20minha%20vida&rows=10",
+                    "https://dados.gov.br/dados/conjuntos-dados?q=minha+casa+minha+vida",
+                    "https://www.gov.br/cidades/pt-br/acesso-a-informacao/dados-abertos",
+                    "https://www.gov.br/cidades/pt-br/assuntos/habitacao/minha-casa-minha-vida/dados-abertos",
+                    "https://www.gov.br/cidades/pt-br/assuntos/habitacao/minha-casa-minha-vida"]:
+              r=get(u)
+              if r is not None and r.ok:
+                  t=r.text
+                  links=sorted(set(re.findall(r'https?://[^"\'<> ]+?\.(?:csv|zip|xlsx|json)(?:\?[^"\'<> ]*)?',t)))
+                  print(" links:", links[:40])
+                  print(" hrefs mcmv:", sorted(set(h for h in re.findall(r'href="([^"]+)"',t) if re.search(r'(?i)dados|mcmv|minha-casa|habita',h)))[:40])
+                  if "package_search" in u:
+                      try:
+                          for p in r.json()["result"]["results"]:
+                              print(" PKG", p["name"], p.get("title"))
+                              for rs in p.get("resources",[]): print("   ", rs.get("format"), rs.get("name"), rs.get("url"))
+                      except Exception as e: print(e)
+          PY
