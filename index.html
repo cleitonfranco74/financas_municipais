@@ -52,13 +52,12 @@ h1 em{font-style:normal;color:var(--accent)}
 .busca-res button[aria-selected="true"],.busca-res button:hover{background:var(--surface)}
 .busca-res span{grid-row:span 2;font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);align-self:center}
 .busca-res small{color:var(--ink-2);font-size:12.5px}
-nav.temas{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+nav.temas{display:flex;flex-wrap:wrap;gap:8px}
 nav.temas::-webkit-scrollbar{display:none}
-@media (min-width:720px){nav.temas{flex-wrap:wrap;overflow:visible}}
-@media (max-width:719px){nav.temas{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent);padding-right:40px}}
 nav.temas button{flex:none;display:inline-flex;align-items:center;gap:8px;border:0;background:var(--surface);color:var(--ink-2);border-radius:999px;padding:10px 16px;font-weight:700;font-size:14.5px}
 nav.temas button:hover{color:var(--ink)}
 nav.temas button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+@media (max-width:719px){nav.temas{gap:6px}nav.temas button{padding:8px 12px;font-size:13.5px;gap:6px}nav.temas button svg{width:16px;height:16px}}
 .tema-cab{margin-bottom:14px}
 .tema-t{display:flex;align-items:center;gap:10px;font-size:clamp(26px,4vw,36px);letter-spacing:-.03em;margin:4px 0 10px}
 .tema-ind{border:1px solid var(--line);border-radius:16px;padding:6px 14px;margin-bottom:14px;background:var(--bg-2)}
@@ -293,7 +292,7 @@ html{--tbh:64px}
   <span>© 2026 · Ferramenta educacional: correlações não são, por si, relações de causa e efeito</span>
 </footer>
 <script src="assets/governos_texto.js?v=2026-11-05a" defer></script>
-<script src="assets/municipios.js?v=2026-11-05m" defer></script>
+<script src="assets/municipios.js?v=2026-11-05n" defer></script>
 <script src="assets/feedback.js" data-site="Finanças Municipais" data-cor="#c8f250" defer></script>
 </body>
 </html>
