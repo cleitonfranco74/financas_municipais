@@ -52,13 +52,12 @@ h1 em{font-style:normal;color:var(--accent)}
 .busca-res button[aria-selected="true"],.busca-res button:hover{background:var(--surface)}
 .busca-res span{grid-row:span 2;font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);align-self:center}
 .busca-res small{color:var(--ink-2);font-size:12.5px}
-nav.temas{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+nav.temas{display:flex;flex-wrap:wrap;gap:8px}
 nav.temas::-webkit-scrollbar{display:none}
-@media (min-width:720px){nav.temas{flex-wrap:wrap;overflow:visible}}
-@media (max-width:719px){nav.temas{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent);padding-right:40px}}
 nav.temas button{flex:none;display:inline-flex;align-items:center;gap:8px;border:0;background:var(--surface);color:var(--ink-2);border-radius:999px;padding:10px 16px;font-weight:700;font-size:14.5px}
 nav.temas button:hover{color:var(--ink)}
 nav.temas button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+@media (max-width:719px){nav.temas{gap:6px}nav.temas button{padding:8px 12px;font-size:13.5px;gap:6px}nav.temas button svg{width:16px;height:16px}}
 .tema-cab{margin-bottom:14px}
 .tema-t{display:flex;align-items:center;gap:10px;font-size:clamp(26px,4vw,36px);letter-spacing:-.03em;margin:4px 0 10px}
 .tema-ind{border:1px solid var(--line);border-radius:16px;padding:6px 14px;margin-bottom:14px;background:var(--bg-2)}
@@ -244,6 +243,21 @@ pre.codigo{background:var(--bg);border:1px solid var(--line);border-radius:12px;
 svg.mapa path:hover{stroke:var(--ink);stroke-width:1.2}
 .bar-el{display:grid;grid-template-columns:44px minmax(0,1fr) 92px;gap:10px;align-items:center;margin:9px 0;font-size:12.5px;color:var(--ink-2)}
 .pb{display:flex;height:18px;border-radius:6px;overflow:hidden;gap:1px;background:var(--surface-2)} .pb i{display:block;height:100%}
+.ps{margin-top:12px}.ps summary{cursor:pointer;list-style:none}.ps summary::-webkit-details-marker{display:none}.ps summary h3{display:inline}.ps summary h3::after{content:" ›";color:var(--accent)}.ps[open] summary h3::after{content:" ⌄"}
+.ps-g{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}.ps-g h4{margin:0 0 6px;font-size:15px}.ps-g ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14px;color:var(--ink-2)}
+@media (max-width:719px){.ps-g{grid-template-columns:1fr}}
+.ps-par{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin-top:8px;font-size:13.5px;color:var(--ink-2)}.ps-par span{display:inline-flex;flex-direction:column}.ps-par small{color:var(--muted);font-size:11.5px}.ps-par b{font-size:20px}.ps-par p{flex:1 1 260px;margin:0}
+.rod{margin-top:40px;border-top:1px solid var(--line);padding:36px 20px 24px}
+.rod-in{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:28px}
+.rod-logo{display:inline-flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.02em;color:var(--ink);text-decoration:none}
+.rod-marca p{color:var(--ink-2);font-size:15px;line-height:1.5;max-width:340px;margin:14px 0 0}
+.rod-col h2{font-size:14px;font-weight:700;margin:4px 0 14px;color:var(--ink)}
+.rod-col ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.rod-col a{display:inline-flex;align-items:center;gap:10px;color:var(--ink-2);text-decoration:none;font-size:15px}
+.rod-col a:hover{color:var(--ink)}
+.rod-col svg{flex:none}
+@media (max-width:719px){.rod-in{grid-template-columns:1fr 1fr}.rod-marca{grid-column:1/-1}}
+.rod .autor{margin-top:32px}
 .autor{max-width:1200px;margin:28px auto 0;padding-top:16px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;font-size:12.5px;color:var(--muted)}
 .autor b{color:var(--ink-2);font-weight:600}
 html{--tbh:64px}
@@ -268,7 +282,7 @@ html{--tbh:64px}
 </head>
 <body>
 <header class="topbar"><div class="tb-in">
-  <a class="tb-brand" href="./" aria-label="Brasil em Dados, início"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect x="3" y="3" width="24" height="24" rx="7" fill="var(--accent)"/><path d="M8 21V12l7-4 7 4v9M12 21v-5h6v5" fill="none" stroke="var(--accent-ink)" stroke-width="2" stroke-linejoin="round"/></svg>Brasil em Dados</a>
+  <a class="tb-brand" href="./" aria-label="Brasil em Dados, início"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><g fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="2" y="6" width="26" height="18" rx="3"/><path d="M15 8.6L25.4 15 15 21.4 4.6 15z"/><circle cx="15" cy="15" r="4.2"/><path d="M10.9 14.3c2.8-1 5.7-.6 8.2 1.1"/></g></svg>Brasil em Dados</a>
   <nav aria-label="Outros sites"><a href="./" aria-current="page">Painel</a><a href="https://cleitonfranco74.github.io/dashboard_financeiro/">Livro-Caixa</a><a href="https://cleitonfranco74.github.io/boibolsa/">Boi na Bolsa</a></nav>
   <a class="tb-cta" href="https://github.com/cleitonfranco74/financas_municipais">Código</a>
 </div><div class="tb-menu"><a href="./" aria-current="page">Painel</a><a href="https://cleitonfranco74.github.io/dashboard_financeiro/">Livro-Caixa</a><a href="https://cleitonfranco74.github.io/boibolsa/">Boi na Bolsa</a></div></header>
@@ -288,12 +302,28 @@ html{--tbh:64px}
   <main id="conteudo" aria-live="polite"></main>
   <div data-fb-util="Finanças municipais"></div>
 </div>
-<footer class="autor">
-  <span>Desenvolvido por <b>Prof. Dr. Cleiton Franco</b> · Doutor em Economia · Professor Adjunto da UNEMAT, Câmpus de Sinop</span>
-  <span>© 2026 · Ferramenta educacional: correlações não são, por si, relações de causa e efeito</span>
+<footer class="rod" aria-label="Rodapé">
+  <div class="rod-in">
+    <div class="rod-marca">
+      <a class="rod-logo" href="./"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><g fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="2" y="6" width="26" height="18" rx="3"/><path d="M15 8.6L25.4 15 15 21.4 4.6 15z"/><circle cx="15" cy="15" r="4.2"/><path d="M10.9 14.3c2.8-1 5.7-.6 8.2 1.1"/></g></svg>Brasil em Dados</a>
+      <p>Dados oficiais do Brasil e dos municípios em gráficos simples, para qualquer pessoa entender.</p>
+    </div>
+    <nav class="rod-col" aria-label="Temas"><h2>Temas</h2><ul id="rodTemas"></ul></nav>
+    <nav class="rod-col" aria-label="O site"><h2>O site</h2><ul>
+      <li><a href="#governos" data-rod>Governos</a></li>
+      <li><a href="#nacional" data-rod>Economia do Brasil</a></li>
+      <li><a href="#mun" data-rod>Municípios</a></li>
+      <li><a href="#metodo" data-rod>Método e fontes</a></li>
+      <li><a href="https://github.com/cleitonfranco74/financas_municipais">Código e dados</a></li>
+      <li><a href="https://cleitonfranco74.github.io/dashboard_financeiro/">Livro-Caixa</a></li>
+      <li><a href="https://cleitonfranco74.github.io/boibolsa/">Boi na Bolsa</a></li>
+    </ul></nav>
+  </div>
+  <div class="autor"><span>Desenvolvido por <b>Prof. Dr. Cleiton Franco</b> · Doutor em Economia · Professor Adjunto da UNEMAT, Câmpus de Sinop</span>
+  <span>© 2026 · Ferramenta educacional: correlações não são, por si, relações de causa e efeito</span></div>
 </footer>
 <script src="assets/governos_texto.js?v=2026-11-05a" defer></script>
-<script src="assets/municipios.js?v=2026-11-05m" defer></script>
+<script src="assets/municipios.js?v=2026-11-05p" defer></script>
 <script src="assets/feedback.js" data-site="Finanças Municipais" data-cor="#c8f250" defer></script>
 </body>
 </html>

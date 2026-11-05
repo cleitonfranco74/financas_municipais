@@ -1479,6 +1479,7 @@
     const u = i.unid;
     if (u === "pct") return v => `${nf(v, 1)}%`;
     if (u === "pctpib") return v => `${nf(v, 1)}% do PIB`;
+    if (u === "litros") return v => `${nf(v, 0)} litros`;
     if (u === "usd") return v => `US$ ${nf(v, 0)}`;
     if (u === "usdbi") return v => Math.abs(v) >= 1000 ? `US$ ${nf(v / 1000, 2)} tri` : `US$ ${nf(v, v < 10 ? 1 : 0)} bi`;
     if (u === "brl") return v => `R$ ${nf(v, v < 100 ? 2 : 0)}`;
@@ -1524,12 +1525,12 @@
   function economiaBR(){
     if (!GV){ carregaGov(); main.innerHTML = `<section class="panel"><p class="sub">${GVfalhou ? "Os dados nacionais ainda não foram coletados." : "Carregando…"}</p></section>`; return; }
     ECO_LISTA = [];
-    const TEMAS = ["Economia", "Trabalho e renda", "Contas públicas", "Setor externo"];
+    const TEMAS = ["Economia", "Trabalho e renda", "Custo de vida", "Contas públicas", "Setor externo"];
     const cartao = i => {
       const f = fmtGov(i), anos = Object.keys(i.v).filter(a => +a >= 1995).sort(), a0 = anos[0], a1 = anos[anos.length - 1], v0 = i.v[a0], v1 = i.v[a1];
       let txt = "", d = 0;
       if (anos.length > 1){
-        if (ABS[i.unid] || !(v0 > 0)){ d = v1 - v0; txt = `${d >= 0 ? "+" : "−"}${nf(Math.abs(d), i.unid === "gini" ? 3 : 1)}${i.unid === "pct" || i.unid === "pctpib" ? " p.p." : ""}`; }
+        if (ABS[i.unid] || !(v0 > 0)){ d = v1 - v0; txt = `${d >= 0 ? "+" : "−"}${i.unid === "usdbi" || i.unid === "brl" || i.unid === "usd" ? f(Math.abs(d)) : nf(Math.abs(d), i.unid === "gini" ? 3 : 1)}${i.unid === "pct" || i.unid === "pctpib" ? " p.p." : ""}`; }
         else { d = v1 / v0 - 1; txt = `${d >= 0 ? "+" : "−"}${nf(Math.abs(d) * 100, 0)}%`; }
       }
       const bom = i.mais ? Math.sign(d) * i.mais : 0, parc = i.parcial?.[a1] ? ` (até ${i.parcial[a1].slice(5)}/${a1})` : "";
@@ -1540,7 +1541,7 @@
     };
     const blocos = TEMAS.map(t => { const is = GV.indicadores.filter(i => i.tema === t); return is.length ? `<section class="ind-g"><h2>${esc(t)}</h2><div class="eco-g">${is.map(cartao).join("")}</div></section>` : ""; }).join("");
     main.innerHTML = `<div class="explica" style="margin-bottom:12px"><p>Os grandes números do <b>Brasil</b>, ano a ano, desde 1995, primeiro ano depois da implantação do real. <b>Toque num indicador</b> para abrir o gráfico grande com o governo de cada período e a comparação por governo.</p></div>
-      ${blocos}<p class="nota">Verde: melhorou; vermelho: piorou; branco: sem sentido de melhor ou pior (juros, dólar, importações). Fontes: Banco Mundial e Banco Central (SGS); atualizado em ${esc(GV.atualizado)}. Veja também o painel dos <a href="#governos">Governos</a>.</p>`;
+      ${blocos}<p class="nota">Verde: melhorou; vermelho: piorou; branco: sem sentido de melhor ou pior (juros, dólar, importações). Fontes: Banco Mundial, Banco Central (SGS), IBGE (PNAD Contínua) e ANP (preços de combustíveis); atualizado em ${esc(GV.atualizado)}. Veja também o painel dos <a href="#governos">Governos</a>.</p>`;
   }
   function governosAba(){
     if (!GV){ carregaGov(); main.innerHTML = `<section class="panel"><p class="sub">${GVfalhou ? "Os dados dos governos ainda não foram coletados (Action “Atualizar painel dos governos”)." : "Carregando os governos…"}</p></section>`; return; }
@@ -1677,6 +1678,17 @@
     const parUf = D.ufs.map(uf => { const g = M.filter(m => m.uf === uf), c2 = correl(g.map(m => VARS[cj].v(m)), g.map(m => VARS[ci].v(m)), sp);
       return c2 ? comIc({ n: `${uf} (${c2.n})`, r: c2.r, nn: c2.n, st: `uf:${uf}`, destaque: uf === st.uf }) : null; }).filter(Boolean).sort((a, b) => b.r - a.r);
     const geralPar = correl(M.map(m => VARS[cj].v(m)), M.map(m => VARS[ci].v(m)), sp);
+    const xsP = ms.map(m => VARS[cj].v(m)), ysP = ms.map(m => VARS[ci].v(m)), rP = correl(xsP, ysP, false), rS = correl(xsP, ysP, true);
+    const difPS = rP && rS ? Math.abs(rP.r - rS.r) : 0, sinal = r => `<b style="color:${r >= 0 ? "#2dd4bf" : "#f97316"}">${r >= 0 ? "+" : "−"}${nf(Math.abs(r), 2)}</b>`;
+    const ambos = rP && rS ? `<div class="ps-par"><span><small>Pearson</small>${sinal(rP.r)}</span><span><small>Spearman</small>${sinal(rS.r)}</span>
+      <p>${difPS < .05 ? "Os dois quase coincidem: a relação é parecida com uma reta e os valores extremos não mudam a leitura." : rS.r * rS.r > rP.r * rP.r ? "Spearman mais forte que Pearson: a relação existe, mas não é uma reta (é uma curva) ou alguns municípios extremos atrapalham a medida linear. Prefira Spearman para este par." : "Pearson mais forte que Spearman: provavelmente poucos municípios com valores extremos puxam a reta. Confira no gráfico se a relação vale para a maioria."}</p></div>` : "";
+    const quadroPS = `<details class="explica ps"><summary><h3>Pearson ou Spearman: qual a diferença?</h3></summary>
+      <div class="ps-g">
+        <div><h4>Pearson (r)</h4><ul><li>Usa os <b>valores</b> das variáveis.</li><li>Mede se os pontos se alinham numa <b>reta</b> (relação linear).</li><li>É <b>sensível a valores extremos</b>: um município muito diferente dos outros pode mudar muito o resultado.</li><li>Funciona melhor quando as variáveis não têm caudas longas (distribuição parecida com a normal).</li></ul></div>
+        <div><h4>Spearman (ρ)</h4><ul><li>Usa a <b>ordem</b> (postos): quem é o 1º, o 2º, o 3º…</li><li>Mede se as duas variáveis <b>sobem ou descem juntas</b>, mesmo que não seja em linha reta (relação monotônica).</li><li>É <b>robusto a valores extremos</b>: o maior município conta só como “o primeiro”, não importa o tamanho.</li><li>É o mais indicado para dados assimétricos, como receita, PIB e população, comuns entre municípios.</li></ul></div>
+      </div>
+      <p><b>Exemplo:</b> se uma variável cresce cada vez mais rápido quando a outra aumenta, os pontos formam uma curva: Spearman fica perto de 1 (a ordem é perfeita) e Pearson fica menor (os pontos fogem da reta). Se só uma capital rica destoa de todos, Pearson pode subir ou cair por causa dela; Spearman quase não muda.</p>
+      <p><b>Como usar:</b> compare os dois (o gráfico do par abaixo mostra ambos). Se forem parecidos, a leitura é segura. Se forem muito diferentes, olhe a dispersão: a diferença indica curva ou valores extremos. Os dois vão de −1 a +1, e nenhum dos dois mostra causa e efeito.</p></details>`;
     // 3) o par escolhido ano a ano
     const anosC = [...new Set(M.flatMap(m => [...Object.keys(m.fin || {}), ...Object.keys(m.desm || {})]))].filter(a => +a >= 2016).sort();
     let tempo = `<p class="nota">${!VARS[ci].a ? esc(VARS[ci].n) : esc(VARS[cj].n)} não varia de ano para ano no painel (${(!VARS[ci].a ? VARS[ci] : VARS[cj]).l.includes("Censo") ? "vem do Censo 2022" : "é uma medida do período todo"}). Escolha outro par na matriz.</p>`;
@@ -1692,12 +1704,12 @@
     const pts = ms.map(m => { const g = grupo(nota(m.ele?.["2020"]?.[0])); return { x: X.v(m), y: Y.v(m), c: g.c, id: m.c, t: `${m.n} (${m.uf}) · ${g.n}\n${X.n}: ${X.f(X.v(m))}\n${Y.n}: ${Y.f(Y.v(m))}` }; }).filter(p => p.x != null && p.y != null && isFinite(p.x) && isFinite(p.y));
     const d = ci !== cj ? dispersao(pts, { fx: X.f, fy: Y.f, nx: X.l, ny: Y.l }) : "";
     main.innerHTML = `
-      <div class="explica"><h3>Como ler</h3><p>A correlação vai de −1 a +1 e mede quanto duas características dos municípios${st.uf ? ` de ${st.uf}` : ""} andam juntas. <b style="color:#2dd4bf">Verde-água</b>: as duas sobem juntas; <b style="color:#f97316">laranja</b>: quando uma sobe, a outra desce. <b>Pearson</b> mede relação linear e é sensível a valores extremos; <b>Spearman</b> usa a ordem (postos) e capta qualquer relação que só sobe ou só desce. Correlação não é causa: veja as abas Economia política e Eleições acirradas.</p></div>
+      <div class="explica"><h3>Como ler</h3><p>A correlação vai de −1 a +1 e mede quanto duas características dos municípios${st.uf ? ` de ${st.uf}` : ""} andam juntas. <b style="color:#2dd4bf">Verde-água</b>: as duas sobem juntas; <b style="color:#f97316">laranja</b>: quando uma sobe, a outra desce. <b>Pearson</b> mede relação linear e é sensível a valores extremos; <b>Spearman</b> usa a ordem (postos) e capta qualquer relação que só sobe ou só desce. Correlação não é causa: veja as abas Economia política e Eleições acirradas.</p></div>${quadroPS}
       <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>${esc(VARS[cv].n)} contra todas as outras</h2><p class="sub">Correlação com cada uma das outras ${K - 1} variáveis, da mais positiva à mais negativa (${ms.length} municípios; finanças: médias de 2021 a 2024, a preços de ${REF}). O traço sobre a barra é o intervalo de 95% (transformação z de Fisher): se ele cruza o zero, a correlação não é significativa a 5%. Clique numa barra para ver o gráfico do par.</p></div>
         <div class="ctl" style="padding:8px 12px"><label class="f"><span>Variável</span><select data-stsel="cvar">${VARS.map((V, i) => `<option value="${i}" ${i === cv ? "selected" : ""}>${esc(V.n)}</option>`).join("")}</select></label>
           <div class="f"><span>Coeficiente</span>${segSt("corr", [["p", "Pearson"], ["s", "Spearman"]])}</div></div></div>
         ${barrasR(perfil, { rotulo: rotB })}</section>
-      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>${esc(Y.n)} × ${esc(X.n)}</h2><p class="sub">${c ? `r de ${sp ? "Spearman" : "Pearson"} = <b>${nf(c.r, 2)}</b> (${forca(c.r)}), ${nf(c.n)} municípios, valor-p ${c.p < .001 ? "&lt; 0,001" : nf(c.p, 3)}. Linha: mínimos quadrados.` : "Poucos municípios com os dois dados."} Cor: orientação do prefeito eleito em 2020. Clique num ponto para abrir o município.</p></div>
+      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>${esc(Y.n)} × ${esc(X.n)}</h2><p class="sub">${c ? `r de ${sp ? "Spearman" : "Pearson"} = <b>${nf(c.r, 2)}</b> (${forca(c.r)}), ${nf(c.n)} municípios, valor-p ${c.p < .001 ? "&lt; 0,001" : nf(c.p, 3)}. Linha: mínimos quadrados.` : "Poucos municípios com os dois dados."} Cor: orientação do prefeito eleito em 2020. Clique num ponto para abrir o município.</p>${ambos}</div>
         <div class="ctl" style="padding:8px 12px">
           <label class="f"><span>Eixo vertical</span><select id="cPY">${VARS.map((V, i) => `<option value="${i}" ${i === ci ? "selected" : ""}>${esc(V.n)}</option>`).join("")}</select></label>
           <label class="f"><span>Eixo horizontal</span><select id="cPX">${VARS.map((V, i) => `<option value="${i}" ${i === cj ? "selected" : ""}>${esc(V.n)}</option>`).join("")}</select></label></div></div>
@@ -2156,7 +2168,13 @@ for i, nome in enumerate(m.model.exog_names):
   const temaDe = aba => TEMAS_NAV.find(t => t.abas.includes(aba)) || TEMAS_NAV[0];
   const ultimaAba = {};
   const icone = k => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
+  function rodape(){
+    const ul = document.getElementById("rodTemas"); if (!ul || ul.childElementCount) return;
+    ul.innerHTML = TEMAS_NAV.filter(x => !["tudo", "metodo"].includes(x.k)).map(x => `<li><a href="#${x.abas[0]}" data-rod>${icone(x.k)}${esc(x.n)}</a></li>`).join("");
+    document.querySelector(".rod").addEventListener("click", e => { if (e.target.closest("[data-rod]")) setTimeout(() => document.getElementById("temas")?.scrollIntoView({ behavior: "smooth", block: "start" }), 30); });
+  }
   function chips(){
+    rodape();
     const t = temaDe(st.aba);
     document.getElementById("temas").innerHTML = TEMAS_NAV.map(x => `<button type="button" role="tab" data-tema="${x.k}" aria-selected="${x.k === t.k}">${icone(x.k)}${esc(x.n)}</button>`).join("");
     const b = document.querySelector(`#temas [aria-selected="true"]`); if (b) b.scrollIntoView({ block: "nearest", inline: "nearest" });
