@@ -1,4 +1,4 @@
-# Brasil em Números
+# Brasil em Dados
 
 Painel das finanças públicas dos municípios da **Amazônia Legal** (AC, AM, AP, MA, MT, PA, RO, RR e TO), de **Goiás** e de **Mato Grosso do Sul**, desde 2016, com a orientação ideológica do partido do prefeito e a expansão do agronegócio.
 
