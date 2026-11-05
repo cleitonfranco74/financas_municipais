@@ -312,7 +312,7 @@
       const i1 = vals.map((v, i) => v != null && isFinite(v) ? i : -1).filter(i => i >= 0);
       if (!i1.length) return "";
       const ia = i1[0], ib = i1[i1.length - 1], mu = ia < ib ? mudanca(t, vals[ia], vals[ib]) : null;
-      const gid = String(++grafN); GRAFS.set(gid, { series: [{ n: t.n, c: "#c8f250", v: Object.fromEntries(ANOS.map((a, i) => [a, vals[i]])) }], anos: ANOS, fmt: t.f, governos: faixasMandato(m) });
+      const gid = String(++grafN); GRAFS.set(gid, { series: [{ n: t.n, c: "#c8f250", v: Object.fromEntries(ANOS.map((a, i) => [a, vals[i]])) }], anos: ANOS, fmt: t.f, governos: faixasMandato(m), mais: t.mais });
       return `<div class="kpi traj" role="button" tabindex="0" data-trajg="${gid}" title="Abrir em detalhe, por mandato"><span>${esc(t.n)}</span><b>${esc(t.f(vals[ib]))}</b>${spark(vals)}
         <small>${mu ? `<em style="color:${corBom(mu.bom)};font-style:normal;font-weight:700">${mu.txt}</em> desde ${ANOS[ia]}, ` : ""}em ${ANOS[ib]}</small></div>`;
     }).join("");
@@ -1235,7 +1235,8 @@
     fetch("data/estados.json").then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => {
       const defl = a => d.ipca?.[REF] && d.ipca?.[a] ? d.ipca[REF] / d.ipca[a] : deflator(a);
       // por ano: valores nominais em reais (para as razões com o PIB) e o deflator (para os valores por habitante)
-      ES = { atualizado: d.atualizado, entes: d.entes.map(e => ({ ...e, y: Object.fromEntries(Object.entries(e.fin || {}).map(([a, v]) => {
+      const SIG = { 11: "RO", 12: "AC", 13: "AM", 14: "RR", 15: "PA", 16: "AP", 17: "TO", 21: "MA", 22: "PI", 23: "CE", 24: "RN", 25: "PB", 26: "PE", 27: "AL", 28: "SE", 29: "BA", 31: "MG", 32: "ES", 33: "RJ", 35: "SP", 41: "PR", 42: "SC", 43: "RS", 50: "MS", 51: "MT", 52: "GO", 53: "DF" };
+      ES = { atualizado: d.atualizado, entes: d.entes.map(e => ({ ...e, uf: e.esfera === "E" && SIG[e.c] ? SIG[e.c] : e.uf, y: Object.fromEntries(Object.entries(e.fin || {}).map(([a, v]) => {
         const n = e.nat?.[a];
         return [a, { desp: v[3] * 1e3, inv: v[4] * 1e3, nat: n ? n.map(x => x * 1e3) : null, fn: e.fn?.[a] ? Object.fromEntries(Object.entries(e.fn[a]).map(([k, x]) => [k, x * 1e3])) : null,
           pib: e.pib?.[a] ? e.pib[a] * 1e3 : null, pop: e.pop?.[a] || null, k: defl(a) }]; })) })) };
@@ -1423,7 +1424,7 @@
       }).join("");
       return cs ? `<section class="ind-g"><h2>${esc(tema)}</h2>${cs}</section>` : "";
     }).join("");
-    IND_LISTA = lista.map(({ it, anos }) => ({ g: { series: [{ n: it.n, c: "#c8f250", v: it.v }], anos, fmt: it.f, governos: gov }, titulo: it.n + (st.uf ? ` · municípios de ${st.uf}` : ""), sub: it.d }));
+    IND_LISTA = lista.map(({ it, anos }) => ({ g: { series: [{ n: it.n, c: "#c8f250", v: it.v }], anos, fmt: it.f, governos: gov, mais: it.mais }, titulo: it.n + (st.uf ? ` · municípios de ${st.uf}` : ""), sub: it.d }));
     main.innerHTML = `<div class="explica" style="margin-bottom:12px"><p>Os principais números ${st.uf ? `dos municípios de <b>${st.uf}</b>` : "dos municípios do painel"}, somados ou ponderados pela população. <b>Toque num indicador</b> para abrir o gráfico grande, com a comparação ${st.uf ? "entre os governadores" : "entre os governos federais"}, a tabela e o resumo. Use o filtro de estado acima para mudar o recorte.</p></div>${cartoes}
       <p class="nota">Verde: melhorou; vermelho: piorou (para dependência de transferências, pessoal, mortalidade, desmatamento e queimadas, cair é melhorar). Fontes: as mesmas das demais abas (Método e fontes).</p>`;
   }
@@ -1803,15 +1804,29 @@ for i, nome in enumerate(m.model.exog_names):
       corpo = linhas(vis, { anos: g.anos, fmt: g.fmt, alto: w < 560 ? 300 : 380, w, faixas: gov, ampliado: true }) +
         `<div class="det-gov">${gov.map(x => `<span><i style="background:${x.c}"></i>${esc(x.rot)}${/\(/.test(x.rot) ? "" : `<small>${x.de}–${x.ate}</small>`}</span>`).join("")}</div>`;
     } else {
-      // por governo: média de cada série no período e o que mudou (do ano anterior à posse ao último ano do governo)
-      const media2 = (v, x) => { const vs = anos.filter(a => +a >= x.de && +a <= x.ate && v[a] != null && isFinite(v[a])).map(a => v[a]); return vs.length ? media(vs) : null; };
-      const barras = colunas(gov.map(x => x.rot), visP.map(s => ({ n: s.n, c: s.c, v: gov.map(x => media2(s.v, x)) })), { fmt: g.fmt, alto: 280, w });
-      const linhasT = gov.map(x => `<tr><td><span class="chip"><i style="background:${x.c}"></i>${esc(x.rot)}</span> <small style="color:var(--muted)">${x.de}–${x.ate}</small></td>${visP.map(s => {
-        const ini = valorAte(s.v, x.de - 1, x.de - 3), fim = valorAte(s.v, x.ate, x.de); const m = ini && fim ? variacao(g.fmt, ini[1], fim[1]) : null;
-        return `<td class="num" title="${ini && fim ? esc(`${ini[0]}: ${g.fmt(ini[1])} → ${fim[0]}: ${g.fmt(fim[1])}`) : ""}">${m ? `<b style="color:${m.d > 0 ? "var(--good)" : m.d < 0 ? "var(--crit)" : "var(--muted)"}">${m.txt}</b><br><small style="color:var(--muted)">${esc(g.fmt(ini[1]))} → ${esc(g.fmt(fim[1]))}</small>` : "—"}</td>`; }).join("")}</tr>`).join("");
-      corpo = `<h3 class="mini">Média de cada governo</h3>${barras}
-        <h3 class="mini" style="margin-top:16px">O que mudou em cada governo</h3><p class="nota" style="margin-top:0">Do último ano antes da posse ao último ano do governo (ou o mais recente). Verde: subiu; vermelho: caiu (subir nem sempre é melhor: veja o indicador).</p>
-        <div class="tbwrap"><table class="tb"><thead><tr><th>Governo</th>${visP.map(s => `<th><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${s.c};margin-right:5px"></i>${esc(s.n)}</th>`).join("")}</tr></thead><tbody>${linhasT}</tbody></table></div>`;
+      // por governo, no estilo de cartões: selo melhorou/piorou/estável, mudança, mudança por ano, barra centrada
+      const s1 = vis.length === 1 ? vis[0] : s0, sentido = g.mais || 0;
+      const lin = gov.map(x => {
+        const ini = valorAte(s1.v, x.de - 1, x.de - 1) || (() => { for (let a = x.de; a <= x.ate; a++) if (s1.v[a] != null && isFinite(s1.v[a])) return [a, s1.v[a]]; return null; })();
+        const fim = valorAte(s1.v, x.ate, x.de);
+        if (!ini || !fim || fim[0] <= ini[0]) return { x, sem: true };
+        const m = variacao(g.fmt, ini[1], fim[1]), n = fim[0] - ini[0];
+        const rel = ini[1] ? (fim[1] - ini[1]) / Math.abs(ini[1]) : 0, porAno = rel / n;
+        const estavel = Math.abs(porAno) < .01;   // menos de 1% ao ano (relativo): estável
+        const sel = estavel ? "estavel" : !sentido ? (m.d > 0 ? "subiu" : "caiu") : Math.sign(m.d) * sentido > 0 ? "melhorou" : "piorou";
+        const pctTxt = !ehPct(g.fmt) && ini[1] > 0 ? `${rel >= 0 ? "+" : "−"}${nf(Math.abs(rel) * 100, 1)}%, ${porAno >= 0 ? "+" : "−"}${nf(Math.abs((Math.pow(fim[1] / ini[1], 1 / n) - 1) * 100), 1)}% ao ano` : `${m.d >= 0 ? "+" : "−"}${nf(Math.abs(/^100/.test(g.fmt(1)) ? m.d * 100 : m.d) / n, 2)} p.p. ao ano`;
+        return { x, ini, fim, m, rel, sel, pctTxt, andamento: x.ate >= anoHoje() };
+      });
+      const maxRel = Math.max(.0001, ...lin.filter(o => !o.sem).map(o => Math.abs(o.rel)));
+      const COR = { melhorou: "var(--good)", piorou: "var(--crit)", estavel: "var(--muted)", subiu: "var(--ink)", caiu: "var(--ink)" };
+      const ROT = { melhorou: "👍 melhorou", piorou: "👎 piorou", estavel: "– estável", subiu: "▲ subiu", caiu: "▼ caiu" };
+      corpo = `<div class="pg-cab"><b>${sentido > 0 ? "Quanto maior, melhor." : sentido < 0 ? "Quanto maior, pior." : "Subir não é, por si, melhor nem pior."}</b>
+        <p>Do último dado antes da posse até o último do governo; sem dado anterior, parte do primeiro ano. Variação abaixo de 1% ao ano aparece como estável.${vis.length === 1 || todas.length === 1 ? "" : ` Série usada: ${esc(s1.n)} (escolha outra nos botões acima).`}</p></div>
+        ${lin.slice().reverse().map(o => `<div class="pg"><span class="pg-av" style="background:${o.x.c}">${esc(o.x.rot.slice(0, 2))}</span><div class="pg-c">
+          <div class="pg-l1"><b>${esc(o.x.rot.replace(/ \(.*\)$/, ""))}</b>${o.sem ? "" : `<span class="pg-sel" style="${o.sel === "melhorou" || o.sel === "piorou" ? `background:${COR[o.sel]};color:#08090b` : `border:1px solid var(--line);color:var(--ink-2)`}">${ROT[o.sel]}</span>`}<strong>${o.sem ? "—" : esc(o.m.txt)}</strong></div>
+          <div class="pg-l2"><span>${o.x.de} a ${o.andamento ? `${o.fim?.[0] || o.x.ate}, em andamento` : o.x.ate}</span><span>${o.sem ? "dados insuficientes" : o.pctTxt}</span></div>
+          ${o.sem ? "" : `<div class="pg-bar"><i style="${o.rel >= 0 ? "left:50%" : `right:50%`};width:${Math.abs(o.rel) / maxRel * 50}%;background:${COR[o.sel] === "var(--ink)" ? "var(--ink-2)" : COR[o.sel]}"></i><u></u></div>
+          <small>${esc(g.fmt(o.ini[1]))} em ${o.ini[0]} para ${esc(g.fmt(o.fim[1]))} em ${o.fim[0]}</small>`}</div></div>`).join("")}`;
     }
     const tabela = `<details class="det-num"><summary>Ver os números</summary><div class="tbwrap"><table class="tb"><thead><tr><th>Ano</th>${todas.map(s => `<th>${esc(s.n)}</th>`).join("")}<th>Governo</th></tr></thead><tbody>${
       anos.slice().reverse().map(a => `<tr><td>${a}</td>${todas.map(s => `<td class="num">${s.v[a] != null && isFinite(s.v[a]) ? esc(g.fmt(s.v[a])) : "—"}</td>`).join("")}<td>${esc(gov.find(x => +a >= x.de && +a <= x.ate)?.rot || "")}</td></tr>`).join("")}</tbody></table></div></details>`;
@@ -1839,7 +1854,7 @@ for i, nome in enumerate(m.model.exog_names):
     det.innerHTML = `<div class="det-in">
       <div class="det-top"><button type="button" class="btn" data-fecha>‹ Voltar</button><span class="status">Toque nos pontos para ver os valores</span></div>
       <h2 class="det-tit">${esc(g.titulo)}</h2>${g.sub ? `<p class="sub">${esc(g.sub)}</p>` : ""}
-      ${ok.length ? `<div class="det-val"><b>${esc(g.fmt(s0.v[ult]))}</b><span>${esc(s0.n)}, em ${ult}${vt ? `, <em style="color:${vt.d > 0 ? "var(--good)" : vt.d < 0 ? "var(--crit)" : "var(--muted)"};font-style:normal;font-weight:700">${vt.txt}</em> desde ${pri}` : ""}</span></div>` : ""}
+      ${ok.length ? `<div class="det-val"><b>${esc(g.fmt(s0.v[ult]))}</b><span>${esc(s0.n)}, em ${ult}${vt ? `, <em style="color:${!g.mais || !vt.d ? "var(--ink)" : Math.sign(vt.d) * g.mais > 0 ? "var(--good)" : "var(--crit)"};font-style:normal;font-weight:700">${vt.txt}</em> desde ${pri}` : ""}</span></div>` : ""}
       <div class="seg det-seg" role="group" aria-label="Visão"><button type="button" data-detmodo="tempo" aria-pressed="${detModo === "tempo"}">Linha do tempo</button><button type="button" data-detmodo="gov" aria-pressed="${detModo === "gov"}">Por governo</button></div>
       ${todas.length > 1 ? `<div class="det-chips" role="group" aria-label="Série">${[[-1, "Todas"], ...todas.map((s, i) => [i, s.n])].map(([i, n]) => `<button type="button" data-detserie="${i}" aria-pressed="${detSerie === i}">${i >= 0 ? `<i style="background:${todas[i].c}"></i>` : ""}${esc(n)}</button>`).join("")}</div>` : ""}
       <div class="det-ch">${corpo}</div>${tabela}${resumo}${faq}

@@ -21,6 +21,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import atualizar_municipios as A  # noqa: E402
 
 SAIDA = A.RAIZ / "data" / "estados.json"
+SIGLAS = {11: "RO", 12: "AC", 13: "AM", 14: "RR", 15: "PA", 16: "AP", 17: "TO", 21: "MA", 22: "PI", 23: "CE", 24: "RN", 25: "PB",
+          26: "PE", 27: "AL", 28: "SE", 29: "BA", 31: "MG", 32: "ES", 33: "RJ", 35: "SP", 41: "PR", 42: "SC", 43: "RS", 50: "MS",
+          51: "MT", 52: "GO", 53: "DF"}   # o Siconfi traz "BR" no campo uf dos estados
 CHAVES = ("fin", "nat", "fn")
 
 
@@ -31,7 +34,7 @@ def entes() -> dict[int, dict]:
         c = e.get("cod_ibge")
         if e.get("esfera") == "U" or (e.get("esfera") in ("E", "D") and c and int(c) < 100):
             c = 1 if e.get("esfera") == "U" else int(c)
-            out[c] = {"c": c, "n": e.get("ente"), "uf": "BR" if c == 1 else e.get("uf"), "esfera": "U" if c == 1 else "E"}
+            out[c] = {"c": c, "n": e.get("ente"), "uf": "BR" if c == 1 else SIGLAS.get(c, e.get("uf")), "esfera": "U" if c == 1 else "E"}
     return out
 
 
