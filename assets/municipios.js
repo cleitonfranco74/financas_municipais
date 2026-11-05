@@ -1471,8 +1471,8 @@
   function carregaGov(){
     if (GV || GVcarregando || GVfalhou) return;
     GVcarregando = true;
-    fetch("data/governos.json").then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { GV = d; GVcarregando = false; if (st.aba === "governos") render(); if (detAtual) desenhaDetalhe(); })
-      .catch(() => { GVfalhou = true; GVcarregando = false; if (st.aba === "governos") render(); });
+    fetch("data/governos.json").then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { GV = d; GVcarregando = false; if (st.aba === "governos" || st.aba === "nacional") render(); if (detAtual) desenhaDetalhe(); })
+      .catch(() => { GVfalhou = true; GVcarregando = false; if (st.aba === "governos" || st.aba === "nacional") render(); });
   }
   const ABS = { pct: 1, pctpib: 1, gini: 1, anos: 1, pormil: 1, por100mil: 1 };   // comparação em diferença; os demais, em %
   function fmtGov(i){
@@ -1480,6 +1480,7 @@
     if (u === "pct") return v => `${nf(v, 1)}%`;
     if (u === "pctpib") return v => `${nf(v, 1)}% do PIB`;
     if (u === "usd") return v => `US$ ${nf(v, 0)}`;
+    if (u === "usdbi") return v => Math.abs(v) >= 1000 ? `US$ ${nf(v / 1000, 2)} tri` : `US$ ${nf(v, v < 10 ? 1 : 0)} bi`;
     if (u === "brl") return v => `R$ ${nf(v, v < 100 ? 2 : 0)}`;
     if (u === "gini") return v => nf(v, 3);
     if (u === "anos") return v => `${nf(v, 1)} anos`;
@@ -1518,6 +1519,29 @@
     return r ? `<img class="${cls}" src="${esc(r.arquivo)}" alt="${esc(p.nome)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'${cls} gv-ini',textContent:'${esc(p.nome.split(" ").map(x => x[0]).slice(0, 2).join(""))}'}))">` : `<span class="${cls} gv-ini">${esc(p.nome[0])}</span>`; };
   const faixasPres = () => GV.mandatos.map(m => ({ de: m.de, ate: m.ate, rot: m.rot, c: grupo(nota(GV.pessoas[m.pessoa].partido)).c, t: `${m.rot} (${GV.pessoas[m.pessoa].partido}), ${m.de}–${m.ate}`, foto: GV.retratos?.[m.pessoa]?.arquivo || null }));
   let GV_ABRIR = [];
+  /* ---------- aba: economia do Brasil (indicadores nacionais em cartões; mesmos dados do painel dos governos) ---------- */
+  let ECO_LISTA = [];
+  function economiaBR(){
+    if (!GV){ carregaGov(); main.innerHTML = `<section class="panel"><p class="sub">${GVfalhou ? "Os dados nacionais ainda não foram coletados." : "Carregando…"}</p></section>`; return; }
+    ECO_LISTA = [];
+    const TEMAS = ["Economia", "Trabalho e renda", "Contas públicas", "Setor externo"];
+    const cartao = i => {
+      const f = fmtGov(i), anos = Object.keys(i.v).filter(a => +a >= 1995).sort(), a0 = anos[0], a1 = anos[anos.length - 1], v0 = i.v[a0], v1 = i.v[a1];
+      let txt = "", d = 0;
+      if (anos.length > 1){
+        if (ABS[i.unid] || !(v0 > 0)){ d = v1 - v0; txt = `${d >= 0 ? "+" : "−"}${nf(Math.abs(d), i.unid === "gini" ? 3 : 1)}${i.unid === "pct" || i.unid === "pctpib" ? " p.p." : ""}`; }
+        else { d = v1 / v0 - 1; txt = `${d >= 0 ? "+" : "−"}${nf(Math.abs(d) * 100, 0)}%`; }
+      }
+      const bom = i.mais ? Math.sign(d) * i.mais : 0, parc = i.parcial?.[a1] ? ` (até ${i.parcial[a1].slice(5)}/${a1})` : "";
+      ECO_LISTA.push({ ...i, v: Object.fromEntries(anos.map(a => [a, i.v[a]])) });
+      return `<button type="button" class="ind-c" data-eco="${ECO_LISTA.length - 1}"><div class="ind-t"><b>${esc(i.n)}</b><small>${esc(i.nota)}</small>
+        <strong>${esc(f(v1))}</strong><em>em ${a1}${parc}${txt ? `, <span style="color:${bom > 0 ? "var(--good)" : bom < 0 ? "var(--crit)" : "var(--ink)"}">${txt}</span> desde ${a0}` : ""}</em></div>
+        ${spark(anos.map(a => i.v[a]), "var(--ink-2)", 130, 44)}<span class="ind-seta" aria-hidden="true">›</span></button>`;
+    };
+    const blocos = TEMAS.map(t => { const is = GV.indicadores.filter(i => i.tema === t); return is.length ? `<section class="ind-g"><h2>${esc(t)}</h2><div class="eco-g">${is.map(cartao).join("")}</div></section>` : ""; }).join("");
+    main.innerHTML = `<div class="explica" style="margin-bottom:12px"><p>Os grandes números do <b>Brasil</b>, ano a ano, desde 1995, primeiro ano depois da implantação do real. <b>Toque num indicador</b> para abrir o gráfico grande com o governo de cada período e a comparação por governo.</p></div>
+      ${blocos}<p class="nota">Verde: melhorou; vermelho: piorou; branco: sem sentido de melhor ou pior (juros, dólar, importações). Fontes: Banco Mundial e Banco Central (SGS); atualizado em ${esc(GV.atualizado)}. Veja também o painel dos <a href="#governos">Governos</a>.</p>`;
+  }
   function governosAba(){
     if (!GV){ carregaGov(); main.innerHTML = `<section class="panel"><p class="sub">${GVfalhou ? "Os dados dos governos ainda não foram coletados (Action “Atualizar painel dos governos”)." : "Carregando os governos…"}</p></section>`; return; }
     const T = window.GOV_TEXTO?.M || {};
@@ -2100,6 +2124,7 @@ for i, nome in enumerate(m.model.exog_names):
 
   /* ---------- temas (chips) e busca ---------- */
   const IC = {
+    economia: '<path d="M4 19.5h16"/><path d="M5 15l4.5-4.5 3.5 3L19 7.5"/><path d="M14.5 7.5H19V12"/>',
     tudo: '<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>',
     financas: '<rect x="3.5" y="6" width="17" height="12" rx="2.5"/><path d="M15 12h2.5"/><path d="M3.5 9.5h17"/>',
     gasto: '<path d="M4 9l8-4.5L20 9M5.5 10v7M10 10v7M14 10v7M18.5 10v7M4 19.5h16"/>',
@@ -2116,6 +2141,7 @@ for i, nome in enumerate(m.model.exog_names):
   const TEMAS_NAV = [
     { k: "tudo", n: "Tudo", abas: ["indicadores"] },
     { k: "financas", n: "Finanças", abas: ["geral", "fiscal"], ind: ["Finanças das prefeituras"], rot: { geral: "Visão geral", fiscal: "Contas e LRF" } },
+    { k: "economia", n: "Economia", abas: ["nacional"] },
     { k: "gasto", n: "Gasto público", abas: ["gasto"] },
     { k: "governos", n: "Governos", abas: ["governos"] },
     { k: "politica", n: "Política", abas: ["politica", "rdd"], rot: { politica: "Economia política", rdd: "Eleições acirradas" } },
@@ -2151,6 +2177,7 @@ for i, nome in enumerate(m.model.exog_names):
   /* busca: municípios, indicadores e seções */
   const semAc = x => String(x).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   const SECOES = [["geral", "Visão geral", "investimento receita orientação prefeito"], ["fiscal", "Contas e LRF", "pessoal rcl lei de responsabilidade fiscal saúde educação mínimos fontes de receita fpm icms repasses fundeb sus saúde fiscal"],
+    ["nacional", "Economia do Brasil", "pib inflação ipca selic juros dólar salário mínimo dívida reservas exportações importações desemprego"],
     ["gasto", "Gasto público", "união estados pib mapa por morador"], ["governos", "Governos", "presidentes mandato lula bolsonaro temer dilma fhc fernando henrique análise"], ["politica", "Economia política", "ciclo político mandato reeleição alinhamento governador presidente convênios"], ["rdd", "Eleições acirradas", "regressão descontínua rdd"],
     ["economia", "Trabalho e empresas", "emprego rais caged cnpj empresas salário"], ["resultados", "Saúde e educação", "mortalidade infantil vacinação esgoto alfabetização censo"],
     ["agro", "Agronegócio", "soja milho algodão boi pib agro"], ["amazonia", "Amazônia", "desmatamento prodes queimadas focos"], ["porte20", "Até 20 mil habitantes", "pequenos municípios brasil"],
@@ -2193,7 +2220,7 @@ for i, nome in enumerate(m.model.exog_names):
   }
 
   /* ---------- navegação ---------- */
-  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, economia, resultados, correlacoes, regressao, mapa: mapaAba, porte20: () => porteAba(20000), porte50: () => porteAba(50000), mun: munAba, rdd: rddAba, gasto, indicadores: indicadoresAba, governos: governosAba, metodo };
+  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, economia, resultados, correlacoes, regressao, mapa: mapaAba, porte20: () => porteAba(20000), porte50: () => porteAba(50000), mun: munAba, rdd: rddAba, gasto, indicadores: indicadoresAba, governos: governosAba, nacional: economiaBR, metodo };
   function render(){
     GRAFS.clear();
     if (!ABAS[st.aba]) st.aba = "indicadores";
@@ -2230,6 +2257,8 @@ for i, nome in enumerate(m.model.exog_names):
     }
     const sa = e.target.closest(".secs [data-aba]");
     if (sa){ st.aba = sa.dataset.aba; render(); return; }
+    const ec = e.target.closest("[data-eco]");
+    if (ec){ const i = ECO_LISTA[+ec.dataset.eco]; if (i) abreDetalhe({ series: [{ n: i.n, c: "#c8f250", v: i.v }], anos: Object.keys(i.v).sort(), fmt: fmtGov(i), governos: faixasPres(), mais: i.mais }, `${i.n} · Brasil`, `${i.nota} Fonte: ${i.fonte}.`); return; }
     const ic = e.target.closest("[data-ind]");
     if (ic){ const o = IND_LISTA[+ic.dataset.ind]; if (o) abreDetalhe(o.g, o.titulo, o.sub); return; }
     const tj = e.target.closest("[data-trajg]");
