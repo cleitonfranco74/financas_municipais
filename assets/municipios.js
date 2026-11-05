@@ -1228,7 +1228,31 @@
 
 
   /* ---------- aba: gasto público (União, estados e municípios do Brasil) ---------- */
-  let ES = null, ESfalhou = false, EScarregando = false;
+  let ES = null, ESfalhou = false, EScarregando = false, MALHA_UF = null;
+  fetch("data/malha_uf.json").then(r => r.ok ? r.json() : null).then(g => { MALHA_UF = g; if (st.aba === "gasto") render(); }).catch(() => {});
+  /* mapa dos estados: cor em escala do menor (escuro) ao maior (claro); toque escolhe o estado */
+  function mapaUF(vals, fmt, sel){
+    if (!MALHA_UF) return "";
+    const ufs = Object.keys(MALHA_UF), vs = ufs.map(u => vals[u]).filter(v => v != null && isFinite(v));
+    if (!vs.length) return "";
+    const lo = Math.min(...vs), hi = Math.max(...vs);
+    const w = Math.min(560, largura()), k = Math.cos(15 * Math.PI / 180);
+    const x0 = -74.2, x1 = -34.6, y0 = 5.4, y1 = -33.9, sx = w / ((x1 - x0) * k), h = (y0 - y1) * sx;
+    const X = lon => (lon - x0) * k * sx, Y = lat => (y0 - lat) * sx;
+    const cor = v => { if (v == null) return "#27272a"; const t = hi > lo ? (v - lo) / (hi - lo) : .5; const a = [39, 39, 75], b = [167, 139, 250]; return `rgb(${a.map((c, i) => Math.round(c + (b[i] - c) * t)).join(",")})`; };
+    let caminhos = "", rotulos = "";
+    ufs.forEach(u => {
+      const d = MALHA_UF[u].map(an => { let t = ""; for (let i = 0; i < an.length; i += 2) t += `${i ? "L" : "M"}${X(an[i]).toFixed(1)},${Y(an[i + 1]).toFixed(1)}`; return t + "Z"; }).join("");
+      caminhos += `<path d="${d}" fill="${cor(vals[u])}" stroke="${u === sel ? "#fff" : "#08090b"}" stroke-width="${u === sel ? 2.4 : .8}" data-st="gUf:${u}" style="cursor:pointer"><title>${u}: ${vals[u] == null ? "sem dado" : esc(fmt(vals[u]))}</title></path>`;
+      const an = MALHA_UF[u][0]; let cx = 0, cy = 0; const n = an.length / 2; for (let i = 0; i < an.length; i += 2){ cx += an[i]; cy += an[i + 1]; }
+      if (!["DF", "SE", "AL", "PB", "RN", "ES", "RJ"].includes(u) || u === sel) rotulos += `<text x="${X(cx / n)}" y="${Y(cy / n)}" text-anchor="middle" style="font:700 ${w < 420 ? 9 : 11}px var(--sans);fill:#f4f6f2;pointer-events:none;paint-order:stroke;stroke:#08090b;stroke-width:2px">${u}</text>`;
+    });
+    const sobe = caminhos.split("</path>").filter(Boolean); // estado escolhido por último (contorno por cima)
+    const i = sobe.findIndex(c => c.includes(`gUf:${sel}"`)); if (i >= 0) sobe.push(sobe.splice(i, 1)[0]);
+    return `<div class="mapa-uf"><svg viewBox="0 0 ${w} ${h.toFixed(0)}" role="img" aria-label="Mapa dos estados">${sobe.join("</path>")}</path>${rotulos}</svg>
+      <div class="rk-esc" style="max-width:${w}px"><div class="rk-grad" style="background:linear-gradient(90deg,rgb(39,39,75),rgb(167,139,250))"></div><div><span>${esc(fmt(lo))}, menor</span><span>maior, ${esc(fmt(hi))}</span></div></div>
+      <p class="nota" style="margin:4px 0 0">Toque num estado para escolhê-lo. Contorno branco: o escolhido.</p></div>`;
+  }
   function carregaEstados(){
     if (ES || EScarregando || ESfalhou) return;
     EScarregando = true;
@@ -1288,8 +1312,10 @@
         const cor = o.e.uf === eSel.uf ? "var(--accent)" : D.ufs.includes(o.e.uf) ? "#60a5fa" : "#71717a";
         rows += `<button type="button" class="rk${o.e.uf === eSel.uf ? " on" : ""}" data-st="gUf:${o.e.uf}"><span>${rank}</span><b>${esc(o.e.n || o.e.uf)}</b><div class="rkb"><i style="width:${o.v / mx * 100}%;background:${cor}"></i></div><span class="num">${esc(M2.f(o.v))}</span></button>`;
       });
+      const mapa = mapaUF(Object.fromEntries(lista.map(o => [o.e.uf, o.v])), M2.f, eSel.uf);
       corpo = `<div class="ano-sel"><b class="ano-n">${ano}</b><input type="range" min="0" max="${anosM.length - 1}" step="1" value="${anosM.indexOf(ano)}" data-anos="${anosM.join(",")}" aria-label="Ano"><span class="nota" style="margin:0">${anosM[0]}–${anosM[anosM.length - 1]}</span></div>
         ${sel ? `<div class="rk-card"><div><b>${esc(eSel.n || eSel.uf)}</b><small>${pos + 1}º maior valor entre ${lista.length} estados${md != null ? ` · média dos estados: ${esc(M2.f(md))}` : ""}</small></div><strong>${esc(M2.f(sel.v))}</strong></div>` : ""}
+        ${mapa}
         <div class="rk-esc"><div class="rk-grad"><i style="left:${md != null && mx > mn ? (md - mn) / (mx - mn) * 100 : 50}%"></i></div><div><span>${esc(M2.f(mn))}, menor</span><span>maior, ${esc(M2.f(mx))}</span></div></div>
         <p class="nota" style="margin:4px 0 8px">Do maior para o menor. Toque num estado para escolhê-lo. Azul: estados do painel.</p>
         <div class="rk-l">${rows}</div>`;
