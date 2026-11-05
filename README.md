@@ -21,7 +21,7 @@ Publicado em: https://cleitonfranco74.github.io/financas_municipais/
 - **Eleições acirradas:** regressão descontínua (linear local, núcleo triangular, erro-padrão robusto HC1) sobre a margem da esquerda contra a direita ou do partido do governador contra outro partido, com faixa ajustável e histograma das margens.
 - **Método e fontes:** definições e a escala ideológica dos partidos.
 
-Todo gráfico tem botões para baixar em PNG (fundo escuro ou claro, com título, legenda e fonte). No celular, tocar num ponto, barra ou município mostra o valor; um segundo toque abre a ficha.
+Todo gráfico de linhas tem o botão **Ampliar e comparar governos**, que abre o gráfico em tela cheia com duas visões: **Linha do tempo** (com as faixas dos governos: presidentes; na ficha do município, os prefeitos; na série de um estado, os governadores) e **Por governo** (média de cada governo e o que mudou do ano anterior à posse ao último ano), além da tabela com os números e um resumo. Os cartões da trajetória, na ficha, abrem o mesmo painel. Todo gráfico tem botões para baixar em PNG (fundo escuro ou claro, com título, legenda e fonte). No celular, tocar num ponto, barra ou município mostra o valor; um segundo toque abre a ficha.
 
 ## Dados
 `data/municipios.json` e `data/malha.json` são gravados por `scripts/atualizar_municipios.py`, que roda toda segunda-feira pela Action `.github/workflows/atualizar.yml` (e pode ser disparado à mão em **Actions → Atualizar finanças municipais → Run workflow**). Fontes públicas, sem chave:
