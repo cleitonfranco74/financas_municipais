@@ -4,8 +4,6 @@ on:
   schedule:
     - cron: "37 9 5 * *"   # todo dia 5
   workflow_dispatch:
-  push:
-    branches: [claude/sweet-albattani-q7n9og]
 
 permissions:
   contents: write

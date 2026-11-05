@@ -97,8 +97,11 @@ def sgs(cod: str) -> tuple[dict[str, float], dict[str, str]]:
     out, mes = {}, {}
     for a0 in range(INICIO, date.today().year + 1, 10):
         a1 = min(a0 + 9, date.today().year)
-        d = get(f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{cod}/dados", {"formato": "json", "dataInicial": f"01/01/{a0}", "dataFinal": f"31/12/{a1}"}).json()
-        for l in d:
+        try:
+            d = get(f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{cod}/dados", {"formato": "json", "dataInicial": f"01/01/{a0}", "dataFinal": f"31/12/{a1}"}).json()
+        except Exception:  # noqa: BLE001  (janela antes do início da série)
+            continue
+        for l in d if isinstance(d, list) else []:
             dia, m, a = l["data"].split("/")
             try:
                 out[a] = float(l["valor"]); mes[a] = f"{a}-{m}"
@@ -164,8 +167,6 @@ def main() -> int:
                     v = {a: round(x * P[ult] / P[a], 2) for a, x in v.items() if a in P}
                 if k == "primario":
                     v = {a: round(-x, 2) for a, x in v.items()}   # o SGS traz a necessidade de financiamento: positivo é déficit
-                if k == "gini":
-                    pass
             if k == "gini":
                 v = {a: round(x / 100, 3) for a, x in v.items()}
             v = {a: x for a, x in v.items() if int(a) >= INICIO}
