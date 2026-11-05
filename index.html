@@ -83,6 +83,24 @@ svg.ch[data-graf]{cursor:zoom-in}
 .det-faq{border-bottom:1px solid var(--line);padding:12px 0}
 .det-faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:15px}
 .det-faq p{margin:8px 0 0;color:var(--ink-2)}
+.ano-sel{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:4px 0 12px}
+.ano-sel .ano-n{font-size:clamp(30px,5vw,44px);letter-spacing:-.04em;line-height:1}
+.ano-sel input[type=range]{flex:1 1 200px;width:auto}
+.rk-card{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--surface-2);border-radius:16px;padding:14px 16px;margin-bottom:12px}
+.rk-card b{display:block;font-size:16px}.rk-card small{color:var(--ink-2)}
+.rk-card strong{font-size:clamp(20px,3.4vw,28px);letter-spacing:-.03em;white-space:nowrap}
+.rk-esc{margin:0 0 6px}.rk-esc > div:last-child{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:5px}
+.rk-grad{position:relative;height:9px;border-radius:9px;background:linear-gradient(90deg,#27272a,#60a5fa)}
+.rk-grad i{position:absolute;top:-4px;width:3px;height:17px;background:var(--ink);border-radius:2px;transform:translateX(-50%)}
+.rk-l{display:flex;flex-direction:column}
+.rk{display:grid;grid-template-columns:26px minmax(90px,1.1fr) minmax(60px,1.4fr) auto;gap:10px;align-items:center;padding:8px 8px;border:0;background:none;color:var(--ink);text-align:left;border-radius:10px;font-size:14px}
+button.rk:hover{background:var(--surface)}
+.rk.on{background:var(--surface-2)}
+.rk > span:first-child{color:var(--muted);font-size:12.5px;text-align:right}
+.rk b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk .num{text-align:right;white-space:nowrap}
+.rkb{height:8px;border-radius:8px;background:var(--surface-2);overflow:hidden}.rkb i{display:block;height:100%;border-radius:8px}
+.rk-m b,.rk-m .num{color:var(--ink-2)}.rk-m .rkb{background:none}.rk-m .rkb i{background:repeating-linear-gradient(90deg,var(--ink-2) 0 5px,transparent 5px 9px);height:2px;margin-top:3px}
 .det-num{margin-top:18px;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--surface)}
 .det-num summary{cursor:pointer;font-weight:700}
 .det-res{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
@@ -193,7 +211,7 @@ html{--tbh:64px}
   <span>Desenvolvido por <b>Prof. Dr. Cleiton Franco</b> · Doutor em Economia · Professor Adjunto da UNEMAT, Câmpus de Sinop</span>
   <span>© 2026 · Ferramenta educacional: correlações não são, por si, relações de causa e efeito</span>
 </footer>
-<script src="assets/municipios.js?v=2026-11-05c" defer></script>
+<script src="assets/municipios.js?v=2026-11-05d" defer></script>
 <script src="assets/feedback.js" data-site="Finanças Municipais" data-cor="#c8f250" defer></script>
 </body>
 </html>
