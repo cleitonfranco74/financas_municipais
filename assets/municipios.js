@@ -284,6 +284,7 @@
     { k: "saudepc", n: "Saúde por habitante", f: brl, mais: 1, v: (m, a) => indiv(m, a, "saudepc") },
     { k: "educpc", n: "Educação por habitante", f: brl, mais: 1, v: (m, a) => indiv(m, a, "educpc") },
     { k: "isf", n: "Saúde fiscal (0 a 1)", f: v => nf(v, 2), mais: 1, abs: true, v: (m, a) => isf(m, a) },
+    { k: "constr", n: "Emprego na construção (por mil hab.)", f: v => nf(v, 1), mais: 1, v: (m, a) => m.rais?.[a] && m.pop?.[a] ? 1000 * m.rais[a][4] / m.pop[a] : null },
   ];
   /* mudança entre dois valores, já com o sinal de melhora: {txt, bom} (bom: 1 melhorou, −1 piorou, 0 estável) */
   function mudanca(t, v0, v1){
@@ -1361,6 +1362,73 @@
       <p class="nota">Fontes: Tesouro Nacional (Siconfi: Declaração de Contas Anuais da União, dos estados e dos municípios), IBGE (PIB e população) e Banco Central (IPCA); contas da União e dos estados atualizadas em ${new Date(ES.atualizado + "T12:00").toLocaleDateString("pt-BR")}. Ficam de fora, por enquanto, a comparação com outros países, as emendas parlamentares e a divisão entre despesas obrigatórias e discricionárias.</p>`;
   }
 
+
+  /* ---------- aba: indicadores (vitrine em cartões; o toque abre o painel ampliado) ---------- */
+  function indicadoresAba(){
+    const ms = sel();
+    const anosDe = chave => [...new Set(ms.flatMap(m => Object.keys(m[chave] || {})))].filter(a => +a >= 2016 && +a < anoHoje() + 1).sort();
+    const soma = (anos, f) => Object.fromEntries(anos.map(a => { let v = 0, n = 0; ms.forEach(m => { const x = f(m, a); if (x != null && isFinite(x)){ v += x; n++; } }); return [a, n ? v : null]; }));
+    const razao = (anos, num, den) => Object.fromEntries(anos.map(a => { let x = 0, y = 0; ms.forEach(m => { const p = num(m, a), q = den(m, a); if (p == null || !q || !isFinite(p)) return; x += p; y += q; }); return [a, y ? x / y : null]; }));
+    const met = k => Object.fromEntries(ANOS.map(a => [a, agrega(ms, String(a), k).v]));
+    const anosR = anosDe("rais"), anosC = anosDe("caged").filter(a => +a < anoHoje()), anosT = anosDe("tmi").filter(a => +a < anoHoje()), anosD = anosDe("desm").filter(a => +a < anoHoje()), anosF = anosDe("fogo").filter(a => +a < anoHoje()), anosA = anosDe("agro");
+    const pop = (m, a) => m.pop?.[a] || null;
+    const TEMAS = [
+      ["Finanças das prefeituras", [
+        { n: "Investimento por habitante", d: "Obras e equipamentos (despesa de capital), a preços de " + REF, v: met("invpc"), f: brl, mais: 1 },
+        { n: "Investimento em % da despesa", d: "Quanto da despesa total vai para investimento", v: met("invdesp"), f: v => pct(v), mais: 1 },
+        { n: "Receita por habitante", d: "Receita líquida total, a preços de " + REF, v: met("recpc"), f: brl, mais: 1 },
+        { n: "Receita própria por habitante", d: "Impostos e taxas da própria prefeitura (IPTU, ISS, ITBI e taxas)", v: met("tribpc"), f: brl, mais: 1 },
+        { n: "Dependência de transferências", d: "Parte da receita que vem da União e do estado", v: met("transf"), f: v => pct(v, 0), mais: -1 },
+        { n: "Transferências voluntárias por habitante", d: "Convênios da União e do estado e emendas Pix", v: met("convpc"), f: brl, mais: 1 },
+        { n: "Despesa com pessoal (mediana)", d: "Poder Executivo, em % da receita corrente líquida (limite de 54%)", v: Object.fromEntries(ANOS.map(a => [a, mediana(ms.map(m => m.f[a]?.lrf?.[1]).filter(v => v != null)) ?? null])), f: v => `${nf(v, 1)}%`, mais: -1, pp: true },
+      ]],
+      ["Saúde e educação", [
+        { n: "Saúde por habitante", d: "Despesa das prefeituras na função saúde", v: met("saudepc"), f: brl, mais: 1 },
+        { n: "Educação por habitante", d: "Despesa das prefeituras na função educação", v: met("educpc"), f: brl, mais: 1 },
+        { n: "FUNDEB por habitante", d: "Repasse do fundo da educação básica, com a complementação da União", v: met("fundebpc"), f: brl, mais: 1 },
+        { n: "SUS da União por habitante", d: "Repasses do Fundo Nacional de Saúde", v: met("susUpc"), f: brl, mais: 1 },
+        { n: "Mortalidade infantil", d: "Bebês que morrem antes de 1 ano, por mil nascidos vivos", v: Object.fromEntries(Object.entries(razao(anosT, (m, a) => m.tmi?.[a]?.[0], (m, a) => m.tmi?.[a]?.[1])).map(([a, v]) => [a, v == null ? null : v * 1000])), f: v => `${nf(v, 1)} por mil`, mais: -1 },
+      ]],
+      ["Trabalho e empresas", [
+        { n: "Emprego formal por mil habitantes", d: "Vínculos ativos em 31 de dezembro (RAIS)", v: Object.fromEntries(Object.entries(razao(anosR, (m, a) => m.rais?.[a]?.[1], pop)).map(([a, v]) => [a, v == null ? null : v * 1000])), f: v => nf(v, 0), mais: 1 },
+        { n: "Emprego na construção", d: "Vínculos formais na construção (RAIS), por mil habitantes", v: Object.fromEntries(Object.entries(razao(anosR, (m, a) => m.rais?.[a]?.[4], pop)).map(([a, v]) => [a, v == null ? null : v * 1000])), f: v => nf(v, 1), mais: 1 },
+        { n: "Saldo de empregos com carteira", d: "Admissões menos desligamentos no ano (Novo Caged)", v: soma(anosC, (m, a) => m.caged?.[a]?.[2]), f: v => nf(v, 0), mais: 1, abs: true },
+        { n: "Empresas abertas no ano", d: "Estabelecimentos abertos no CNPJ, inclusive MEI", v: soma(anosDe("cnpj").length ? anosDe("cnpj") : [...new Set(ms.flatMap(m => Object.keys(m.cnpj?.abertos || {})))].filter(a => +a >= 2016 && +a < anoHoje()).sort(), (m, a) => m.cnpj?.abertos?.[a]), f: v => nf(v, 0), mais: 1 },
+      ]],
+      ["Agro e meio ambiente", [
+        { n: "Área de soja, milho e algodão", d: "Hectares colhidos (IBGE, PAM)", v: soma(anosA, (m, a) => m.agro?.[a] ? m.agro[a][0] + m.agro[a][1] + m.agro[a][2] : null), f: v => `${nf(v / 1e6, 1)} mi ha`, mais: 0 },
+        { n: "Desmatamento", d: "Vegetação nativa desmatada por ano PRODES (Amazônia e Cerrado), km²", v: soma(anosD, (m, a) => m.desm?.[a]), f: v => `${nf(v, 0)} km²`, mais: -1 },
+        { n: "Focos de queimadas", d: "Focos de calor do satélite de referência do Inpe", v: soma(anosF, (m, a) => m.fogo?.[a]), f: v => nf(v, 0), mais: -1 },
+      ]],
+    ];
+    const gov = st.uf ? governadores(st.uf) : null;
+    const lista = [];
+    const cartoes = TEMAS.map(([tema, its]) => {
+      const cs = its.map(it => {
+        const anos = Object.keys(it.v).filter(a => it.v[a] != null && isFinite(it.v[a])).sort();
+        if (!anos.length) return "";
+        const a0 = anos[0], a1 = anos[anos.length - 1], v0 = it.v[a0], v1 = it.v[a1];
+        let txt = null, dd = 0;
+        if (anos.length > 1){
+          if (it.pp){ dd = v1 - v0; txt = `${dd >= 0 ? "+" : "−"}${nf(Math.abs(dd), 1)} p.p.`; }
+          else if (it.abs || !(v0 > 0)){ dd = v1 - v0; txt = `${dd >= 0 ? "+" : "−"}${it.f(Math.abs(dd))}`; }
+          else if (/%$/.test(it.f(0.5)) && !it.pp){ dd = v1 - v0; txt = `${dd >= 0 ? "+" : "−"}${nf(Math.abs(dd) * 100, 1)} p.p.`; }
+          else { dd = v1 / v0 - 1; txt = `${dd >= 0 ? "+" : "−"}${nf(Math.abs(dd) * 100, 1)}%`; }
+        }
+        const bom = it.mais ? Math.sign(dd) * it.mais : 0;
+        const id = String(lista.length); lista.push({ it, anos });
+        return `<button type="button" class="ind-c" data-ind="${id}"><div class="ind-t"><b>${esc(it.n)}</b><small>${esc(it.d)}</small>
+          <strong>${esc(it.f(v1))}</strong>${txt ? `<em><span style="color:${bom > 0 ? "var(--good)" : bom < 0 ? "var(--crit)" : "var(--ink)"}">${txt}</span> desde ${a0}, em ${a1}</em>` : `<em>em ${a1}</em>`}</div>
+          ${spark(anos.map(a => it.v[a]), "var(--ink-2)", 130, 44)}<span class="ind-seta" aria-hidden="true">›</span></button>`;
+      }).join("");
+      return cs ? `<section class="ind-g"><h2>${esc(tema)}</h2>${cs}</section>` : "";
+    }).join("");
+    IND_LISTA = lista.map(({ it, anos }) => ({ g: { series: [{ n: it.n, c: "#c8f250", v: it.v }], anos, fmt: it.f, governos: gov }, titulo: it.n + (st.uf ? ` · municípios de ${st.uf}` : ""), sub: it.d }));
+    main.innerHTML = `<div class="explica" style="margin-bottom:12px"><p>Os principais números ${st.uf ? `dos municípios de <b>${st.uf}</b>` : "dos municípios do painel"}, somados ou ponderados pela população. <b>Toque num indicador</b> para abrir o gráfico grande, com a comparação ${st.uf ? "entre os governadores" : "entre os governos federais"}, a tabela e o resumo. Use o filtro de estado acima para mudar o recorte.</p></div>${cartoes}
+      <p class="nota">Verde: melhorou; vermelho: piorou (para dependência de transferências, pessoal, mortalidade, desmatamento e queimadas, cair é melhorar). Fontes: as mesmas das demais abas (Método e fontes).</p>`;
+  }
+  let IND_LISTA = [];
+
   /* ---------- aba: correlações ---------- */
   /* uma linha por município; períodos médios para suavizar anos atípicos */
   const mediaLrf = (m, i) => { const v = ULT().map(a => m.f[a]?.lrf?.[i]).filter(x => x != null); return v.length >= 2 ? media(v) : null; };
@@ -1873,7 +1941,7 @@ for i, nome in enumerate(m.model.exog_names):
   });
 
   /* ---------- navegação ---------- */
-  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, economia, resultados, correlacoes, regressao, mapa: mapaAba, porte20: () => porteAba(20000), porte50: () => porteAba(50000), mun: munAba, rdd: rddAba, gasto, metodo };
+  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, economia, resultados, correlacoes, regressao, mapa: mapaAba, porte20: () => porteAba(20000), porte50: () => porteAba(50000), mun: munAba, rdd: rddAba, gasto, indicadores: indicadoresAba, metodo };
   function render(){
     GRAFS.clear();
     document.querySelectorAll("nav.abas button").forEach(b => b.setAttribute("aria-selected", b.dataset.aba === st.aba));
@@ -1893,6 +1961,8 @@ for i, nome in enumerate(m.model.exog_names):
   ctl.addEventListener("change", e => { if (e.target.id === "fUf"){ st.uf = e.target.value; render(); } });
   ctl.addEventListener("click", e => { const b = e.target.closest("[data-modo]"); if (!b) return; st.modo = b.dataset.modo; controles(); render(); });
   main.addEventListener("click", e => {
+    const ic = e.target.closest("[data-ind]");
+    if (ic){ const o = IND_LISTA[+ic.dataset.ind]; if (o) abreDetalhe(o.g, o.titulo, o.sub); return; }
     const tj = e.target.closest("[data-trajg]");
     if (tj){ const g = GRAFS.get(tj.dataset.trajg); if (g){ const m = M.find(x => x.c === st.mun); abreDetalhe(g, `${g.series[0].n}${m ? ` · ${m.n} (${m.uf})` : ""}`, `A preços de ${REF}. Governos: os mandatos dos prefeitos.`); } return; }
     const t = e.target.closest("[data-met],[data-ord],[data-mun],[data-voltar],[data-st],[data-comp],[data-csv]");
