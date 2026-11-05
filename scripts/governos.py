@@ -5,7 +5,7 @@ Fontes, públicas e sem chave:
 - Banco Mundial (API v2): PIB, PIB por habitante, desemprego (estimativa da OIT), homicídios, Gini, pobreza,
   expectativa de vida, mortalidade infantil, gasto público em saúde e educação, matrículas no ensino superior,
   área de florestas e emissões de gases de efeito estufa;
-- Banco Central (SGS): inflação (IPCA), Selic, dólar, salário mínimo, dívida bruta e líquida e resultado primário;
+- Banco Central (SGS): reservas internacionais, inflação (IPCA), Selic, dólar, salário mínimo, dívida bruta e líquida e resultado primário;
 - Wikipédia e Wikimedia Commons: retrato do verbete de cada presidente, com autor e licença.
 Se uma fonte falhar, os valores anteriores são mantidos. Roda pela Action .github/workflows/governos.yml.
 """
@@ -49,11 +49,17 @@ IND = [
     ("inflacao", "Inflação (IPCA)", "Economia", "sgs:13522", "pct", -1, "fluxo", .5, "IPCA acumulado em 12 meses, em dezembro."),
     ("selic", "Juros básicos (Selic)", "Economia", "sgs:432", "pct", 0, "nivel", .5, "Meta da Selic no fim do ano."),
     ("dolar", "Dólar", "Economia", "sgs:3698", "brl", 0, "nivel", .02, "Média de dezembro, venda."),
+    ("pib_usd", "Tamanho da economia", "Economia", "wb:NY.GDP.MKTP.CD", "usdbi", 1, "nivel", .01, "PIB em dólares correntes."),
+    ("pib_ppc", "PIB por habitante (PPC)", "Economia", "wb:NY.GDP.PCAP.PP.CD", "usd", 1, "nivel", .01, "Em dólares internacionais, pela paridade do poder de compra."),
     ("desemprego", "Desemprego", "Trabalho e renda", "wb:SL.UEM.TOTL.ZS", "pct", -1, "nivel", .2, "Estimativa da OIT, comparável desde 1991."),
     ("salario_minimo", "Salário mínimo real", "Trabalho e renda", "sgs:1619", "brl", 1, "nivel", .01, "Em dezembro, em reais de hoje (IPCA)."),
+    ("salario_minimo_usd", "Salário mínimo em dólares", "Trabalho e renda", "sgs:1619", "usd", 1, "nivel", .01, "Valor de dezembro dividido pelo dólar médio de dezembro."),
     ("divida_bruta", "Dívida bruta do governo", "Contas públicas", "sgs:13762", "pctpib", -1, "nivel", .5, "Governo geral, % do PIB, em dezembro (desde 2006)."),
     ("divida_liquida", "Dívida líquida do setor público", "Contas públicas", "sgs:4513", "pctpib", -1, "nivel", .5, "% do PIB, em dezembro (desde 2001)."),
     ("primario", "Resultado primário", "Contas públicas", "sgs:5793", "pctpib", 1, "fluxo", .3, "Setor público consolidado, % do PIB no ano; positivo é superávit."),
+    ("reservas", "Reservas internacionais", "Setor externo", "sgs:3546", "usdbi", 1, "nivel", .02, "Conceito liquidez, em dezembro."),
+    ("exportacoes", "Exportações", "Setor externo", "wb:NE.EXP.GNFS.CD", "usdbi", 1, "nivel", .02, "Bens e serviços, em dólares correntes."),
+    ("importacoes", "Importações", "Setor externo", "wb:NE.IMP.GNFS.CD", "usdbi", 0, "nivel", .02, "Bens e serviços, em dólares correntes."),
     ("gini", "Desigualdade (Gini)", "Social", "wb:SI.POV.GINI", "gini", -1, "nivel", .003, "De 0 a 1; mais perto de 1, mais desigual."),
     ("pobreza_extrema", "Pobreza extrema", "Social", "wb:SI.POV.DDAY", "pct", -1, "nivel", .2, "Pessoas com menos de US$ 3,00 por dia (PPC de 2021)."),
     ("pobreza", "Pobreza", "Social", "wb:SI.POV.UMIC", "pct", -1, "nivel", .3, "Pessoas com menos de US$ 8,30 por dia (PPC de 2021)."),
@@ -154,6 +160,10 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001
         log(f"IPCA (433): falhou ({e})"); P = {}
     ult = max(P) if P else None
+    try:
+        DOL = sgs("3698")[0]
+    except Exception:  # noqa: BLE001
+        DOL = {}
     indicadores = []
     for k, n, tema, fonte, unid, mais, tipo, tol, nota in IND:
         org, cod = fonte.split(":")
@@ -163,10 +173,16 @@ def main() -> int:
             else:
                 v, mes = sgs(cod)
                 parc = {a: m for a, m in mes.items() if not m.endswith("-12")}
+                if k == "salario_minimo_usd":
+                    v = {a: round(x / DOL[a], 0) for a, x in v.items() if DOL.get(a)}
+                if k == "reservas":
+                    v = {a: round(x / 1000, 1) for a, x in v.items()}   # US$ milhões → bilhões
                 if k == "salario_minimo":
                     v = {a: round(x * P[ult] / P[a], 2) for a, x in v.items() if a in P}
                 if k == "primario":
                     v = {a: round(-x, 2) for a, x in v.items()}   # o SGS traz a necessidade de financiamento: positivo é déficit
+            if unid == "usdbi" and org == "wb":
+                v = {a: round(x / 1e9, 1) for a, x in v.items()}
             if k == "gini":
                 v = {a: round(x / 100, 3) for a, x in v.items()}
             v = {a: x for a, x in v.items() if int(a) >= INICIO}
