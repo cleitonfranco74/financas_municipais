@@ -1679,7 +1679,7 @@ for i, nome in enumerate(m.model.exog_names):
   const governadores = (uf, gov = D.gov) => ["2014", "2018", "2022"].map(e => { const p = gov?.[uf]?.[e]; return p ? { de: +e + 1, ate: +e + 4, rot: `${p} (${+e + 1}–${String(+e + 4).slice(2)})`, c: corPartido(p), t: `Governador do ${p}, ${+e + 1}–${+e + 4}` } : null; }).filter(Boolean);
   const det = document.createElement("div"); det.className = "det"; det.hidden = true; det.setAttribute("role", "dialog"); det.setAttribute("aria-modal", "true");
   document.body.appendChild(det);
-  let detAtual = null, detModo = "tempo";
+  let detAtual = null, detModo = "tempo", detSerie = -1;   // detSerie: −1 = todas as séries
   const ehPct = fmt => /%/.test(fmt(0.5)) ;
   function variacao(fmt, v0, v1){
     if (v0 == null || v1 == null || !isFinite(v0) || !isFinite(v1)) return null;
@@ -1690,7 +1690,7 @@ for i, nome in enumerate(m.model.exog_names):
   }
   const valorAte = (v, ano, de) => { for (let a = ano; a >= de; a--) if (v[a] != null && isFinite(v[a])) return [a, v[a]]; return null; };
   function abreDetalhe(g, titulo, sub){
-    detAtual = { ...g, titulo, sub }; detModo = "tempo";
+    detAtual = { ...g, titulo, sub }; detModo = "tempo"; detSerie = -1;
     det.hidden = false; document.body.style.overflow = "hidden"; desenhaDetalhe(); det.scrollTop = 0; det.querySelector("[data-fecha]")?.focus();
   }
   function fechaDetalhe(){ det.hidden = true; document.body.style.overflow = ""; detAtual = null; }
@@ -1698,43 +1698,61 @@ for i, nome in enumerate(m.model.exog_names):
     const g = detAtual; if (!g) return;
     const anos = g.anos.map(String), gov = (g.governos || presidentes()).filter(x => x.ate >= +anos[0] && x.de <= +anos[anos.length - 1]);
     // destaque: a série do conjunto ("Todos os municípios", "Brasil"...) quando houver; senão, a primeira
-    const s0 = (g.series.length >= 3 && g.series.find(s => /^(Todos|Brasil)/.test(s.n))) || g.series[0], ok = anos.filter(a => s0.v[a] != null && isFinite(s0.v[a]));
+    const todas = g.series, vis = detSerie >= 0 && todas[detSerie] ? [todas[detSerie]] : todas;
+    const s0 = vis.length === 1 ? vis[0] : (todas.length >= 3 && todas.find(s => /^(Todos|Brasil)/.test(s.n))) || todas[0], ok = anos.filter(a => s0.v[a] != null && isFinite(s0.v[a]));
     const ult = ok[ok.length - 1], pri = ok[0], vt = ok.length > 1 ? variacao(g.fmt, s0.v[pri], s0.v[ult]) : null;
     const w = Math.max(300, Math.min(1140, (det.clientWidth || window.innerWidth) - 40));
     let corpo;
     if (detModo === "tempo"){
-      corpo = linhas(g.series, { anos: g.anos, fmt: g.fmt, alto: w < 560 ? 300 : 380, w, faixas: gov, ampliado: true }) +
+      corpo = linhas(vis, { anos: g.anos, fmt: g.fmt, alto: w < 560 ? 300 : 380, w, faixas: gov, ampliado: true }) +
         `<div class="det-gov">${gov.map(x => `<span><i style="background:${x.c}"></i>${esc(x.rot)}${/\(/.test(x.rot) ? "" : `<small>${x.de}–${x.ate}</small>`}</span>`).join("")}</div>`;
     } else {
       // por governo: média de cada série no período e o que mudou (do ano anterior à posse ao último ano do governo)
       const media2 = (v, x) => { const vs = anos.filter(a => +a >= x.de && +a <= x.ate && v[a] != null && isFinite(v[a])).map(a => v[a]); return vs.length ? media(vs) : null; };
-      const barras = colunas(gov.map(x => x.rot), g.series.map(s => ({ n: s.n, c: s.c, v: gov.map(x => media2(s.v, x)) })), { fmt: g.fmt, alto: 280, w });
-      const linhasT = gov.map(x => `<tr><td><span class="chip"><i style="background:${x.c}"></i>${esc(x.rot)}</span> <small style="color:var(--muted)">${x.de}–${x.ate}</small></td>${g.series.map(s => {
+      const barras = colunas(gov.map(x => x.rot), vis.map(s => ({ n: s.n, c: s.c, v: gov.map(x => media2(s.v, x)) })), { fmt: g.fmt, alto: 280, w });
+      const linhasT = gov.map(x => `<tr><td><span class="chip"><i style="background:${x.c}"></i>${esc(x.rot)}</span> <small style="color:var(--muted)">${x.de}–${x.ate}</small></td>${vis.map(s => {
         const ini = valorAte(s.v, x.de - 1, x.de - 3), fim = valorAte(s.v, x.ate, x.de); const m = ini && fim ? variacao(g.fmt, ini[1], fim[1]) : null;
         return `<td class="num" title="${ini && fim ? esc(`${ini[0]}: ${g.fmt(ini[1])} → ${fim[0]}: ${g.fmt(fim[1])}`) : ""}">${m ? `<b style="color:${m.d > 0 ? "var(--good)" : m.d < 0 ? "var(--crit)" : "var(--muted)"}">${m.txt}</b><br><small style="color:var(--muted)">${esc(g.fmt(ini[1]))} → ${esc(g.fmt(fim[1]))}</small>` : "—"}</td>`; }).join("")}</tr>`).join("");
       corpo = `<h3 class="mini">Média de cada governo</h3>${barras}
         <h3 class="mini" style="margin-top:16px">O que mudou em cada governo</h3><p class="nota" style="margin-top:0">Do último ano antes da posse ao último ano do governo (ou o mais recente). Verde: subiu; vermelho: caiu (subir nem sempre é melhor: veja o indicador).</p>
-        <div class="tbwrap"><table class="tb"><thead><tr><th>Governo</th>${g.series.map(s => `<th><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${s.c};margin-right:5px"></i>${esc(s.n)}</th>`).join("")}</tr></thead><tbody>${linhasT}</tbody></table></div>`;
+        <div class="tbwrap"><table class="tb"><thead><tr><th>Governo</th>${vis.map(s => `<th><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${s.c};margin-right:5px"></i>${esc(s.n)}</th>`).join("")}</tr></thead><tbody>${linhasT}</tbody></table></div>`;
     }
     const tabela = `<details class="det-num"><summary>Ver os números</summary><div class="tbwrap"><table class="tb"><thead><tr><th>Ano</th>${g.series.map(s => `<th>${esc(s.n)}</th>`).join("")}<th>Governo</th></tr></thead><tbody>${
       anos.slice().reverse().map(a => `<tr><td>${a}</td>${g.series.map(s => `<td class="num">${s.v[a] != null && isFinite(s.v[a]) ? esc(g.fmt(s.v[a])) : "—"}</td>`).join("")}<td>${esc(gov.find(x => +a >= x.de && +a <= x.ate)?.rot || "")}</td></tr>`).join("")}</tbody></table></div></details>`;
     const mx = ok.length ? ok.reduce((b, a) => s0.v[a] > s0.v[b] ? a : b) : null, mn = ok.length ? ok.reduce((b, a) => s0.v[a] < s0.v[b] ? a : b) : null;
+    // variação de s0 em cada governo com pelo menos 2 anos de dados: do ano anterior à posse (ou o primeiro do governo) ao último
+    const porGov = gov.map(x => { const ini = valorAte(s0.v, x.de - 1, x.de - 1) || (() => { for (let a = x.de; a <= x.ate; a++) if (s0.v[a] != null && isFinite(s0.v[a])) return [a, s0.v[a]]; return null; })();
+      const fim = valorAte(s0.v, x.ate, x.de); if (!ini || !fim || fim[0] - ini[0] < 2 - (ini[0] < x.de ? 1 : 0) || fim[0] <= ini[0]) return null;
+      const m = variacao(g.fmt, ini[1], fim[1]); if (!m) return null;
+      const anual = !ehPct(g.fmt) && ini[1] > 0 && fim[1] > 0 ? Math.pow(fim[1] / ini[1], 1 / (fim[0] - ini[0])) - 1 : null;
+      return { x, ini, fim, m, anual }; }).filter(Boolean);
+    const alta = porGov.length ? porGov.reduce((b, o) => o.m.d > b.m.d ? o : b) : null, queda = porGov.length ? porGov.reduce((b, o) => o.m.d < b.m.d ? o : b) : null;
+    const frase = o => `no governo ${esc(o.x.rot)}, ${o.m.txt} de ${o.ini[0]} a ${o.fim[0]}${o.anual != null ? ` (${o.anual >= 0 ? "+" : "−"}${nf(Math.abs(o.anual) * 100, 1)}% ao ano)` : ""}`;
+    const tituloCurto = esc(String(g.titulo).split(":")[0].replace(/,? por orientação.*$/i, "").toLowerCase());
+    const faq = ok.length ? `<div class="det-res"><h3>Perguntas frequentes</h3>
+      <details class="det-faq"><summary>Qual é o dado mais recente de ${tituloCurto}?</summary><p>${esc(s0.n)}: ${esc(g.fmt(s0.v[ult]))} em ${ult}${vt ? `, ${vt.txt} em relação a ${pri}` : ""}.</p></details>
+      ${mx !== mn ? `<details class="det-faq"><summary>Qual foi o maior valor e em que ano?</summary><p>${esc(g.fmt(s0.v[mx]))}, em ${mx}. O menor foi ${esc(g.fmt(s0.v[mn]))}, em ${mn}.</p></details>` : ""}
+      ${alta && alta.m.d > 0 ? `<details class="det-faq"><summary>Em qual governo houve a maior alta?</summary><p>${frase(alta)[0].toUpperCase() + frase(alta).slice(1)}.</p></details>` : ""}
+      ${queda && queda.m.d < 0 ? `<details class="det-faq"><summary>Em qual governo houve a maior queda?</summary><p>${frase(queda)[0].toUpperCase() + frase(queda).slice(1)}.</p></details>` : ""}</div>` : "";
     const resumo = ok.length ? `<div class="det-res"><h3>Em resumo</h3><ul>
       <li>Último dado (${esc(s0.n)}): <b>${esc(g.fmt(s0.v[ult]))}</b> em ${ult}.</li>
       ${vt ? `<li>Desde ${pri}: <b>${vt.txt}</b> (de ${esc(g.fmt(s0.v[pri]))}).</li>` : ""}
       ${mx !== mn ? `<li>Maior valor em ${mx} (${esc(g.fmt(s0.v[mx]))}); menor em ${mn} (${esc(g.fmt(s0.v[mn]))}).</li>` : ""}
-      ${g.series.length > 1 ? `<li>${g.series.length} séries no gráfico; o destaque acima é “${esc(s0.n)}”.</li>` : ""}</ul></div>` : "";
+      ${porGov.length >= 2 && alta.m.d > 0 ? `<li>Por governo (entre os que têm pelo menos 2 anos de dados): a maior alta foi ${frase(alta)}.</li>` : ""}
+      ${porGov.length >= 2 && queda.m.d < 0 ? `<li>A maior queda foi ${frase(queda)}.</li>` : ""}</ul></div>` : "";
     det.innerHTML = `<div class="det-in">
       <div class="det-top"><button type="button" class="btn" data-fecha>‹ Voltar</button><span class="status">Toque nos pontos para ver os valores</span></div>
       <h2 class="det-tit">${esc(g.titulo)}</h2>${g.sub ? `<p class="sub">${esc(g.sub)}</p>` : ""}
       ${ok.length ? `<div class="det-val"><b>${esc(g.fmt(s0.v[ult]))}</b><span>${esc(s0.n)}, em ${ult}${vt ? `, <em style="color:${vt.d > 0 ? "var(--good)" : vt.d < 0 ? "var(--crit)" : "var(--muted)"};font-style:normal;font-weight:700">${vt.txt}</em> desde ${pri}` : ""}</span></div>` : ""}
       <div class="seg det-seg" role="group" aria-label="Visão"><button type="button" data-detmodo="tempo" aria-pressed="${detModo === "tempo"}">Linha do tempo</button><button type="button" data-detmodo="gov" aria-pressed="${detModo === "gov"}">Por governo</button></div>
-      <div class="det-ch">${corpo}</div>${tabela}${resumo}
+      ${todas.length > 1 ? `<div class="det-chips" role="group" aria-label="Série">${[[-1, "Todas"], ...todas.map((s, i) => [i, s.n])].map(([i, n]) => `<button type="button" data-detserie="${i}" aria-pressed="${detSerie === i}">${i >= 0 ? `<i style="background:${todas[i].c}"></i>` : ""}${esc(n)}</button>`).join("")}</div>` : ""}
+      <div class="det-ch">${corpo}</div>${tabela}${resumo}${faq}
       <p class="nota">Governos: ${g.governos ? "mandatos indicados no próprio gráfico (prefeitos ou governadores)" : "presidentes da República; cada ano fica com quem governou a maior parte dele (2016 com Dilma)"}. Mudanças dentro de um governo não são, por si, efeito dele.</p></div>`;
   }
   det.addEventListener("click", e => {
     if (e.target.closest("[data-fecha]")){ fechaDetalhe(); return; }
-    const b = e.target.closest("[data-detmodo]"); if (b){ detModo = b.dataset.detmodo; desenhaDetalhe(); }
+    const b = e.target.closest("[data-detmodo]"); if (b){ detModo = b.dataset.detmodo; desenhaDetalhe(); return; }
+    const c = e.target.closest("[data-detserie]"); if (c){ detSerie = +c.dataset.detserie; desenhaDetalhe(); }
   });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !det.hidden) fechaDetalhe(); });
   function abreGraf(svg){
