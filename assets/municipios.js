@@ -31,7 +31,8 @@
   let D, M = [], ANOS = [], REF = null;
   const st = { aba: "geral", uf: "", modo: "4", met: "invpc", mun: null, x: "peso", y: "inv", h: 20, rddE: "2016+2020", rddY: "inv", rddC: "ideo", ord: "invpc", comp: [],
     fn: "10", polY: "invpc", polY2: "convEpc", amX: "expansao", amY: "desm", resX: "saude", resY: "tmi", mapa: "orient", cmet: "invpc", corr: "p", cxy: "6-3", cvar: "6",
-    regY: "6", regX: [0, 1, 2, 3], regUF: true, regZ: false, mapaModo: "v", regLang: "r", vac: "0", reg: "", metP: "invpc", metP2: "convEpc" };
+    regY: "6", regX: [0, 1, 2, 3], regUF: true, regZ: false, mapaModo: "v", regLang: "r", vac: "0", reg: "", metP: "invpc", metP2: "convEpc",
+    gArea: "total", gUf: "MT", gMun: "desp" };
 
   const nota = sg => { if (!sg) return null; const s = sg.trim().toUpperCase(); return D.escala[D.sinonimos[s] || s] ?? null; };
   const cat7 = sc => sc == null ? null : CATS.find(c => sc <= c[2])[0];
@@ -60,6 +61,8 @@
           return [a, { rec: v[0] * d, tr: v[1] * d, trib: v[2] * d, desp: v[3] * d, inv: v[4] * d, pop: m.pop?.[a] || null,
             rc: rc ? rc.map(x => x * d) : null, conv: rc ? (rc[6] + rc[7] + rc[8]) * d : null, convE: rc ? rc[7] * d : null,
             fn: fn ? Object.fromEntries(Object.entries(fn).map(([k, x]) => [k, x * d])) : null, lrf: m.lrf?.[a] || null,
+            // despesa por natureza (D.nat_nomes): pessoal, juros, custeio, investimentos, inversões, amortização
+            nat: m.nat?.[a] ? m.nat[a].map(x => x * d) : null,
             // repasses vinculados (D.tr_nomes): FUNDEB, SUS da União e do estado, FNDE, educação estadual, assistência social
             rp: rp ? rp.map(x => x * d) : null }];
         })) };
@@ -107,7 +110,7 @@
 
   /* ---------- gráficos SVG ---------- */
   const largura = () => Math.max(300, Math.min(1100, (main.clientWidth || 700) - 50));
-  function linhas(series, { anos, fmt, alto = 260, w = largura() }){
+  function linhas(series, { anos, fmt, alto = 260, w = largura(), faixas = [] }){
     const pl = 64, pr = 12, pt = 14, pb = 26, xs = anos.map(String);
     const vals = series.flatMap(s => xs.map(a => s.v[a]).filter(v => v != null && isFinite(v)));
     if (!vals.length) return `<p class="nota">Sem dados para o recorte escolhido.</p>`;
@@ -116,6 +119,14 @@
     const ticks = [0, .25, .5, .75, 1].map(t => lo + t * (hi - lo));
     const grade = ticks.map(t => `<line class="gl" x1="${pl}" x2="${w - pr}" y1="${Y(t)}" y2="${Y(t)}"/><text class="ax" x="${pl - 6}" y="${Y(t) + 4}" text-anchor="end">${esc(fmt(t))}</text>`).join("");
     const eixo = xs.map((a, i) => (xs.length <= 12 || i % 2 === 0) ? `<text class="ax" x="${X(i)}" y="${alto - 6}" text-anchor="middle">${w < 520 ? "’" + a.slice(2) : a}</text>` : "").join("");
+    // faixas de fundo (mandatos): do meio do ano anterior ao primeiro até o meio do ano seguinte ao último
+    const passo = xs.length > 1 ? (w - pl - pr) / (xs.length - 1) : 0;
+    const fx = faixas.map((f, k) => { const i0 = xs.indexOf(String(f.de)), i1 = xs.indexOf(String(f.ate));
+      const a0 = i0 >= 0 ? X(i0) - passo / 2 : (+f.de < +xs[0] ? pl : null), a1 = i1 >= 0 ? X(i1) + passo / 2 : (+f.ate > +xs[xs.length - 1] ? w - pr : null);
+      if (a0 == null || a1 == null) return "";
+      const x0 = Math.max(pl, a0), x1 = Math.min(w - pr, a1);
+      return `<rect x="${x0}" y="${pt}" width="${Math.max(0, x1 - x0)}" height="${alto - pt - pb}" fill="${f.c}" fill-opacity="${k % 2 ? .10 : .06}"><title>${esc(f.t || f.rot)}</title></rect>` +
+        (x1 - x0 > 40 ? `<text class="ax" x="${(x0 + x1) / 2}" y="${pt + 11}" text-anchor="middle" style="fill:var(--ink-2)">${esc(f.rot)}</text>` : ""); }).join("");
     const ls = series.map(s => {
       const pts = xs.map((a, i) => s.v[a] != null && isFinite(s.v[a]) ? [X(i), Y(s.v[a]), a, s.v[a]] : null);
       let d = "", on = false;
@@ -123,7 +134,7 @@
       return `<path d="${d}" fill="none" stroke="${s.c}" stroke-width="2.4" stroke-linejoin="round" ${s.dash ? 'stroke-dasharray="5 4"' : ""}/>` +
         pts.filter(Boolean).map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="3.2" fill="${s.c}"><title>${esc(s.n)} · ${p[2]}: ${esc(fmt(p[3]))}</title></circle>`).join("");
     }).join("");
-    return `<svg class="ch" viewBox="0 0 ${w} ${alto}" role="img" aria-label="Gráfico de linhas">${grade}${eixo}${ls}</svg>` +
+    return `<svg class="ch" viewBox="0 0 ${w} ${alto}" role="img" aria-label="Gráfico de linhas">${fx}${grade}${eixo}${ls}</svg>` +
       `<div class="leg">${series.map(s => `<span><i style="background:${s.c}"></i>${esc(s.n)}</span>`).join("")}</div>`;
   }
   function dispersao(pts, { fx, fy, nx, ny, reta = true, alto = 340, w = largura(), corte = null }){
@@ -258,6 +269,103 @@
       </section>`;
   }
 
+
+  /* ---------- ficha: trajetória, balanço por mandato e despesa por tipo ---------- */
+  /* indicadores da trajetória: valor do município no ano; mais = +1 quando subir é melhor, −1 quando cair é melhor */
+  const TRAJ = [
+    { k: "invpc", n: "Investimento por habitante", f: brl, mais: 1, v: (m, a) => indiv(m, a, "invpc") },
+    { k: "tribpc", n: "Receita própria por habitante", f: brl, mais: 1, v: (m, a) => indiv(m, a, "tribpc") },
+    { k: "transf", n: "Dependência de transferências", f: v => pct(v, 0), mais: -1, pp: true, v: (m, a) => indiv(m, a, "transf") },
+    { k: "pessoal", n: "Pessoal / RCL", f: v => pct(v), mais: -1, pp: true, v: (m, a) => m.f[a]?.lrf?.[1] != null ? m.f[a].lrf[1] / 100 : null },
+    { k: "saudepc", n: "Saúde por habitante", f: brl, mais: 1, v: (m, a) => indiv(m, a, "saudepc") },
+    { k: "educpc", n: "Educação por habitante", f: brl, mais: 1, v: (m, a) => indiv(m, a, "educpc") },
+    { k: "isf", n: "Saúde fiscal (0 a 1)", f: v => nf(v, 2), mais: 1, abs: true, v: (m, a) => isf(m, a) },
+  ];
+  /* mudança entre dois valores, já com o sinal de melhora: {txt, bom} (bom: 1 melhorou, −1 piorou, 0 estável) */
+  function mudanca(t, v0, v1){
+    if (v0 == null || v1 == null || !isFinite(v0) || !isFinite(v1)) return null;
+    let d, txt, rel;
+    if (t.pp){ d = (v1 - v0) * 100; txt = `${d >= 0 ? "+" : "−"}${nf(Math.abs(d), 1)} p.p.`; rel = Math.abs(d) < 1 ? 0 : d; }
+    else if (t.abs){ d = v1 - v0; txt = `${d >= 0 ? "+" : "−"}${nf(Math.abs(d), 2)}`; rel = Math.abs(d) < .02 ? 0 : d; }
+    else { if (!(v0 > 0)) return null; d = v1 / v0 - 1; txt = `${d >= 0 ? "+" : "−"}${nf(Math.abs(d) * 100, 0)}%`; rel = Math.abs(d) < .05 ? 0 : d; }
+    return { txt, bom: rel === 0 ? 0 : Math.sign(rel) * t.mais };
+  }
+  const corBom = b => b > 0 ? "var(--good)" : b < 0 ? "var(--crit)" : "var(--muted)";
+  /* minigráfico (não é svg.ch, para não ganhar os botões de PNG) */
+  function spark(vals, cor = "var(--accent)", w = 150, h = 36){
+    const ok = vals.map((v, i) => [i, v]).filter(([, v]) => v != null && isFinite(v));
+    if (ok.length < 2) return "";
+    const lo = Math.min(...ok.map(p => p[1])), hi = Math.max(...ok.map(p => p[1])), n = vals.length - 1 || 1;
+    const X = i => 2 + i * (w - 6) / n, Y = v => 3 + (hi - v) / ((hi - lo) || 1) * (h - 6);
+    const d = ok.map(([i, v], j) => `${j ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join("");
+    const [li, lv] = ok[ok.length - 1];
+    return `<svg class="spk" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><path d="${d}" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linejoin="round"/><circle cx="${X(li)}" cy="${Y(lv)}" r="2.8" fill="${cor}"/></svg>`;
+  }
+  function trajetoria(m){
+    const cards = TRAJ.map(t => {
+      const vals = ANOS.map(a => t.v(m, String(a)));
+      const i1 = vals.map((v, i) => v != null && isFinite(v) ? i : -1).filter(i => i >= 0);
+      if (!i1.length) return "";
+      const ia = i1[0], ib = i1[i1.length - 1], mu = ia < ib ? mudanca(t, vals[ia], vals[ib]) : null;
+      return `<div class="kpi traj"><span>${esc(t.n)}</span><b>${esc(t.f(vals[ib]))}</b>${spark(vals)}
+        <small>${mu ? `<em style="color:${corBom(mu.bom)};font-style:normal;font-weight:700">${mu.txt}</em> desde ${ANOS[ia]}, ` : ""}em ${ANOS[ib]}</small></div>`;
+    }).join("");
+    return `<section class="panel" style="margin-top:16px"><h2>Trajetória desde ${ANOS[0]}</h2><p class="sub">Valor mais recente, evolução ano a ano e variação no período, a preços de ${REF}. Verde: melhorou; vermelho: piorou (para pessoal e dependência de transferências, cair é melhorar).</p>
+      <div class="kpis">${cards}</div></section>`;
+  }
+  /* mandatos do painel: ano da eleição, posse no ano seguinte, quatro anos */
+  const mandatos = m => D.eleicoes.map(e => ({ e, de: +e + 1, ate: +e + 4, ele: m.ele?.[e] || null, reel: m.reel?.[e] === 1 }))
+    .filter(x => x.ate >= ANOS[0] && x.de <= ANOS[ANOS.length - 1] + 1);
+  const faixasMandato = m => mandatos(m).map(x => ({ de: x.de, ate: x.ate, rot: x.ele ? x.ele[0] : "?", c: x.ele ? grupo(nota(x.ele[0])).c : "#52525b",
+    t: `${MANDATO[x.e]}: ${x.ele ? x.ele[0] : "sem dado"}${x.reel ? " (reeleito)" : ""}` }));
+  /* mortalidade infantil num período: óbitos ÷ nascidos × 1000 */
+  const tmiPer = (m, de, ate) => { let o = 0, n = 0; for (let a = de; a <= ate; a++){ const t = m.tmi?.[a]; if (t){ o += t[0]; n += t[1]; } } return n >= 30 ? o / n * 1000 : null; };
+  function balanco(m){
+    const ult = ANOS[ANOS.length - 1];
+    const ms = mandatos(m).filter(x => x.de - 1 >= ANOS[0]);   // é preciso o ano anterior à posse como base
+    if (!ms.length) return "";
+    const linhasB = [...TRAJ, { k: "tmi", n: "Mortalidade infantil (por mil)", f: v => nf(v, 1), mais: -1, abs2: true }];
+    const col = ms.map(x => {
+      const fim = Math.min(x.ate, ult), base = x.de - 1, parcial = fim < x.ate;
+      const cel = linhasB.map(t => {
+        let v0, v1, mu;
+        if (t.k === "tmi"){ v0 = tmiPer(m, base - 3, base); v1 = tmiPer(m, x.de, Math.min(x.ate, ANOS[ANOS.length - 1] + 1));
+          mu = v0 != null && v1 != null ? (() => { const d = v1 - v0; return { txt: `${d >= 0 ? "+" : "−"}${nf(Math.abs(d), 1)}`, bom: Math.abs(d) < .5 ? 0 : -Math.sign(d) }; })() : null; }
+        else { v0 = t.v(m, String(base)); v1 = t.v(m, String(fim)); mu = fim > base ? mudanca(t, v0, v1) : null; }
+        return { mu, v0, v1, t };
+      });
+      const bons = cel.filter(c => c.mu?.bom > 0).length, maus = cel.filter(c => c.mu?.bom < 0).length;
+      return { x, fim, base, parcial, cel, bons, maus };
+    });
+    const cab = col.map(c => { const g = c.x.ele ? grupo(nota(c.x.ele[0])) : SEM;
+      return `<th style="text-align:center;white-space:normal">${MANDATO[c.x.e]}<br><span class="chip" style="margin-top:4px"><i style="background:${g.c}"></i>${esc(c.x.ele ? c.x.ele[0] : "sem dado")}</span>${c.x.reel ? "<br><small>reeleito</small>" : ""}</th>`; }).join("");
+    const corpo = linhasB.map((t, i) => `<tr><td>${esc(t.n)}</td>${col.map(c => { const z = c.cel[i];
+      if (!z.mu) return `<td style="text-align:center;color:var(--muted)">—</td>`;
+      const seta = z.mu.bom > 0 ? "▲" : z.mu.bom < 0 ? "▼" : "●";
+      const dica = t.k === "tmi" ? `${nf(z.v0, 1)} (4 anos antes) → ${nf(z.v1, 1)} (no mandato)` : `${c.base}: ${t.f(z.v0)} → ${c.fim}: ${t.f(z.v1)}`;
+      return `<td class="num" style="text-align:center;color:${corBom(z.mu.bom)}" title="${esc(dica)}">${seta} ${z.mu.txt}</td>`; }).join("")}</tr>`).join("");
+    const pe = `<tr><td><b>Melhorou / piorou</b></td>${col.map(c => `<td style="text-align:center"><b style="color:var(--good)">${c.bons}</b> / <b style="color:var(--crit)">${c.maus}</b>${c.parcial ? `<br><small style="color:var(--muted)">parcial, até ${c.fim}</small>` : ""}</td>`).join("")}</tr>`;
+    return `<section class="panel" style="margin-top:16px"><h2>Balanço por mandato</h2><p class="sub">O que melhorou e o que piorou em cada mandato: o último ano antes da posse comparado com o último ano do mandato (ou o mais recente), a preços de ${REF}. Mortalidade infantil: os anos do mandato contra os quatro anteriores. Passe o mouse ou toque para ver os valores.</p>
+      <div class="tbwrap"><table class="tb"><thead><tr><th>Indicador</th>${cab}</tr></thead><tbody>${corpo}${pe}</tbody></table></div>
+      <p class="nota">Regras fixas, sem julgamento: ▲ melhorou, ▼ piorou, ● estável (menos de 5% nos valores por habitante, de 1 p.p. nos percentuais e de 0,02 no índice). Mudanças no mandato também dependem de repasses, da economia e de regras nacionais; para uma comparação causal, veja a aba <b>Eleições acirradas</b>.</p></section>`;
+  }
+  /* despesa por natureza: pessoal, custeio, dívida (juros e amortização) e investimento (com inversões) */
+  const NAT_GR = [["Pessoal e encargos", n => n[0], "#60a5fa"], ["Custeio (outras correntes)", n => n[2], "#a1a1aa"], ["Juros e amortização da dívida", n => n[1] + n[5], "#f87171"], ["Investimentos e inversões", n => n[3] + n[4], "#c8f250"]];
+  const barraNat = (rot, n, extra = "") => { const t = NAT_GR.reduce((s, [, f]) => s + f(n), 0); if (!(t > 0)) return "";
+    return `<div class="bar-el" style="grid-template-columns:minmax(80px,140px) minmax(0,1fr) 70px"><span>${esc(rot)}</span><div class="pb">${NAT_GR.map(([nm, f, c]) => `<i title="${esc(rot)} · ${esc(nm)}: ${pct(f(n) / t)}" style="width:${f(n) / t * 100}%;background:${c}"><title>${esc(rot)} · ${esc(nm)}: ${pct(f(n) / t)}</title></i>`).join("")}</div><b class="num" style="font-weight:500">${pct(NAT_GR[3][1](n) / t, 0)}${extra}</b></div>`; };
+  const somaNat = (ms, a) => { const s = [0, 0, 0, 0, 0, 0]; let k = 0; ms.forEach(m => { const n = m.f[a]?.nat; if (n){ n.forEach((v, i) => s[i] += v); k++; } }); return k ? s : null; };
+  function naturezaFicha(m){
+    const anos = ANOS.filter(a => m.f[a]?.nat);
+    if (!anos.length) return `<section class="panel" style="margin-top:16px"><h2>Em que a prefeitura gasta</h2><p class="nota">A despesa por tipo (pessoal, custeio, dívida e investimento, anexo I-D da DCA) está sendo coletada; aparece aqui nas próximas atualizações semanais.</p></section>`;
+    const a = String(anos[anos.length - 1]), uf = somaNat(M.filter(x => x.uf === m.uf), a), rec = somaNat(M, a);
+    return `<section class="panel" style="margin-top:16px"><h2>Em que a prefeitura gasta</h2><p class="sub">Despesa liquidada por tipo (natureza), em % do total de cada ano; a coluna da direita é a parcela do investimento. Comparação com a soma dos municípios do estado e do painel em ${a}.</p>
+      ${anos.slice().reverse().map(y => barraNat(String(y), m.f[y].nat)).join("")}
+      <div style="border-top:1px dashed var(--line);margin:6px 0"></div>
+      ${uf ? barraNat(`Municípios de ${m.uf}`, uf) : ""}${rec ? barraNat("Todo o painel", rec) : ""}
+      <div class="leg">${NAT_GR.map(([n, , c]) => `<span><i style="background:${c}"></i>${esc(n)}</span>`).join("")}</div>
+      <p class="nota">Custeio inclui material, serviços de terceiros, contratos de terceirização e repasses a consórcios. Fonte: DCA, anexo I-D (Siconfi).</p></section>`;
+  }
+
   /* ---------- aba: municípios ---------- */
   function munAba(){
     const ms = sel();
@@ -277,7 +385,7 @@
       return;
     }
     const s = met => ({ n: MET[met].n, v: Object.fromEntries(ANOS.map(a => [a, indiv(m, a, met)])) });
-    const fin = linhas([{ ...s("invpc"), c: "#c8f250" }, { ...s("tribpc"), c: "#60a5fa" }], { anos: ANOS, fmt: brl, alto: 240 });
+    const fin = linhas([{ ...s("invpc"), c: "#c8f250" }, { ...s("tribpc"), c: "#60a5fa" }], { anos: ANOS, fmt: brl, alto: 240, faixas: faixasMandato(m) });
     const anosA = Object.keys(m.agro || {}).sort();
     const ag = anosA.length ? linhas([["Soja", 0, "#eab308"], ["Milho", 1, "#f97316"], ["Algodão", 2, "#e4e4e7"]].map(([n, i, c]) => ({ n, c, v: Object.fromEntries(anosA.map(a => [a, m.agro[a][i]])) })), { anos: anosA, fmt: v => `${nf(v / 1e3, 0)} mil ha`, alto: 220 }) : `<p class="nota">Sem dados de lavouras.</p>`;
     const boi = anosA.length ? `<p class="nota">Rebanho bovino: <b>${nf(m.agro[anosA[anosA.length - 1]][4])}</b> cabeças em ${anosA[anosA.length - 1]}${m.agro[anosA[0]][4] ? ` (${pct(m.agro[anosA[anosA.length - 1]][4] / m.agro[anosA[0]][4] - 1, 0)} desde ${anosA[0]})` : ""}.</p>` : "";
@@ -293,6 +401,7 @@
           <div class="kpi"><span>Receita ${REF}</span><b>${brlC(x?.rec)}</b><small>${pct(indiv(m, REF, "transf"), 0)} de transferências</small></div>
           <div class="kpi"><span>Receita própria</span><b>${brl(indiv(m, REF, "tribpc"))}</b><small>por habitante (impostos e taxas)</small></div>
         </div></section>
+      ${trajetoria(m)}
       <section class="panel" style="margin-top:16px"><h2>Contas, ambiente e resultados</h2><div class="kpis" style="margin-top:10px">
           <div class="kpi"><span>Pessoal / RCL ${aL}</span><b>${m.f[aL]?.lrf?.[1] == null ? "—" : `${nf(m.f[aL].lrf[1], 1)}%`}</b><small>limite de 54% (LRF)</small></div>
           <div class="kpi"><span>Saúde fiscal ${aL}</span><b>${nf(isf(m, aL), 2)}</b><small>índice de 0 a 1 (aba Finanças públicas)</small></div>
@@ -310,10 +419,12 @@
         </div></section>
       <section class="panel" style="margin-top:16px"><h2>Prefeitos</h2><p class="sub">Partido do prefeito eleito, posição na escala de 0 (esquerda) a 10 (direita) e margem sobre o segundo colocado.</p>
         <div class="tbwrap"><table class="tb"><thead><tr><th>Mandato</th><th>Partido</th><th>Orientação</th><th>Escala</th><th>Margem</th></tr></thead><tbody>${prefeitos}</tbody></table></div></section>
+      ${balanco(m)}
       <div class="grid" style="margin-top:16px">
-        <section class="panel"><h2>Investimento e receita própria por habitante</h2><p class="sub">A preços de ${REF}.</p>${fin}</section>
+        <section class="panel"><h2>Investimento e receita própria por habitante</h2><p class="sub">A preços de ${REF}. Faixas de fundo: mandatos, na cor da orientação do prefeito.</p>${fin}</section>
         <section class="panel"><h2>Lavouras</h2><p class="sub">Área colhida (IBGE, PAM).</p>${ag}${boi}</section>
       </div>
+      ${naturezaFicha(m)}
       <section class="panel" style="margin-top:16px"><h2>Ano a ano</h2><div class="tbwrap"><table class="tb"><thead><tr><th>Ano</th><th>Receita</th><th>Despesa</th><th>Investimento</th><th>Invest./hab.</th><th>Transf. %</th><th>Partido do prefeito</th></tr></thead><tbody>
         ${ANOS.slice().reverse().map(a => { const y = m.f[a]; const e = m.ele?.[eleicaoDo(a)]; return `<tr><td>${a}</td><td class="num">${brlC(y?.rec)}</td><td class="num">${brlC(y?.desp)}</td><td class="num">${brlC(y?.inv)}</td><td class="num">${brl(indiv(m, a, "invpc"))}</td><td class="num">${pct(indiv(m, a, "transf"), 0)}</td><td>${e ? esc(e[0]) : "—"}</td></tr>`; }).join("")}
       </tbody></table></div><p class="nota">Valores a preços de ${REF}. Anos sem valor: a prefeitura não entregou a declaração de contas ao Tesouro.</p></section>`;
@@ -470,13 +581,15 @@
     if (!vals.length) return `<p class="nota">Sem dados para o recorte escolhido.</p>`;
     let lo = Math.min(0, ...vals), hi = Math.max(0, ...vals); if (hi === lo) hi = lo + 1;
     const pad = (hi - lo) * .08; lo -= lo < 0 ? pad : 0; hi += pad;
-    const pl = 56, pr = 12, pt = 12, pb = 26, gw = (w - pl - pr) / rotulos.length, bw = Math.min(46, gw * .8 / series.length);
+    const gira = w < 560 && rotulos.length > 4;   // rótulos inclinados quando não cabem lado a lado (celular)
+    const pl = 56, pr = 12, pt = 12, pb = gira ? 54 : 26, gw = (w - pl - pr) / rotulos.length, bw = Math.min(46, gw * .8 / series.length);
+    alto += gira ? 28 : 0;
     const Y = v => pt + (hi - v) / (hi - lo) * (alto - pt - pb);
     const tk = [0, .25, .5, .75, 1].map(t => lo + t * (hi - lo));
     return `<svg class="ch" viewBox="0 0 ${w} ${alto}" role="img" aria-label="Gráfico de colunas">
       ${tk.map(t => `<line class="gl" x1="${pl}" x2="${w - pr}" y1="${Y(t)}" y2="${Y(t)}"/><text class="ax" x="${pl - 6}" y="${Y(t) + 4}" text-anchor="end">${esc(fmt(t))}</text>`).join("")}
       <line class="zero" x1="${pl}" x2="${w - pr}" y1="${Y(0)}" y2="${Y(0)}"/>
-      ${rotulos.map((r, i) => `<text class="ax" x="${pl + (i + .5) * gw}" y="${alto - 6}" text-anchor="middle">${esc(r)}</text>` + series.map((s, j) => { const v = s.v[i]; if (v == null || !isFinite(v)) return "";
+      ${rotulos.map((r, i) => (gira ? `<text class="ax" x="${pl + (i + .5) * gw}" y="${alto - pb + 14}" text-anchor="end" transform="rotate(-35 ${pl + (i + .5) * gw} ${alto - pb + 14})">${esc(r)}</text>` : `<text class="ax" x="${pl + (i + .5) * gw}" y="${alto - 6}" text-anchor="middle">${esc(r)}</text>`) + series.map((s, j) => { const v = s.v[i]; if (v == null || !isFinite(v)) return "";
         const x = pl + i * gw + (gw - bw * series.length) / 2 + j * bw; return `<rect x="${x + 1}" y="${Math.min(Y(v), Y(0))}" width="${bw - 2}" height="${Math.max(1, Math.abs(Y(v) - Y(0)))}" rx="3" fill="${s.c}"><title>${esc(s.n)} · ${esc(r)}: ${esc(fmt(v))}</title></rect>`; }).join("")).join("")}
     </svg>${series.length > 1 ? `<div class="leg">${series.map(s => `<span><i style="background:${s.c}"></i>${esc(s.n)}</span>`).join("")}</div>` : ""}`;
   }
@@ -871,7 +984,7 @@
     const rc = D.rc_nomes || [];
     const cab = ["codigo_ibge", "municipio", "uf", "ano", "populacao", "partido_prefeito", "escala_ideologica", "orientacao", "prefeito_2o_mandato", "partido_governador", "alinhado_governador",
       "receita_rs_mil", "transferencias_rs_mil", "receita_tributaria_rs_mil", "despesa_rs_mil", "investimento_rs_mil", ...rc.map(n => `rec_${n}_rs_mil`), "saude_rs_mil", "educacao_rs_mil",
-      "rcl_rs_mil", "pessoal_pct_rcl", "dcl_pct_rcl", "restos_pagar_np_rs_mil", "caixa_liquido_rs_mil", "resultado_primario_rs_mil", "meta_primario_rs_mil", "saude_pct_impostos", "educacao_mde_pct_impostos",
+      ...(D.nat_nomes || []).map(n => `desp_${n}_rs_mil`), "rcl_rs_mil", "pessoal_pct_rcl", "dcl_pct_rcl", "restos_pagar_np_rs_mil", "caixa_liquido_rs_mil", "resultado_primario_rs_mil", "meta_primario_rs_mil", "saude_pct_impostos", "educacao_mde_pct_impostos",
       "pib_rs_mil", "pib_agro_rs_mil", "vab_industria_rs_mil", "vab_servicos_rs_mil", "vab_adm_publica_rs_mil",
       ...(D.tr_nomes || []).map(n => `repasse_${n}_rs_mil`), "cempre_empresas", "cempre_pessoal_ocupado", "cempre_assalariados", "cempre_salarios_rs_mil",
       ...SETORES_ID.map(n => `rais_vinculos_${n}`), "rais_estabelecimentos", "rais_vinculos_total", "caged_admissoes", "caged_desligamentos", "caged_saldo",
@@ -882,7 +995,7 @@
       const al = alinhado(m, a);
       out.push([m.c, m.n, m.uf, +a, m.pop?.[a], e?.[0], sc, c7 ? CATS.find(c => c[0] === c7)[1] : "", m.reel?.[E], g, al == null ? "" : +al,
         fi[0], fi[1], fi[2], fi[3], fi[4], ...rc.map((_, i) => r[i]), m.fn?.[a] ? fn["10"] || 0 : "", m.fn?.[a] ? fn["12"] || 0 : "",
-        l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8], m.pib?.[a]?.[0], m.pib?.[a]?.[1], m.pib?.[a]?.[2], m.pib?.[a]?.[3], m.pib?.[a]?.[4],
+        ...(D.nat_nomes || []).map((_, i) => m.nat?.[a]?.[i]), l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8], m.pib?.[a]?.[0], m.pib?.[a]?.[1], m.pib?.[a]?.[2], m.pib?.[a]?.[3], m.pib?.[a]?.[4],
         ...(D.tr_nomes || []).map((_, i) => m.tr?.[a]?.[i]), ...[0, 1, 2, 3].map(i => m.cempre?.[a]?.[i]),
         ...SETORES_ID.map((_, i) => m.rais?.[a]?.[2 + i]), m.rais?.[a]?.[0], m.rais?.[a]?.[1], m.caged?.[a]?.[0], m.caged?.[a]?.[1], m.caged?.[a]?.[2],
         m.cnpj?.abertos?.[a], m.cnpj?.fechados?.[a], ...VACINAS.map(([, i]) => m.vac?.[a]?.[i]), m.emp?.[a]?.[0], m.emp?.[a]?.[1], m.tmi?.[a]?.[0], m.tmi?.[a]?.[1],
@@ -985,8 +1098,8 @@
               fn: fn ? Object.fromEntries(Object.entries(fn).map(([q, x]) => [q, x * k])) : null, rp: rp ? rp.map(x => x * k) : null, lrf: null }]; })) };
       }), emprego: e ? { caged_ate: e.caged_ate, atualizado: e.atualizado } : null };
       BRcarregando = false;
-      if (/^porte/.test(st.aba)) render();
-    }).catch(() => { BRfalhou = true; BRcarregando = false; if (/^porte/.test(st.aba)) render(); });
+      if (/^porte|^gasto/.test(st.aba)) render();
+    }).catch(() => { BRfalhou = true; BRcarregando = false; if (/^porte|^gasto/.test(st.aba)) render(); });
   }
   const govBR = (uf, a) => { const e = a <= 2018 ? "2014" : a <= 2022 ? "2018" : "2022"; return BR.gov?.[uf]?.[e] || null; };
   const alinhadoBR = (m, a) => { const e = m.ele?.[eleicaoDo(+a)], g = govBR(m.uf, +a); return e && g ? sigla(e[0]) === sigla(g) : null; };
@@ -1105,6 +1218,115 @@
         <div class="tbwrap"><table class="tb"><thead><tr><th>Município</th><th>População</th><th>Invest./hab.</th><th>Transf. %</th><th>Partido do prefeito</th></tr></thead><tbody>
         ${top.slice(0, 8).map(linhaTop).join("")}${top.length > 16 ? `<tr><td colspan="5" style="text-align:center;color:var(--muted)">⋯</td></tr>` : ""}${top.slice(Math.max(8, top.length - 8)).map(linhaTop).join("")}</tbody></table></div></section>
       <p class="nota">Fontes: Tesouro Nacional (Siconfi, DCA), TSE, IBGE, Banco Central e Ministério do Trabalho e Emprego (RAIS e Novo Caged); painel nacional atualizado em ${BR.atualizado ? new Date(BR.atualizado + "T12:00").toLocaleDateString("pt-BR") : "—"}. Municípios que não entregaram a DCA de um ano ficam fora daquele ano.</p>`;
+  }
+
+
+  /* ---------- aba: gasto público (União, estados e municípios do Brasil) ---------- */
+  let ES = null, ESfalhou = false, EScarregando = false;
+  function carregaEstados(){
+    if (ES || EScarregando || ESfalhou) return;
+    EScarregando = true;
+    fetch("data/estados.json").then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => {
+      const defl = a => d.ipca?.[REF] && d.ipca?.[a] ? d.ipca[REF] / d.ipca[a] : deflator(a);
+      // por ano: valores nominais em reais (para as razões com o PIB) e o deflator (para os valores por habitante)
+      ES = { atualizado: d.atualizado, entes: d.entes.map(e => ({ ...e, y: Object.fromEntries(Object.entries(e.fin || {}).map(([a, v]) => {
+        const n = e.nat?.[a];
+        return [a, { desp: v[3] * 1e3, inv: v[4] * 1e3, nat: n ? n.map(x => x * 1e3) : null, fn: e.fn?.[a] ? Object.fromEntries(Object.entries(e.fn[a]).map(([k, x]) => [k, x * 1e3])) : null,
+          pib: e.pib?.[a] ? e.pib[a] * 1e3 : null, pop: e.pop?.[a] || null, k: defl(a) }]; })) })) };
+      EScarregando = false; if (st.aba === "gasto") render();
+    }).catch(() => { ESfalhou = true; EScarregando = false; if (st.aba === "gasto") render(); });
+  }
+  const semAmort = y => y.nat ? y.desp - y.nat[5] : y.desp;            // despesa sem a amortização (rolagem) da dívida
+  const AREAS_G = [["total", "Despesa total*", y => semAmort(y)], ["pessoal", "Pessoal e encargos", y => y.nat?.[0]], ["juros", "Juros da dívida", y => y.nat?.[1]],
+    ["inv", "Investimento", y => y.inv], ["10", "Saúde", y => y.fn?.["10"]], ["12", "Educação", y => y.fn?.["12"]], ["09", "Previdência", y => y.fn?.["09"]],
+    ["08", "Assistência social", y => y.fn?.["08"]], ["06", "Segurança pública", y => y.fn?.["06"]], ["26", "Transporte", y => y.fn?.["26"]]];
+  /* municípios do Brasil num ano: soma dos que entregaram as contas, levada à população total (cobertura parcial) */
+  function municipiosBR(a, f){
+    if (!BR) return null;
+    let v = 0, pop = 0, popT = 0, n = 0;
+    BR.ms.forEach(m => { const p = m.pop?.[a] || 0; popT += p; const fin = m.fin?.[a]; if (!fin || !p) return; const x = f({ desp: fin[3] * 1e3, inv: fin[4] * 1e3, fn: m.fn?.[a] ? Object.fromEntries(Object.entries(m.fn[a]).map(([k, q]) => [k, q * 1e3])) : null, nat: null });
+      if (x == null) return; v += x; pop += p; n++; });
+    return pop > 0 && popT > 0 ? { v: v * popT / pop, cob: pop / popT, n } : null;
+  }
+  function gasto(){
+    if (!ES) carregaEstados();
+    if (!BR) carregaBrasil();
+    if (!ES){
+      main.innerHTML = `<section class="panel"><h2>Gasto público</h2><p class="sub">${ESfalhou ? "As contas da União e dos estados ainda não foram coletadas (Action “Atualizar contas da União e dos estados”). Tente mais tarde." : "Carregando as contas da União e dos estados…"}</p></section>`;
+      return;
+    }
+    const U = ES.entes.find(e => e.esfera === "U"), EST = ES.entes.filter(e => e.esfera === "E");
+    const anosE = [...new Set(EST.flatMap(e => Object.keys(e.y)))].sort();
+    const pibBR = a => U?.pib?.[a] ? U.pib[a] * 1e3 : null;
+    // último ano com o PIB do Brasil e as contas da União
+    const aP = [...anosE].reverse().find(a => pibBR(a) && U?.y[a] && EST.filter(e => e.y[a]?.pib).length >= 20) || anosE[anosE.length - 1];
+    const aE = [...anosE].reverse().find(a => EST.filter(e => e.y[a]).length >= 20) || aP;
+    const pP = v => pct(v, 1);
+    const somaE = (a, f) => { let v = 0, n = 0; EST.forEach(e => { const y = e.y[a]; const x = y ? f(y) : null; if (x != null){ v += x; n++; } }); return n ? v : null; };
+    const pibE = a => somaE(a, y => y.pib);
+    // 1. quem executa cada gasto
+    const CURTO = { total: "Total*", pessoal: "Pessoal", inv: "Investim.", "10": "Saúde", "12": "Educação", "09": "Previd.", "08": "Assist." };
+    const cat = AREAS_G.filter(([k]) => CURTO[k]);
+    const serieQ = [["União", "#f5b83d", a => cat.map(([, , f]) => U?.y[a] ? (f(U.y[a]) ?? null) : null)],
+      ["Estados e DF", "#60a5fa", a => cat.map(([, , f]) => somaE(a, f))],
+      ["Municípios", "#c8f250", a => cat.map(([k, , f]) => k === "pessoal" ? null : municipiosBR(a, f)?.v ?? null)]];
+    const quem = colunas(cat.map(c => CURTO[c[0]]), serieQ.map(([n, c, f]) => ({ n, c, v: f(aP).map(v => v != null && pibBR(aP) ? v / pibBR(aP) : null) })), { fmt: v => pct(v, 1), alto: 270 });
+    const cobM = municipiosBR(aP, y => y.desp);
+    // 2. União por natureza, % do PIB
+    const anosU = Object.keys(U?.y || {}).filter(a => pibBR(a)).sort();
+    const NATU = [["Pessoal e encargos", 0, "#60a5fa"], ["Juros", 1, "#f87171"], ["Custeio e benefícios", 2, "#a1a1aa"], ["Investimentos", 3, "#c8f250"], ["Amortização (rolagem)", 5, "#f5b83d"]];
+    const uniao = anosU.length ? linhas(NATU.map(([n, i, c]) => ({ n, c, dash: i === 5, v: Object.fromEntries(anosU.map(a => [a, U.y[a].nat ? U.y[a].nat[i] / pibBR(a) : null])) })), { anos: anosU, fmt: v => pct(v, 1), alto: 260 }) : `<p class="nota">Sem as contas da União.</p>`;
+    const funU = U?.y[aP]?.fn ? Object.entries(U.y[aP].fn).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 10) : [];
+    const barrasU = funU.length ? barrasH(funU.map(([k, v]) => ({ n: FUNCOES[k] || `Função ${k}`, w: v / funU[0][1], v, c: k === "28" ? "#f5b83d" : "#60a5fa" })), v => pct(v / pibBR(aP), 1)) : "";
+    // 3. estados: por morador (total ou área), pessoal e investimento em % do PIB estadual
+    const area = AREAS_G.find(([k]) => k === st.gArea) || AREAS_G[0];
+    const porMorador = EST.map(e => { const y = e.y[aE]; const v = y && y.pop ? area[2](y) : null; return v == null ? null : { e, v: v * y.k / y.pop }; }).filter(Boolean).sort((a, b) => b.v - a.v);
+    const destaque = uf => uf === st.gUf ? "var(--accent)" : D.ufs.includes(uf) ? "#60a5fa" : "#52525b";
+    const barMor = porMorador.length ? barrasH(porMorador.map(o => ({ n: o.e.uf, w: o.v / porMorador[0].v, v: o.v, c: destaque(o.e.uf) })), brl) : `<p class="nota">Sem dados.</p>`;
+    const rankPib = f => { const r = EST.map(e => { const y = e.y[aP]; const v = y && y.pib ? f(y) : null; return v == null ? null : { e, v: v / y.pib }; }).filter(Boolean).sort((a, b) => b.v - a.v);
+      return r.length ? barrasH(r.map(o => ({ n: o.e.uf, w: o.v / r[0].v, v: o.v, c: destaque(o.e.uf) })), pP) : `<p class="nota">Sem a despesa por natureza dos estados em ${aP}.</p>`; };
+    // 4. um estado ao longo do tempo, contra a média dos estados
+    const eSel = EST.find(e => e.uf === st.gUf) || EST[0];
+    const mediaMor = a => { let v = 0, p = 0; EST.forEach(e => { const y = e.y[a]; if (y?.pop && area[2](y) != null){ v += area[2](y) * y.k; p += y.pop; } }); return p ? v / p : null; };
+    const serieUf = linhas([{ n: `${eSel.uf}`, c: "#c8f250", v: Object.fromEntries(anosE.map(a => { const y = eSel.y[a]; return [a, y?.pop && area[2](y) != null ? area[2](y) * y.k / y.pop : null]; })) },
+      { n: "Todos os estados", c: "#e4e4e7", dash: true, v: Object.fromEntries(anosE.map(a => [a, mediaMor(a)])) }], { anos: anosE, fmt: brl, alto: 240 });
+    const anosPib = anosE.filter(a => eSel.y[a]?.pib);
+    const razUf = (f, cor) => linhas([{ n: eSel.uf, c: cor, v: Object.fromEntries(anosPib.map(a => [a, eSel.y[a]?.pib && f(eSel.y[a]) != null ? f(eSel.y[a]) / eSel.y[a].pib : null])) },
+      { n: "Todos os estados", c: "#e4e4e7", dash: true, v: Object.fromEntries(anosPib.map(a => [a, (() => { const pb = somaE(a, y => y.pib && f(y) != null ? y.pib : null), v = somaE(a, y => y.pib && f(y) != null ? f(y) : null); return pb ? v / pb : null; })()])) }], { anos: anosPib, fmt: v => pct(v, 1), alto: 220 });
+    // 5. municípios do Brasil por região
+    let regiao = "";
+    if (BR){
+      const anosB = ANOS.map(String);
+      const porReg = (r, a, f) => { let v = 0, p = 0; BR.ms.forEach(m => { if (r && m.reg !== r) return; const x = m.f[a]; if (!x?.pop) return; const q = f(x); if (q == null) return; v += q; p += x.pop; }); return p ? v / p : null; };
+      regiao = `<section class="panel" style="margin-top:16px"><div class="hd"><div><h2>Quanto as prefeituras gastam por morador, por região</h2><p class="sub">Despesa liquidada dos municípios que entregaram as contas, por habitante, a preços de ${REF}. Todos os municípios do Brasil.</p></div>
+        ${segSt("gMun", [["desp", "Despesa total"], ["inv", "Investimento"], ["10", "Saúde"], ["12", "Educação"]])}</div>
+        ${linhas([["", "Brasil", "#e4e4e7"], ...Object.entries(REGIOES).map(([k, n]) => [k, n, CORES_REG[k]])].map(([r, n, c]) => ({ n, c, dash: !r, v: Object.fromEntries(anosB.map(a => [a, porReg(r, a, x => st.gMun === "desp" ? x.desp : st.gMun === "inv" ? x.inv : x.fn?.[st.gMun] ?? null)])) })), { anos: anosB, fmt: brl, alto: 260 })}</section>`;
+    } else regiao = `<section class="panel" style="margin-top:16px"><p class="nota">${BRfalhou ? "O painel nacional dos municípios não pôde ser carregado." : "Carregando os municípios do Brasil…"}</p></section>`;
+    const kU = U?.y[aP] && pibBR(aP);
+    main.innerHTML = `
+      <div class="kpis">
+        <div class="kpi"><span>União em ${aP}</span><b>${kU ? pP(semAmort(U.y[aP]) / pibBR(aP)) : "—"}</b><small>do PIB, sem a amortização da dívida${kU && U.y[aP].nat ? `; juros: ${pP(U.y[aP].nat[1] / pibBR(aP))}` : ""}</small></div>
+        <div class="kpi"><span>Estados e DF em ${aP}</span><b>${pibBR(aP) && somaE(aP, semAmort) ? pP(somaE(aP, semAmort) / pibBR(aP)) : "—"}</b><small>do PIB, soma dos 27 governos estaduais</small></div>
+        <div class="kpi"><span>Municípios em ${aP}</span><b>${cobM && pibBR(aP) ? pP(cobM.v / pibBR(aP)) : "—"}</b><small>${cobM ? `do PIB; contas de ${nf(cobM.n)} prefeituras (${pct(cobM.cob, 0)} da população)` : "carregando o painel nacional…"}</small></div>
+        <div class="kpi"><span>Investimento público ${aP}</span><b>${pibBR(aP) ? pP(((U?.y[aP]?.inv || 0) + (somaE(aP, y => y.inv) || 0) + (municipiosBR(aP, y => y.inv)?.v || 0)) / pibBR(aP)) : "—"}</b><small>do PIB: União ${U?.y[aP] && pibBR(aP) ? pP(U.y[aP].inv / pibBR(aP)) : "—"}, estados ${somaE(aP, y => y.inv) && pibBR(aP) ? pP(somaE(aP, y => y.inv) / pibBR(aP)) : "—"}, municípios ${municipiosBR(aP, y => y.inv) && pibBR(aP) ? pP(municipiosBR(aP, y => y.inv).v / pibBR(aP)) : "—"}</small></div>
+      </div>
+      <section class="panel" style="margin-top:16px"><h2>Quem executa cada gasto: União, estados ou municípios</h2><p class="sub">Despesa liquidada de cada esfera em ${aP}, em % do PIB do Brasil, por tipo e por área (DCA, Siconfi). *Despesa total sem a amortização (rolagem) da dívida.</p>${quem}
+        <p class="nota"><b>Não some as três esferas:</b> o que a União repassa a estados e municípios (FPM, SUS, Fundeb) aparece no gasto de quem repassa e de novo no de quem executa. Municípios: soma das prefeituras que entregaram a DCA, levada à população total${cobM ? ` (cobertura de ${pct(cobM.cob, 0)})` : ""}; o painel nacional não traz a despesa com pessoal das prefeituras.</p></section>
+      <div class="grid" style="margin-top:16px">
+        <section class="panel"><h2>Em que o governo federal gasta</h2><p class="sub">Despesa liquidada da União por tipo, em % do PIB. Custeio inclui os benefícios do INSS, o BPC e o seguro-desemprego; a amortização é quase toda rolagem da dívida (pagar títulos antigos com novos).</p>${uniao}</section>
+        <section class="panel"><h2>Para onde vai o gasto da União em ${aP}</h2><p class="sub">As dez funções com maior despesa liquidada, em % do PIB. Encargos especiais: juros, amortização e transferências constitucionais a estados e municípios.</p>${barrasU}</section>
+      </div>
+      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>Quanto cada governo estadual gasta por morador, ${aE}</h2><p class="sub">Despesa liquidada do governo do estado (sem os municípios), por habitante, a preços de ${REF}. Em azul, os estados do painel; em verde, o estado escolhido abaixo.</p></div>
+        <div class="ctl" style="padding:8px 12px">${selSt("gArea", "Área", Object.fromEntries(AREAS_G.map(([k, n]) => [k, { n }])))}</div></div>${barMor}</section>
+      <div class="grid" style="margin-top:16px">
+        <section class="panel"><h2>Gasto dos estados com pessoal, ${aP}</h2><p class="sub">Salários, aposentadorias e pensões pagos pelo governo do estado, em % do PIB do estado (o PIB estadual sai com dois anos de atraso).</p>${rankPib(y => y.nat?.[0])}</section>
+        <section class="panel"><h2>Quanto cada estado investe, ${aP}</h2><p class="sub">Investimento liquidado (obras e equipamentos) do governo do estado, em % do PIB do estado.</p>${rankPib(y => y.inv)}</section>
+      </div>
+      <section class="panel" style="margin-top:16px"><div class="hd"><div><h2>${esc(eSel.n || eSel.uf)} ao longo do tempo</h2><p class="sub">${esc(area[1].replace("*", ""))} por habitante, a preços de ${REF}, contra a média de todos os estados (ponderada pela população).</p></div>
+        <div class="ctl" style="padding:8px 12px">${selSt("gUf", "Estado", Object.fromEntries(EST.map(e => [e.uf, { n: e.uf }])))}</div></div>${serieUf}
+        <div class="grid" style="margin-top:8px"><div><h3 class="mini">Pessoal em % do PIB do estado</h3>${razUf(y => y.nat?.[0], "#60a5fa")}</div><div><h3 class="mini">Investimento em % do PIB do estado</h3>${razUf(y => y.inv, "#c8f250")}</div></div></section>
+      ${regiao}
+      <p class="nota">Fontes: Tesouro Nacional (Siconfi: Declaração de Contas Anuais da União, dos estados e dos municípios), IBGE (PIB e população) e Banco Central (IPCA); contas da União e dos estados atualizadas em ${new Date(ES.atualizado + "T12:00").toLocaleDateString("pt-BR")}. Ficam de fora, por enquanto, a comparação com outros países, as emendas parlamentares e a divisão entre despesas obrigatórias e discricionárias.</p>`;
   }
 
   /* ---------- aba: correlações ---------- */
@@ -1365,6 +1587,9 @@
         <p><b>Resultados:</b> mortalidade infantil do SIM e do Sinasc (DATASUS, TabNet), por residência; esgotamento sanitário e alfabetização do Censo 2022. O Ideb não entra porque o Inep bloqueia a coleta automática.</p>
         <p><b>Repasses:</b> FUNDEB (com a complementação da União), SUS da União e do estado, FNDE (salário-educação, alimentação e transporte escolar), repasses estaduais para educação e assistência social, classificados pelo nome das contas do anexo I-C da DCA (os códigos mudaram em 2018 e 2022).</p>
         <p><b>Economia local:</b> IBGE: Cadastro Central de Empresas (empresas, pessoal ocupado, salários e emprego por seção da CNAE, até 2021) e valor adicionado por setor (até 2021; em 2022 e 2023 o IBGE publicou só o PIB total). Ministério do Trabalho: RAIS (estabelecimentos e vínculos ativos em 31/12 por setor) e Novo Caged (admissões e desligamentos). Receita Federal: cadastro do CNPJ (estabelecimentos ativos, abertos e baixados por ano, inclusive MEI).</p>
+        <p><b>Despesa por tipo:</b> DCA, anexo I-D: despesa liquidada por grupo de natureza (pessoal e encargos, juros, outras despesas correntes, investimentos, inversões financeiras e amortização da dívida).</p>
+        <p><b>Balanço por mandato:</b> para cada mandato, o último ano antes da posse comparado com o último ano do mandato (ou o mais recente); mortalidade infantil, os anos do mandato contra os quatro anteriores. Regras fixas: estável abaixo de 5% (valores por habitante), de 1 ponto percentual (percentuais) ou de 0,02 (índice). Descreve o que mudou, não o efeito do prefeito.</p>
+        <p><b>Gasto público:</b> Declaração de Contas Anuais da União e dos 27 governos estaduais (Siconfi), com o PIB e a população do IBGE (tabelas 5938 e 6579). Os municípios de todo o Brasil vêm do painel nacional; a soma das prefeituras que entregaram as contas é levada à população total. As esferas não devem ser somadas: as transferências entre elas aparecem duas vezes.</p>
         <p><b>Vacinação:</b> coberturas vacinais do SI-PNI (DATASUS, TabNet) por município, de 2016 a 2022.</p>
         <p><b>Dados para baixar:</b> na aba Municípios, o painel município-ano completo em CSV, em valores correntes (R$ mil) e com o IPCA para deflacionar.</p>
         <p><b>Recorte:</b> Amazônia Legal (AC, AM, AP, MA, MT, PA, RO, RR e TO) e, por escolha, Goiás e Mato Grosso do Sul.</p>
@@ -1514,7 +1739,7 @@ for i, nome in enumerate(m.model.exog_names):
   });
 
   /* ---------- navegação ---------- */
-  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, economia, resultados, correlacoes, regressao, mapa: mapaAba, porte20: () => porteAba(20000), porte50: () => porteAba(50000), mun: munAba, rdd: rddAba, metodo };
+  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, economia, resultados, correlacoes, regressao, mapa: mapaAba, porte20: () => porteAba(20000), porte50: () => porteAba(50000), mun: munAba, rdd: rddAba, gasto, metodo };
   function render(){
     document.querySelectorAll("nav.abas button").forEach(b => b.setAttribute("aria-selected", b.dataset.aba === st.aba));
     (ABAS[st.aba] || ABAS.geral)();

@@ -46,6 +46,7 @@ import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, timezone
 from pathlib import Path
+from urllib.parse import parse_qsl, urlsplit
 
 import requests
 
@@ -301,15 +302,46 @@ def repasses(rec: list) -> list:
     return out
 
 
-def siconfi(cod: int, ano: int, so_lrf: bool = False, pequeno: bool = False, so_ic: bool = False) -> dict:
+def paginas(r) -> list:
+    """Itens de uma resposta do Siconfi, seguindo as páginas seguintes ("hasMore") quando a lista é longa,
+    como nas contas da União e dos estados maiores."""
+    js = r.json()
+    out = js.get("items", [])
+    while js.get("hasMore") and js.get("items"):
+        params = dict(parse_qsl(urlsplit(r.url).query))
+        params["offset"] = int(params.get("offset", 0)) + len(js["items"])
+        r = get(r.url.split("?")[0], params, timeout=90)
+        js = r.json()
+        out += js.get("items", [])
+    return out
+
+
+# Despesa liquidada por natureza (anexo I-D da DCA), na ordem de NAT_NOMES
+NAT_NOMES = ("pessoal", "juros", "custeio", "investimentos", "inversoes", "amortizacao")
+NAT_CODIGOS = ("DO3.1.00.00.00", "DO3.2.00.00.00", "DO3.3.00.00.00", "DO4.4.00.00.00", "DO4.5.00.00.00", "DO4.6.00.00.00")
+
+
+def natureza(desp: list) -> list | None:
+    """Despesa liquidada por grupo de natureza (R$ mil): pessoal e encargos, juros da dívida, outras despesas
+    correntes (custeio), investimentos, inversões financeiras e amortização da dívida."""
+    liq = [sum(i.get("valor") or 0 for i in desp if str(i.get("cod_conta", "")).startswith(cod)
+               and i.get("coluna") == "Despesas Liquidadas") for cod in NAT_CODIGOS]
+    return [round(x / 1e3, 1) for x in liq] if any(liq) else None
+
+
+def siconfi(cod: int, ano: int, so_lrf: bool = False, pequeno: bool = False, so_ic: bool = False, so_id: bool = False) -> dict:
     """Contas de um município num ano, em R$ mil:
     fin: [receita líquida, transferências, receita tributária, despesa liquidada, investimento liquidado];
+    nat: despesa liquidada por natureza, na ordem de NAT_NOMES;
     rc: fontes de receita na ordem de RC_NOMES; fn: {função: despesa liquidada};
     lrf: [RCL, pessoal % RCL, dívida consolidada líquida % RCL, restos a pagar não processados, caixa líquido,
           resultado primário, meta de resultado primário, % aplicado em saúde, % aplicado em educação (MDE)]."""
     p = lambda anexo: {"an_exercicio": ano, "id_ente": cod, "no_anexo": anexo}
-    itens = lambda r: r.json().get("items", [])
+    itens = lambda r: paginas(r)
     out: dict = {}
+    if so_id:   # só a despesa por natureza (anos coletados antes de ela entrar no painel)
+        nat = natureza(itens(get(SICONFI + "dca", p("DCA-Anexo I-D"), timeout=90)))
+        return {"nat": nat} if nat else {}
     rec = [] if so_lrf else itens(get(SICONFI + "dca", p("DCA-Anexo I-C"), timeout=90))
     if so_ic:   # só os repasses e as fontes de receita (anos já coletados antes da classificação dos repasses)
         if rec:
@@ -331,6 +363,8 @@ def siconfi(cod: int, ano: int, so_lrf: bool = False, pequeno: bool = False, so_
         invest = soma(desp, "DO4.4.00.00.00", liquidada)
         if receita or despesa:
             out["fin"] = [round(x / 1e3, 1) for x in (receita, transf, trib, despesa, invest)]
+        if nat := natureza(desp):
+            out["nat"] = nat
         brutas = {i.get("cod_conta"): i.get("valor") or 0 for i in rec if bruta(i.get("coluna", ""))}
         out["rc"] = [round(sum(brutas.get(k, 0) for k in RC_CODIGOS[n]) / 1e3, 1) for n in RC_NOMES]
         out["tr"] = repasses(rec)
@@ -386,7 +420,7 @@ def siconfi(cod: int, ano: int, so_lrf: bool = False, pequeno: bool = False, so_
 
 def financas(ms: dict, antes: dict) -> None:
     fim = date.today().year - 1                       # a DCA de um ano sai no ano seguinte
-    chaves = ("fin", "rc", "fn", "lrf", "tr")
+    chaves = ("fin", "rc", "fn", "lrf", "tr", "nat")
     pendentes, revisar = [], []
     for c, m in ms.items():
         for k in chaves:
@@ -400,12 +434,14 @@ def financas(ms: dict, antes: dict) -> None:
                 revisar.append((c, a, "lrf"))
             elif str(a) not in m["tr"]:                    # faltam os repasses classificados: só o anexo I-C
                 revisar.append((c, a, "ic"))
+            elif not BASICO and str(a) not in m["nat"]:   # falta a despesa por natureza: só o anexo I-D
+                revisar.append((c, a, "id"))
     # primeiro o que falta (anos recentes antes), depois as revisões, se sobrar tempo
     pendentes = (sorted(pendentes, key=lambda p: -p[1]) + sorted(revisar, key=lambda p: -p[1]))[:MAX_PARES]
     limite = time.monotonic() + PRAZO_SICONFI * 60
     def tarefa(c, a, modo):
         pop = ms[c].get("pop", {}).get(str(a)) or 0
-        return siconfi(c, a, modo == "lrf", 0 < pop < 50000, modo == "ic") if time.monotonic() < limite else None
+        return siconfi(c, a, modo == "lrf", 0 < pop < 50000, modo == "ic", modo == "id") if time.monotonic() < limite else None
     log(f"Siconfi: {len(pendentes)} pares município-ano a consultar.")
     feitos = erros = adiados = 0
     with ThreadPoolExecutor(TRABALHADORES) as ex:
@@ -722,7 +758,7 @@ def main() -> int:
             log(f"{nome}: falha ({e}); dados anteriores mantidos.")
     # o que uma etapa não conseguiu atualizar fica como estava no arquivo anterior
     for c, m in ms.items():
-        for k in ("pop", "agro", "pib", "fin", "rc", "fn", "lrf", "tr", "ele", "reel", "emp", "cempre", "cempre_set", "censo", "tmi", "desm", "fogo"):
+        for k in ("pop", "agro", "pib", "fin", "rc", "fn", "lrf", "tr", "nat", "ele", "reel", "emp", "cempre", "cempre_set", "censo", "tmi", "desm", "fogo"):
             if not m.get(k) and antes.get(c, {}).get(k):
                 m[k] = antes[c][k]
     try:
@@ -740,6 +776,7 @@ def main() -> int:
         "unidades": {"fin": "R$ mil correntes: receita líquida, transferências, receita tributária, despesa liquidada, investimento liquidado",
                      "rc": "R$ mil correntes, receitas brutas: " + ", ".join(RC_NOMES),
                      "fn": "R$ mil correntes: despesa liquidada por função (código da função)",
+                     "nat": "R$ mil correntes, despesa liquidada por natureza (DCA, anexo I-D): " + ", ".join(NAT_NOMES),
                      "lrf": "RCL (R$ mil), pessoal % RCL, dívida consolidada líquida % RCL, restos a pagar não processados (R$ mil), caixa líquido (R$ mil), resultado primário (R$ mil), meta (R$ mil), % da receita de impostos aplicado em saúde e em manutenção e desenvolvimento do ensino (RREO, Anexo 14)",
                      "agro": "soja, milho e algodão (ha colhidos), valor das três lavouras (R$ mil), bovinos (cabeças)",
                      "pib": "PIB e valor adicionado da agropecuária, da indústria, dos serviços (exceto administração pública) e da administração pública (R$ mil correntes; setores até 2021)",
@@ -755,6 +792,7 @@ def main() -> int:
                      "fogo": "focos de queimadas (satélite de referência)"},
         "rc_nomes": list(RC_NOMES),
         "tr_nomes": list(TR_NOMES),
+        "nat_nomes": list(NAT_NOMES),
         "setores": list(SETORES),
         "gov": gov,
         "ufs": list(UFS),

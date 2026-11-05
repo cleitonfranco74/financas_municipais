@@ -1,0 +1,39 @@
+name: Atualizar contas da União e dos estados
+
+on:
+  schedule:
+    - cron: "23 6 10 * *"   # todo dia 10 (a DCA de um ano sai até maio do ano seguinte)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: municipios   # a mesma fila das outras coletas do Siconfi
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+      - run: pip install -r scripts/requirements.txt
+      - run: python scripts/estados.py
+      - name: Commit se houve mudança
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/estados.json
+          if git diff --cached --quiet; then
+            echo "Sem mudanças."
+          else
+            git commit -m "Atualiza contas da União e dos estados ($(date -u +%Y-%m-%d))"
+            git pull --rebase
+            git push
+          fi
