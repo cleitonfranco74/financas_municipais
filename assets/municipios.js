@@ -29,7 +29,7 @@
   };
   const SEM = { k: "sd", n: "Sem classificação", c: "#52525b" };
   let D, M = [], ANOS = [], REF = null;
-  const st = { aba: "geral", uf: "", modo: "4", met: "invpc", mun: null, x: "peso", y: "inv", h: 20, rddE: "2016+2020", rddY: "inv", rddC: "ideo", ord: "invpc", comp: [],
+  const st = { aba: "indicadores", uf: "", modo: "4", met: "invpc", mun: null, x: "peso", y: "inv", h: 20, rddE: "2016+2020", rddY: "inv", rddC: "ideo", ord: "invpc", comp: [],
     fn: "10", polY: "invpc", polY2: "convEpc", amX: "expansao", amY: "desm", resX: "saude", resY: "tmi", mapa: "orient", cmet: "invpc", corr: "p", cxy: "6-3", cvar: "6",
     regY: "6", regX: [0, 1, 2, 3], regUF: true, regZ: false, mapaModo: "v", regLang: "r", vac: "0", reg: "", metP: "invpc", metP2: "convEpc",
     gArea: "total", gUf: "MT", gMun: "desp", gMet: "mor", gVis: "estados", gAno: "" };
@@ -1391,7 +1391,7 @@
 
 
   /* ---------- aba: indicadores (vitrine em cartões; o toque abre o painel ampliado) ---------- */
-  function indicadoresAba(){
+  function indicadoresAba(op = {}){
     const ms = sel();
     const anosDe = chave => [...new Set(ms.flatMap(m => Object.keys(m[chave] || {})))].filter(a => +a >= 2016 && +a < anoHoje() + 1).sort();
     const soma = (anos, f) => Object.fromEntries(anos.map(a => { let v = 0, n = 0; ms.forEach(m => { const x = f(m, a); if (x != null && isFinite(x)){ v += x; n++; } }); return [a, n ? v : null]; }));
@@ -1430,7 +1430,9 @@
     ];
     const gov = st.uf ? governadores(st.uf) : null;
     const lista = [];
-    const cartoes = TEMAS.map(([tema, its]) => {
+    const grupos = op.filtro ? TEMAS.filter(([t]) => op.filtro.includes(t)) : TEMAS;
+    const base = op.base || 0;
+    const cartoes = grupos.map(([tema, its]) => {
       const cs = its.map(it => {
         const anos = Object.keys(it.v).filter(a => it.v[a] != null && isFinite(it.v[a])).sort();
         if (!anos.length) return "";
@@ -1443,14 +1445,17 @@
           else { dd = v1 / v0 - 1; txt = `${dd >= 0 ? "+" : "−"}${nf(Math.abs(dd) * 100, 1)}%`; }
         }
         const bom = it.mais ? Math.sign(dd) * it.mais : 0;
-        const id = String(lista.length); lista.push({ it, anos });
+        const id = String(base + lista.length); lista.push({ it, anos, tema });
         return `<button type="button" class="ind-c" data-ind="${id}"><div class="ind-t"><b>${esc(it.n)}</b><small>${esc(it.d)}</small>
           <strong>${esc(it.f(v1))}</strong>${txt ? `<em><span style="color:${bom > 0 ? "var(--good)" : bom < 0 ? "var(--crit)" : "var(--ink)"}">${txt}</span> desde ${a0}, em ${a1}</em>` : `<em>em ${a1}</em>`}</div>
           ${spark(anos.map(a => it.v[a]), "var(--ink-2)", 130, 44)}<span class="ind-seta" aria-hidden="true">›</span></button>`;
       }).join("");
       return cs ? `<section class="ind-g"><h2>${esc(tema)}</h2>${cs}</section>` : "";
     }).join("");
-    IND_LISTA = lista.map(({ it, anos }) => ({ g: { series: [{ n: it.n, c: "#c8f250", v: it.v }], anos, fmt: it.f, governos: gov, mais: it.mais }, titulo: it.n + (st.uf ? ` · municípios de ${st.uf}` : ""), sub: it.d }));
+    const itens = lista.map(({ it, anos, tema }) => ({ g: { series: [{ n: it.n, c: "#c8f250", v: it.v }], anos, fmt: it.f, governos: gov, mais: it.mais }, titulo: it.n + (st.uf ? ` · municípios de ${st.uf}` : ""), sub: it.d, nome: it.n, tema }));
+    if (op.soLista) return itens;
+    if (op.filtro){ IND_LISTA = IND_LISTA.concat(itens); return cartoes; }
+    IND_LISTA = itens;
     main.innerHTML = `<div class="explica" style="margin-bottom:12px"><p>Os principais números ${st.uf ? `dos municípios de <b>${st.uf}</b>` : "dos municípios do painel"}, somados ou ponderados pela população. <b>Toque num indicador</b> para abrir o gráfico grande, com a comparação ${st.uf ? "entre os governadores" : "entre os governos federais"}, a tabela e o resumo. Use o filtro de estado acima para mudar o recorte.</p></div>${cartoes}
       <p class="nota">Verde: melhorou; vermelho: piorou (para dependência de transferências, pessoal, mortalidade, desmatamento e queimadas, cair é melhorar). Fontes: as mesmas das demais abas (Método e fontes).</p>`;
   }
@@ -1981,12 +1986,108 @@ for i, nome in enumerate(m.model.exog_names):
     else if (b.dataset.copiar === "codigo") copiar(codigoReg(st.regLang), b);
   });
 
+
+  /* ---------- temas (chips) e busca ---------- */
+  const IC = {
+    tudo: '<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>',
+    financas: '<rect x="3.5" y="6" width="17" height="12" rx="2.5"/><path d="M15 12h2.5"/><path d="M3.5 9.5h17"/>',
+    gasto: '<path d="M4 9l8-4.5L20 9M5.5 10v7M10 10v7M14 10v7M18.5 10v7M4 19.5h16"/>',
+    politica: '<path d="M6 10h12l-1 9H7z"/><path d="M9 10V6.5h6V10M10.5 8h3"/>',
+    trabalho: '<rect x="3.5" y="7.5" width="17" height="11.5" rx="2"/><path d="M9 7.5V5.5h6v2M3.5 12.5h17"/>',
+    saude: '<path d="M7 4v5a4 4 0 008 0V4M11 13v2a4 4 0 008 0v-2"/><circle cx="19" cy="11" r="2"/>',
+    agro: '<path d="M12 20V9M12 13c-3 0-5-2-5-5 3 0 5 2 5 5zM12 11c3 0 5-2 5-5-3 0-5 2-5 5zM6 20h12"/>',
+    pequenos: '<path d="M4 20V11l5-3.5 5 3.5v9M14 20v-6l3-2 3 2v6M3 20h18M7.5 20v-3.5h3V20"/>',
+    municipios: '<path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0113 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/>',
+    analises: '<path d="M4 20V4M4 20h16"/><path d="M7.5 15l4-4.5 3 3L20 7"/>',
+    metodo: '<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8v.4"/>',
+  };
+  const TEMAS_NAV = [
+    { k: "tudo", n: "Tudo", abas: ["indicadores"] },
+    { k: "financas", n: "Finanças", abas: ["geral", "fiscal"], ind: ["Finanças das prefeituras"], rot: { geral: "Visão geral", fiscal: "Contas e LRF" } },
+    { k: "gasto", n: "Gasto público", abas: ["gasto"] },
+    { k: "politica", n: "Política", abas: ["politica", "rdd"], rot: { politica: "Economia política", rdd: "Eleições acirradas" } },
+    { k: "trabalho", n: "Trabalho", abas: ["economia"], ind: ["Trabalho e empresas"] },
+    { k: "saude", n: "Saúde e educação", abas: ["resultados"], ind: ["Saúde e educação"] },
+    { k: "agro", n: "Agro e ambiente", abas: ["agro", "amazonia"], ind: ["Agro e meio ambiente"], rot: { agro: "Agronegócio", amazonia: "Amazônia" } },
+    { k: "pequenos", n: "Pequenos municípios", abas: ["porte20", "porte50"], rot: { porte20: "Até 20 mil habitantes", porte50: "Até 50 mil habitantes" } },
+    { k: "municipios", n: "Municípios", abas: ["mun"] },
+    { k: "analises", n: "Análises", abas: ["correlacoes", "regressao", "mapa"], rot: { correlacoes: "Correlações", regressao: "Regressão", mapa: "Mapa" } },
+    { k: "metodo", n: "Método", abas: ["metodo"] },
+  ];
+  const temaDe = aba => TEMAS_NAV.find(t => t.abas.includes(aba)) || TEMAS_NAV[0];
+  const ultimaAba = {};
+  const icone = k => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
+  function chips(){
+    const t = temaDe(st.aba);
+    document.getElementById("temas").innerHTML = TEMAS_NAV.map(x => `<button type="button" role="tab" data-tema="${x.k}" aria-selected="${x.k === t.k}">${icone(x.k)}${esc(x.n)}</button>`).join("");
+    const b = document.querySelector(`#temas [aria-selected="true"]`); if (b) b.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }
+  /* cabeçalho do tema: cartões dos indicadores do tema e as seções, quando há mais de uma */
+  function cabecalhoTema(){
+    const t = temaDe(st.aba);
+    if (t.k === "tudo") return;
+    const sec = t.abas.length > 1 ? `<div class="secs" role="group" aria-label="Seções de ${esc(t.n)}">${t.abas.map(a => `<button type="button" data-aba="${a}" aria-pressed="${a === st.aba}">${esc(t.rot?.[a] || a)}</button>`).join("")}</div>` : "";
+    let cartoes = "";
+    if (t.ind && !(st.aba === "mun" && st.mun)){
+      IND_LISTA = [];
+      cartoes = indicadoresAba({ filtro: t.ind });
+      if (cartoes) cartoes = `<details class="tema-ind" ${st.indAberto === false ? "" : "open"}><summary>Indicadores de ${esc(t.n.toLowerCase())} <small>toque para ver o gráfico e a comparação por governo</small></summary>${cartoes.replace(/<section class="ind-g"><h2>[^<]*<\/h2>/g, '<section class="ind-g">')}</details>`;
+    }
+    main.insertAdjacentHTML("afterbegin", `<div class="tema-cab"><h2 class="tema-t">${icone(t.k)}${esc(t.n)}</h2>${sec}${cartoes}</div>`);
+  }
+  /* busca: municípios, indicadores e seções */
+  const semAc = x => String(x).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const SECOES = [["geral", "Visão geral", "investimento receita orientação prefeito"], ["fiscal", "Contas e LRF", "pessoal rcl lei de responsabilidade fiscal saúde educação mínimos fontes de receita fpm icms repasses fundeb sus saúde fiscal"],
+    ["gasto", "Gasto público", "união estados pib mapa por morador"], ["politica", "Economia política", "ciclo político mandato reeleição alinhamento governador presidente convênios"], ["rdd", "Eleições acirradas", "regressão descontínua rdd"],
+    ["economia", "Trabalho e empresas", "emprego rais caged cnpj empresas salário"], ["resultados", "Saúde e educação", "mortalidade infantil vacinação esgoto alfabetização censo"],
+    ["agro", "Agronegócio", "soja milho algodão boi pib agro"], ["amazonia", "Amazônia", "desmatamento prodes queimadas focos"], ["porte20", "Até 20 mil habitantes", "pequenos municípios brasil"],
+    ["porte50", "Até 50 mil habitantes", "pequenos municípios brasil"], ["mun", "Municípios", "ranking ficha comparador csv baixar"], ["correlacoes", "Correlações", "pearson spearman"],
+    ["regressao", "Regressão", "mqo ols stata r python"], ["mapa", "Mapa", "moran lisa aglomerados"], ["metodo", "Método e fontes", "fontes escala ideológica"]];
+  let BUSCA = [], buscaSel = -1;
+  function buscaResultados(q){
+    q = semAc(q.trim()); if (q.length < 2) return [];
+    const ind = indicadoresAba({ soLista: true });
+    const r = [];
+    ind.forEach((o, i) => { if (semAc(o.nome + " " + o.sub).includes(q)) r.push({ tipo: "Indicador", n: o.nome, d: o.tema, go: () => abreDetalhe(o.g, o.titulo, o.sub) }); });
+    SECOES.forEach(([k, n, kw]) => { if (semAc(n + " " + kw).includes(q)) r.push({ tipo: "Seção", n, d: temaDe(k).n, go: () => { st.aba = k; if (k === "mun") st.mun = null; render(); } }); });
+    M.filter(m => semAc(m.n).includes(q)).sort((a, b) => (semAc(a.n).startsWith(q) ? 0 : 1) - (semAc(b.n).startsWith(q) ? 0 : 1) || a.n.localeCompare(b.n)).slice(0, 8)
+      .forEach(m => r.push({ tipo: "Município", n: `${m.n} (${m.uf})`, d: "abrir a ficha", go: () => { st.mun = m.c; st.aba = "mun"; render(); window.scrollTo({ top: 0 }); } }));
+    return r.slice(0, 12);
+  }
+  function mostraBusca(){
+    const box = document.getElementById("buscaRes"), q = document.getElementById("busca").value;
+    BUSCA = buscaResultados(q); buscaSel = BUSCA.length ? 0 : -1;
+    box.hidden = !q.trim();
+    box.innerHTML = BUSCA.length ? BUSCA.map((r, i) => `<button type="button" role="option" data-br="${i}" aria-selected="${i === buscaSel}"><span>${esc(r.tipo)}</span><b>${esc(r.n)}</b><small>${esc(r.d)}</small></button>`).join("")
+      : `<p class="nota" style="margin:8px 12px">Nada encontrado. Tente um município (Sinop), um indicador (investimento) ou um tema (desmatamento).</p>`;
+  }
+  function escolhe(i){ const r = BUSCA[i]; if (!r) return; const inp = document.getElementById("busca"); inp.value = ""; document.getElementById("buscaRes").hidden = true; inp.blur(); r.go(); }
+  function ligaBusca(){
+    const inp = document.getElementById("busca"), box = document.getElementById("buscaRes");
+    inp.addEventListener("input", mostraBusca);
+    inp.addEventListener("focus", () => { if (inp.value.trim()) mostraBusca(); });
+    inp.addEventListener("keydown", e => {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp"){ e.preventDefault(); if (!BUSCA.length) return; buscaSel = (buscaSel + (e.key === "ArrowDown" ? 1 : -1) + BUSCA.length) % BUSCA.length;
+        box.querySelectorAll("[data-br]").forEach(b => b.setAttribute("aria-selected", +b.dataset.br === buscaSel)); box.querySelector(`[data-br="${buscaSel}"]`)?.scrollIntoView({ block: "nearest" }); }
+      else if (e.key === "Enter"){ e.preventDefault(); escolhe(buscaSel); }
+      else if (e.key === "Escape"){ box.hidden = true; inp.blur(); }
+    });
+    box.addEventListener("mousedown", e => e.preventDefault());
+    box.addEventListener("click", e => { const b = e.target.closest("[data-br]"); if (b) escolhe(+b.dataset.br); });
+    document.addEventListener("click", e => { if (!e.target.closest(".busca-g")) box.hidden = true; });
+    document.getElementById("temas").addEventListener("click", e => { const b = e.target.closest("[data-tema]"); if (!b) return;
+      const t = TEMAS_NAV.find(x => x.k === b.dataset.tema); st.aba = ultimaAba[t.k] && t.abas.includes(ultimaAba[t.k]) ? ultimaAba[t.k] : t.abas[0]; if (st.aba === "mun") st.mun = null; render(); });
+  }
+
   /* ---------- navegação ---------- */
   const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, economia, resultados, correlacoes, regressao, mapa: mapaAba, porte20: () => porteAba(20000), porte50: () => porteAba(50000), mun: munAba, rdd: rddAba, gasto, indicadores: indicadoresAba, metodo };
   function render(){
     GRAFS.clear();
-    document.querySelectorAll("nav.abas button").forEach(b => b.setAttribute("aria-selected", b.dataset.aba === st.aba));
-    (ABAS[st.aba] || ABAS.geral)();
+    if (!ABAS[st.aba]) st.aba = "indicadores";
+    ultimaAba[temaDe(st.aba).k] = st.aba;
+    chips();
+    ABAS[st.aba]();
+    cabecalhoTema();
     // o endereço acompanha a aba e, na aba Municípios, a ficha aberta (#mun=código do IBGE)
     const h = st.aba === "mun" && st.mun ? `#mun=${st.mun}` : `#${st.aba}`;
     if (location.hash !== h) history.replaceState(null, "", h);
@@ -1998,10 +2099,12 @@ for i, nome in enumerate(m.model.exog_names):
     return false;
   }
   window.addEventListener("hashchange", () => { if (D && leEndereco()) render(); });
-  document.querySelector("nav.abas").addEventListener("click", e => { const b = e.target.closest("[data-aba]"); if (!b) return; st.aba = b.dataset.aba; render(); });
+  ligaBusca();
   ctl.addEventListener("change", e => { if (e.target.id === "fUf"){ st.uf = e.target.value; render(); } });
   ctl.addEventListener("click", e => { const b = e.target.closest("[data-modo]"); if (!b) return; st.modo = b.dataset.modo; controles(); render(); });
   main.addEventListener("click", e => {
+    const sa = e.target.closest(".secs [data-aba]");
+    if (sa){ st.aba = sa.dataset.aba; render(); return; }
     const ic = e.target.closest("[data-ind]");
     if (ic){ const o = IND_LISTA[+ic.dataset.ind]; if (o) abreDetalhe(o.g, o.titulo, o.sub); return; }
     const tj = e.target.closest("[data-trajg]");
