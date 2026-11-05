@@ -4,6 +4,9 @@ Painel das finanças públicas dos municípios da **Amazônia Legal** (AC, AM, A
 
 Publicado em: https://cleitonfranco74.github.io/financas_municipais/
 
+## Navegação
+No topo, os filtros (estado e orientação do prefeito) valem para todo o painel. Abaixo, a **busca** (municípios abrem a ficha, indicadores abrem o gráfico ampliado, temas levam à seção) e os **temas** em botões com ícone: Tudo (a vitrine de indicadores), Finanças, Gasto público, Política, Trabalho, Saúde e educação, Agro e ambiente, Pequenos municípios, Municípios, Análises e Método. Cada tema mostra seus indicadores em cartões e as seções correspondentes às abas abaixo; os endereços antigos (`#fiscal`, `#rdd`, `#mun=5107909`…) continuam valendo.
+
 ## Abas
 - **Indicadores:** vitrine com os principais números do recorte (ou do estado escolhido) em cartões, agrupados por tema: valor atual, variação desde 2016 em verde (melhorou) ou vermelho (piorou) e minigráfico. O toque abre o gráfico grande com a comparação entre governos (federais ou, com um estado escolhido, os governadores).
 - **Visão geral:** investimento por habitante, investimento em % da despesa, receita por habitante, receita tributária própria e dependência de transferências, ano a ano, por orientação do prefeito em exercício (2, 5 ou 7 faixas); prefeituras por orientação em cada eleição.
