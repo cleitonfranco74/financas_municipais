@@ -1610,7 +1610,7 @@
   function codigoReg(lang){
     const R = ULTIMA_REG; if (!R) return "";
     const y = IDS[R.yi], xs = R.xs.map(j => IDS[j]), vars = [y, ...xs], arq = arqReg(), uf = R.uf;
-    const cab = c => `${c} Regressão da página Finanças Públicas Municipais: ${VARS[R.yi].n} (${R.n} municípios${st.uf ? `, ${st.uf}` : ""})\n${c} https://cleitonfranco74.github.io/financas_municipais/#regressao\n${c} Dados: ${arq}, baixado pelo botão da página (um município por linha)\n`;
+    const cab = c => `${c} Regressão da página Brasil em Dados: ${VARS[R.yi].n} (${R.n} municípios${st.uf ? `, ${st.uf}` : ""})\n${c} https://cleitonfranco74.github.io/financas_municipais/#regressao\n${c} Dados: ${arq}, baixado pelo botão da página (um município por linha)\n`;
     if (lang === "r") return `${cab("#")}# install.packages(c("sandwich", "lmtest", "car"))
 library(sandwich); library(lmtest); library(car)
 
@@ -1691,7 +1691,7 @@ for i, nome in enumerate(m.model.exog_names):
   const CLARO = { "--ink": "#111827", "--ink-2": "#374151", "--muted": "#4b5563", "--line": "#e5e7eb", "--axis": "#9ca3af", "--accent": "#4d7c0f", "--surface-2": "#f3f4f6", "--bg": "#ffffff", "--surface": "#ffffff" };
   function pngDe(svg, claro){
     const raiz = getComputedStyle(document.documentElement), cor = v => claro && CLARO[v] ? CLARO[v] : raiz.getPropertyValue(v).trim();
-    const vb = svg.viewBox.baseVal, w = vb.width, painel = svg.closest(".panel"), titulo = painel?.querySelector("h2")?.textContent.trim() || "Finanças Públicas Municipais";
+    const vb = svg.viewBox.baseVal, w = vb.width, painel = svg.closest(".panel"), titulo = painel?.querySelector("h2")?.textContent.trim() || "Brasil em Dados";
     const itens = [];
     let viz = svg.nextElementSibling; if (viz?.classList.contains("leg")) viz.querySelectorAll("span").forEach(s => { const i = s.querySelector("i"); if (i){ let c = getComputedStyle(i).backgroundColor; if (claro) c = c.replace(/rgb\(228, 228, 231\)/, "#374151").replace(/rgb\(200, 242, 80\)/, "#4d7c0f"); itens.push([c, s.textContent.trim()]); } });
     // legenda em linhas, com largura aproximada do texto
@@ -1707,7 +1707,7 @@ for i, nome in enumerate(m.model.exog_names):
       <text x="4" y="20" style="font:700 15px system-ui,sans-serif;fill:${cor("--ink")}">${esc(titulo)}</text>
       <g transform="translate(0 ${topo})">${corpo}</g>
       ${lin.map((l, r) => l.map(([c, t, lx]) => `<rect x="${lx + 4}" y="${topo + h + 8 + r * 18}" width="10" height="10" rx="2" fill="${c}"/><text x="${lx + 19}" y="${topo + h + 17 + r * 18}" style="font:12px system-ui,sans-serif;fill:${cor("--ink-2")}">${esc(t)}</text>`).join("")).join("")}
-      <text x="4" y="${total - 8}" style="font:10.5px system-ui,sans-serif;fill:${cor("--muted")}">Fonte: Finanças Públicas Municipais (cleitonfranco74.github.io/financas_municipais), dados de ${new Date(D.atualizado + "T12:00").toLocaleDateString("pt-BR")}${st.uf ? ` · ${st.uf}` : ""}</text>
+      <text x="4" y="${total - 8}" style="font:10.5px system-ui,sans-serif;fill:${cor("--muted")}">Fonte: Brasil em Dados (cleitonfranco74.github.io/financas_municipais), dados de ${new Date(D.atualizado + "T12:00").toLocaleDateString("pt-BR")}${st.uf ? ` · ${st.uf}` : ""}</text>
     </svg>`;
     const img = new Image(), esc2 = 2;
     img.onload = () => {
