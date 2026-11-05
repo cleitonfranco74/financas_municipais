@@ -1849,6 +1849,48 @@
   const TIPOS_LISA = { AA: ["Alto cercado de alto", "#ef4444"], BB: ["Baixo cercado de baixo", "#3b82f6"], AB: ["Alto cercado de baixo", "#fb923c"], BA: ["Baixo cercado de alto", "#93c5fd"], ns: ["Não significativo", "#3f3f46"] };
 
   /* ---------- aba: método ---------- */
+  /* ---------- páginas institucionais: privacidade, cookies e contato ---------- */
+  const ATUALIZ_POL = "5 de novembro de 2026", EMAIL = "cleitonfranco@unemat.br", REPO = "https://github.com/cleitonfranco74/financas_municipais";
+  const pagina = (titulo, intro, secoes) => {
+    main.innerHTML = `<article class="doc"><p class="doc-k">O site</p><h2>${titulo}</h2><p class="doc-i">${intro}</p>
+      <nav class="doc-nav" aria-label="Outras páginas">${[["privacidade", "Privacidade"], ["cookies", "Cookies"], ["contato", "Contato"]].map(([k, n]) => `<a href="#${k}"${st.aba === k ? ' aria-current="page"' : ""}>${n}</a>`).join("")}</nav>
+      ${secoes.map(([h, c]) => `<section><h3>${h}</h3>${c}</section>`).join("")}<p class="doc-at">Atualizado em ${ATUALIZ_POL}.</p></article>`;
+  };
+  function privacidade(){
+    pagina("Política de privacidade", "O Brasil em Dados é um painel educacional e gratuito. Você pode usar todo o site sem cadastro, sem login e sem informar nenhum dado pessoal. Esta página explica, em linguagem simples, o pouco que é coletado e por quê, conforme a Lei Geral de Proteção de Dados (LGPD, Lei nº 13.709/2018).", [
+      ["Quem é o responsável", `<p>O site é mantido por <b>Prof. Dr. Cleiton Franco</b>, Doutor em Economia e Professor Adjunto da Universidade do Estado de Mato Grosso (UNEMAT), Câmpus de Sinop, que responde pelo tratamento dos dados descritos aqui (controlador, nos termos da LGPD). Contato: <a href="mailto:${EMAIL}">${EMAIL}</a>.</p>`],
+      ["O que não coletamos", `<ul><li>Não há cadastro, login nem conta de usuário.</li><li>Não usamos Google Analytics nem outra ferramenta de estatística de visitas, e não há anúncios.</li><li>Não usamos cookies de rastreamento nem pixels de redes sociais.</li><li>Não vendemos nem compartilhamos dados com terceiros para fins comerciais.</li></ul>`],
+      ["O que coletamos, só se você quiser", `<p>O botão <b>“Dê sua opinião”</b> abre um formulário opcional. Se você enviar, recebemos:</p><ul><li>a nota que você deu (de 1 a 5) e o perfil escolhido (por exemplo, aluno ou professor);</li><li>o comentário que você escreveu;</li><li>o seu e-mail, <b>apenas se você preencher</b>, para podermos responder;</li><li>o endereço da página em que você estava.</li></ul><p>A finalidade é melhorar o painel e, quando você pedir, responder à sua mensagem. A base legal é o seu consentimento (art. 7º, I, da LGPD), dado ao enviar o formulário. Não escreva no comentário dados sensíveis (saúde, religião, opinião política etc.).</p>`],
+      ["Como a opinião chega até nós", `<p>O formulário é entregue por e-mail pelo serviço <a href="https://formsubmit.co" rel="noopener">FormSubmit</a>, que repassa a mensagem para a caixa institucional do responsável. Os e-mails ficam guardados enquanto forem úteis para melhorar o site ou responder a você; você pode pedir a exclusão a qualquer momento.</p>`],
+      ["Serviços de terceiros que o seu navegador acessa", `<ul><li><b>GitHub Pages</b>, que hospeda o site: como qualquer servidor, registra dados técnicos de acesso (como o endereço IP) por segurança. Veja a <a href="https://docs.github.com/pt/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">declaração de privacidade do GitHub</a>.</li><li><b>Google Fonts</b>, que fornece as fontes do texto: o navegador baixa as fontes dos servidores do Google, que recebem o seu endereço IP. Veja a <a href="https://developers.google.com/fonts/faq/privacy" rel="noopener">política do Google Fonts</a>.</li><li>Links para fontes oficiais (IBGE, Banco Central, Tesouro, Planalto, Wikimedia Commons etc.) levam a sites com políticas próprias.</li></ul>`],
+      ["Dados públicos exibidos no painel", `<p>Os números do painel vêm de bases públicas e oficiais (Tesouro Nacional, IBGE, TSE, Banco Central, Banco Mundial, ANP, entre outras; veja <a href="#metodo">Método e fontes</a>). Nomes de prefeitos, governadores e presidentes aparecem porque são agentes públicos, e seus dados de mandato são públicos. Os retratos oficiais dos presidentes vêm do Wikimedia Commons, com autor e licença indicados.</p>`],
+      ["Seus direitos", `<p>Pela LGPD (art. 18), você pode pedir a confirmação de que temos dados seus, o acesso a eles, a correção, a exclusão e a revogação do consentimento. Basta escrever para <a href="mailto:${EMAIL}">${EMAIL}</a>. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (<a href="https://www.gov.br/anpd" rel="noopener">ANPD</a>).</p>`],
+      ["Mudanças nesta política", `<p>Se o site passar a coletar algo novo, esta página será atualizada antes, com a data de atualização no fim. O histórico de todas as versões fica público no <a href="${REPO}" rel="noopener">repositório do código</a>.</p>`],
+    ]);
+  }
+  function cookies(){
+    pagina("Cookies e armazenamento local", "Resumo: <b>o Brasil em Dados não grava cookies</b>. O site só guarda, no seu próprio navegador, algumas lembranças pequenas para não repetir perguntas. Nada disso identifica você nem é enviado para nós.", [
+      ["O que é cookie", `<p>Cookies são pequenos arquivos que um site grava no navegador, muitas vezes para reconhecer o visitante ou acompanhá-lo entre sites. Este painel não usa cookies, nem próprios nem de terceiros, e por isso não exibe aviso de consentimento de cookies.</p>`],
+      ["O que fica guardado no seu navegador", `<table class="doc-t"><thead><tr><th>Item</th><th>Para quê</th><th>Onde e por quanto tempo</th></tr></thead><tbody>
+        <tr><td>Data em que você enviou sua opinião</td><td>Diminuir o botão “Dê sua opinião” depois do envio</td><td>Armazenamento local do navegador, até você limpar os dados do site</td></tr>
+        <tr><td>Se você já respondeu “Esta ferramenta foi útil?”</td><td>Não perguntar de novo</td><td>Armazenamento local do navegador, até você limpar os dados do site</td></tr>
+        <tr><td>Resumo das avaliações (quando ativado)</td><td>Não baixar a nota média a cada página</td><td>Armazenamento da sessão: some ao fechar a aba</td></tr></tbody></table>
+        <p>Esses itens ficam só no seu aparelho. O site não os lê para identificar ninguém e não os envia a servidor algum.</p>`],
+      ["Serviços de terceiros", `<p>As fontes do texto são carregadas do Google Fonts, e o site é hospedado no GitHub Pages. Esses serviços recebem dados técnicos do acesso (como o endereço IP), mas não gravam cookies por meio deste site. Detalhes na <a href="#privacidade">Política de privacidade</a>.</p>`],
+      ["Como apagar", `<p>Nas configurações do navegador, procure “Dados de sites” ou “Cookies e dados de sites” e apague os dados de <b>cleitonfranco74.github.io</b>. Numa janela anônima nada fica guardado depois que você a fecha. O painel funciona normalmente mesmo com o armazenamento bloqueado.</p>`],
+    ]);
+  }
+  function contato(){
+    pagina("Contato", "Encontrou um erro, tem uma sugestão de indicador ou quer usar o painel em aula ou pesquisa? Escreva: toda mensagem é lida.", [
+      ["Fale com o responsável", `<div class="doc-cs">
+        <a class="doc-c" href="mailto:${EMAIL}?subject=Brasil%20em%20Dados"><b>E-mail</b><span>${EMAIL}</span><small>Dúvidas, parcerias, uso em aulas e pesquisas e pedidos sobre seus dados (LGPD).</small></a>
+        <button type="button" class="doc-c" data-abreopiniao><b>Dê sua opinião</b><span>Formulário rápido, sem cadastro</span><small>Nota de 1 a 5 e comentário; o e-mail é opcional.</small></button>
+        <a class="doc-c" href="${REPO}/issues" rel="noopener"><b>Relatar um problema</b><span>GitHub Issues</span><small>Para erros nos dados ou no site, com acompanhamento público (exige conta no GitHub).</small></a></div>`],
+      ["Ao relatar um erro nos dados", `<ul><li>Diga a aba e o indicador (ou copie o endereço da página: ele já inclui o município ou o governo aberto).</li><li>Informe o valor que aparece e o valor que você esperava, com a fonte.</li><li>Lembre que os dados vêm de bases oficiais e são atualizados automaticamente; diferenças podem vir de revisões da própria fonte ou da data de atualização. Veja <a href="#metodo">Método e fontes</a>.</li></ul>`],
+      ["Quem faz o Brasil em Dados", `<p><b>Prof. Dr. Cleiton Franco</b>, Doutor em Economia e Professor Adjunto da Universidade do Estado de Mato Grosso (UNEMAT), Câmpus de Sinop. O painel é uma ferramenta educacional, sem fins lucrativos; o código e os dados tratados são abertos no <a href="${REPO}" rel="noopener">GitHub</a>.</p>`],
+      ["Como citar", `<p class="doc-cit">FRANCO, Cleiton. <i>Brasil em Dados</i>: painel de finanças públicas municipais e indicadores do Brasil. Sinop: UNEMAT, 2026. Disponível em: https://cleitonfranco74.github.io/financas_municipais/. Acesso em: ${new Date().toLocaleDateString("pt-BR", { day: "numeric", month: "short", year: "numeric" })}.</p>`],
+    ]);
+  }
   function metodo(){
     const linhasEscala = Object.entries(D.escala).sort((a, b) => a[1] - b[1]).map(([p, sc]) => { const c = CATS.find(k => sc <= k[2]);
       return `<tr><td>${esc(p)}</td><td class="num">${nf(sc, 2)}</td><td><span class="chip"><i style="background:${c[3]}"></i>${esc(c[1])}</span></td></tr>`; }).join("");
@@ -2176,7 +2218,8 @@ for i, nome in enumerate(m.model.exog_names):
   function chips(){
     rodape();
     const t = temaDe(st.aba);
-    document.getElementById("temas").innerHTML = TEMAS_NAV.map(x => `<button type="button" role="tab" data-tema="${x.k}" aria-selected="${x.k === t.k}">${icone(x.k)}${esc(x.n)}</button>`).join("");
+    const inst = ["privacidade", "cookies", "contato"].includes(st.aba);
+    document.getElementById("temas").innerHTML = TEMAS_NAV.map(x => `<button type="button" role="tab" data-tema="${x.k}" aria-selected="${!inst && x.k === t.k}">${icone(x.k)}${esc(x.n)}</button>`).join("");
     const b = document.querySelector(`#temas [aria-selected="true"]`); if (b) b.scrollIntoView({ block: "nearest", inline: "nearest" });
   }
   /* cabeçalho do tema: cartões dos indicadores do tema e as seções, quando há mais de uma */
@@ -2200,7 +2243,7 @@ for i, nome in enumerate(m.model.exog_names):
     ["economia", "Trabalho e empresas", "emprego rais caged cnpj empresas salário"], ["resultados", "Saúde e educação", "mortalidade infantil vacinação esgoto alfabetização censo"],
     ["agro", "Agronegócio", "soja milho algodão boi pib agro"], ["amazonia", "Amazônia", "desmatamento prodes queimadas focos"], ["porte20", "Até 20 mil habitantes", "pequenos municípios brasil"],
     ["porte50", "Até 50 mil habitantes", "pequenos municípios brasil"], ["mun", "Municípios", "ranking ficha comparador csv baixar"], ["correlacoes", "Correlações", "pearson spearman"],
-    ["regressao", "Regressão", "mqo ols stata r python"], ["mapa", "Mapa", "moran lisa aglomerados"], ["metodo", "Método e fontes", "fontes escala ideológica"]];
+    ["regressao", "Regressão", "mqo ols stata r python"], ["mapa", "Mapa", "moran lisa aglomerados"], ["privacidade", "Privacidade", "lgpd dados pessoais política"], ["cookies", "Cookies", "armazenamento local navegador"], ["contato", "Contato", "e-mail fale conosco erro sugestão citar"], ["metodo", "Método e fontes", "fontes escala ideológica"]];
   let BUSCA = [], buscaSel = -1;
   function buscaResultados(q){
     q = semAc(q.trim()); if (q.length < 2) return [];
@@ -2238,7 +2281,7 @@ for i, nome in enumerate(m.model.exog_names):
   }
 
   /* ---------- navegação ---------- */
-  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, economia, resultados, correlacoes, regressao, mapa: mapaAba, porte20: () => porteAba(20000), porte50: () => porteAba(50000), mun: munAba, rdd: rddAba, gasto, indicadores: indicadoresAba, governos: governosAba, nacional: economiaBR, metodo };
+  const ABAS = { geral, fiscal, politica, agro: agroAba, amazonia, economia, resultados, correlacoes, regressao, mapa: mapaAba, porte20: () => porteAba(20000), porte50: () => porteAba(50000), mun: munAba, rdd: rddAba, gasto, indicadores: indicadoresAba, governos: governosAba, nacional: economiaBR, metodo, privacidade, cookies, contato };
   function render(){
     GRAFS.clear();
     if (!ABAS[st.aba]) st.aba = "indicadores";
@@ -2275,6 +2318,7 @@ for i, nome in enumerate(m.model.exog_names):
     }
     const sa = e.target.closest(".secs [data-aba]");
     if (sa){ st.aba = sa.dataset.aba; render(); return; }
+    if (e.target.closest("[data-abreopiniao]")){ document.querySelector(".fb-btn")?.click(); return; }
     const ec = e.target.closest("[data-eco]");
     if (ec){ const i = ECO_LISTA[+ec.dataset.eco]; if (i) abreDetalhe({ series: [{ n: i.n, c: "#c8f250", v: i.v }], anos: Object.keys(i.v).sort(), fmt: fmtGov(i), governos: faixasPres(), mais: i.mais }, `${i.n} · Brasil`, `${i.nota} Fonte: ${i.fonte}.`); return; }
     const ic = e.target.closest("[data-ind]");
