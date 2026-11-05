@@ -51,13 +51,20 @@ IND = [
     ("dolar", "Dólar", "Economia", "sgs:3698", "brl", 0, "nivel", .02, "Média de dezembro, venda."),
     ("pib_usd", "Tamanho da economia", "Economia", "wb:NY.GDP.MKTP.CD", "usdbi", 1, "nivel", .01, "PIB em dólares correntes."),
     ("pib_ppc", "PIB por habitante (PPC)", "Economia", "wb:NY.GDP.PCAP.PP.CD", "usd", 1, "nivel", .01, "Em dólares internacionais, pela paridade do poder de compra."),
+    ("renda_ppc", "Renda nacional por pessoa (PPC)", "Economia", "wb:NY.GNP.PCAP.PP.CD", "usd", 1, "nivel", .01, "Renda nacional bruta por habitante, em dólares de poder de compra igual (a renda do IDH)."),
     ("desemprego", "Desemprego", "Trabalho e renda", "wb:SL.UEM.TOTL.ZS", "pct", -1, "nivel", .2, "Estimativa da OIT, comparável desde 1991."),
     ("salario_minimo", "Salário mínimo real", "Trabalho e renda", "sgs:1619", "brl", 1, "nivel", .01, "Em dezembro, em reais de hoje (IPCA)."),
     ("salario_minimo_usd", "Salário mínimo em dólares", "Trabalho e renda", "sgs:1619", "usd", 1, "nivel", .01, "Valor de dezembro dividido pelo dólar médio de dezembro."),
+    ("reajuste_sm", "Reajuste do salário mínimo", "Trabalho e renda", "sgs:1619", "pct", 0, "fluxo", .5, "Aumento nominal do salário mínimo de dezembro a dezembro."),
+    ("renda_media", "Renda média por pessoa", "Trabalho e renda", "sidra:7533/10816", "brl", 1, "nivel", .01, "Rendimento domiciliar por pessoa, por mês, em reais do último ano (PNAD Contínua, desde 2012)."),
+    ("gasolina", "Preço da gasolina", "Custo de vida", "anp:GASOLINA COMUM", "brl", -1, "nivel", .01, "Gasolina comum, preço médio no posto por litro, média do ano, em reais de hoje (IPCA; ANP, desde 2013)."),
+    ("botijao", "Botijão de gás", "Custo de vida", "anp:GLP", "brl", -1, "nivel", .01, "Botijão de 13 kg, preço médio no Brasil, média do ano, em reais de hoje (IPCA; ANP, desde 2013)."),
+    ("litros_sm", "Litros de gasolina por salário mínimo", "Custo de vida", "anp:GASOLINA COMUM", "litros", 1, "nivel", .01, "Quantos litros de gasolina comum um salário mínimo compra no posto (ANP e Banco Central)."),
     ("divida_bruta", "Dívida bruta do governo", "Contas públicas", "sgs:13762", "pctpib", -1, "nivel", .5, "Governo geral, % do PIB, em dezembro (desde 2006)."),
     ("divida_liquida", "Dívida líquida do setor público", "Contas públicas", "sgs:4513", "pctpib", -1, "nivel", .5, "% do PIB, em dezembro (desde 2001)."),
     ("primario", "Resultado primário", "Contas públicas", "sgs:5793", "pctpib", 1, "fluxo", .3, "Setor público consolidado, % do PIB no ano; positivo é superávit."),
     ("reservas", "Reservas internacionais", "Setor externo", "sgs:3546", "usdbi", 1, "nivel", .02, "Conceito liquidez, em dezembro."),
+    ("saldo_comercial", "Saldo do comércio exterior", "Setor externo", "sgs:22707", "usdbi", 1, "fluxo", .02, "Exportações menos importações de bens no ano (critério do Banco Central)."),
     ("exportacoes", "Exportações", "Setor externo", "wb:NE.EXP.GNFS.CD", "usdbi", 1, "nivel", .02, "Bens e serviços, em dólares correntes."),
     ("importacoes", "Importações", "Setor externo", "wb:NE.IMP.GNFS.CD", "usdbi", 0, "nivel", .02, "Bens e serviços, em dólares correntes."),
     ("gini", "Desigualdade (Gini)", "Social", "wb:SI.POV.GINI", "gini", -1, "nivel", .003, "De 0 a 1; mais perto de 1, mais desigual."),
@@ -72,8 +79,8 @@ IND = [
     ("floresta", "Área de florestas", "Meio ambiente", "wb:AG.LND.FRST.ZS", "pct", 1, "nivel", .05, "% do território."),
     ("emissoes", "Emissões de gases de efeito estufa", "Meio ambiente", "wb:EN.GHG.ALL.MT.CE.AR5", "mt", -1, "nivel", .01, "Milhões de toneladas de CO2 equivalente, sem mudança do uso da terra."),
 ]
-FONTES = {"wb": "Banco Mundial (World Development Indicators)", "sgs": "Banco Central do Brasil (SGS)"}
-URL = {"wb": "https://data.worldbank.org/indicator/{}?locations=BR", "sgs": "https://www3.bcb.gov.br/sgspub/consultarvalores/telaCvsSelecionarSeries.paint?codigoSerie={}"}
+FONTES = {"anp": "ANP, Levantamento de Preços de Combustíveis", "wb": "Banco Mundial (World Development Indicators)", "sgs": "Banco Central do Brasil (SGS)", "sidra": "IBGE, PNAD Contínua (Sidra)"}
+URL = {"anp": "https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/serie-historica-do-levantamento-de-precos#{}", "sidra": "https://sidra.ibge.gov.br/tabela/{}", "wb": "https://data.worldbank.org/indicator/{}?locations=BR", "sgs": "https://www3.bcb.gov.br/sgspub/consultarvalores/telaCvsSelecionarSeries.paint?codigoSerie={}"}
 
 
 def log(msg: str) -> None:
@@ -114,6 +121,67 @@ def sgs(cod: str) -> tuple[dict[str, float], dict[str, str]]:
             except (TypeError, ValueError):
                 pass
     return out, mes
+
+
+def sgs_soma(cod: str) -> tuple[dict[str, float], dict[str, str]]:
+    """Soma dos valores mensais de cada ano (séries de fluxo, como a balança comercial)."""
+    out, mes = {}, {}
+    d = get(f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{cod}/dados", {"formato": "json", "dataInicial": f"01/01/{INICIO}"}).json()
+    for l in d:
+        _, m, a = l["data"].split("/")
+        out[a] = out.get(a, 0) + float(l["valor"]); mes[a] = f"{a}-{m}"
+    return out, mes
+
+
+def sidra(tab_var: str) -> dict[str, float]:
+    tab, var = tab_var.split("/")
+    js = get(f"https://apisidra.ibge.gov.br/values/t/{tab}/n1/all/v/{var}/p/all").json()
+    out = {}
+    for l in js[1:]:
+        if l.get("D4C") not in (None, "49243"):
+            continue
+        try:
+            out[l["D3C"]] = float(l["V"])
+        except (TypeError, ValueError):
+            pass
+    return out
+
+
+ANP_XLSX = ("https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/"
+            "shlp/mensal/mensal-brasil-desde-jan2013.xlsx")
+_ANP = None
+
+
+def anp_mensal() -> dict[str, dict[str, float]]:
+    """Preço médio de revenda por mês e produto (planilha mensal da ANP, Brasil, desde 2013)."""
+    global _ANP
+    if _ANP is None:
+        import io
+        import openpyxl
+        ws = openpyxl.load_workbook(io.BytesIO(get(ANP_XLSX).content), read_only=True).worksheets[0]
+        _ANP, cab = {}, None
+        for row in ws.iter_rows(values_only=True):
+            if cab is None:
+                if row and row[0] == "MÊS":
+                    cab = list(row)
+                continue
+            if not row or not isinstance(row[0], datetime):
+                continue
+            try:
+                _ANP.setdefault(str(row[1]).strip(), {})[row[0].strftime("%Y-%m")] = float(row[cab.index("PREÇO MÉDIO REVENDA")])
+            except (TypeError, ValueError):
+                pass
+    return _ANP
+
+
+def ipca_mensal() -> dict[str, float]:
+    d = get("https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados", {"formato": "json", "dataInicial": "01/01/2012"}).json()
+    idx, out = 100.0, {}
+    for l in d:
+        idx *= 1 + float(l["valor"]) / 100
+        _, m, a = l["data"].split("/")
+        out[f"{a}-{m}"] = idx
+    return out
 
 
 def precos() -> dict[str, float]:
@@ -170,9 +238,32 @@ def main() -> int:
         try:
             if org == "wb":
                 v, parc = banco_mundial(cod), {}
+            elif org == "anp":
+                ser, im = anp_mensal()[cod], ipca_mensal()
+                ultm = max(im)
+                anos = sorted({m[:4] for m in ser})
+                parc = {a: max(m for m in ser if m[:4] == a) for a in anos}
+                parc = {a: m for a, m in parc.items() if not m.endswith("-12")}
+                if k == "litros_sm":
+                    sm = sgs("1619")[0]
+                    v = {a: round(sm[a] / (sum(x for m, x in ser.items() if m[:4] == a) / sum(1 for m in ser if m[:4] == a)), 0) for a in anos if a in sm}
+                else:
+                    v = {}
+                    for a in anos:
+                        xs = [x * im[ultm] / im[m] for m, x in ser.items() if m[:4] == a and m in im]
+                        if xs:
+                            v[a] = round(sum(xs) / len(xs), 2)
+            elif org == "sidra":
+                v, parc = sidra(cod), {}
+            elif k == "saldo_comercial":
+                v, mes = sgs_soma(cod)
+                parc = {a: m for a, m in mes.items() if not m.endswith("-12")}
+                v = {a: round(x / 1000, 1) for a, x in v.items()}
             else:
                 v, mes = sgs(cod)
                 parc = {a: m for a, m in mes.items() if not m.endswith("-12")}
+                if k == "reajuste_sm":
+                    v = {a: round((x / v[str(int(a) - 1)] - 1) * 100, 2) for a, x in v.items() if v.get(str(int(a) - 1))}
                 if k == "salario_minimo_usd":
                     v = {a: round(x / DOL[a], 0) for a, x in v.items() if DOL.get(a)}
                 if k == "reservas":
