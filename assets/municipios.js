@@ -1530,7 +1530,7 @@
       const f = fmtGov(i), anos = Object.keys(i.v).filter(a => +a >= 1995).sort(), a0 = anos[0], a1 = anos[anos.length - 1], v0 = i.v[a0], v1 = i.v[a1];
       let txt = "", d = 0;
       if (anos.length > 1){
-        if (ABS[i.unid] || !(v0 > 0)){ d = v1 - v0; txt = `${d >= 0 ? "+" : "−"}${nf(Math.abs(d), i.unid === "gini" ? 3 : 1)}${i.unid === "pct" || i.unid === "pctpib" ? " p.p." : ""}`; }
+        if (ABS[i.unid] || !(v0 > 0)){ d = v1 - v0; txt = `${d >= 0 ? "+" : "−"}${i.unid === "usdbi" || i.unid === "brl" || i.unid === "usd" ? f(Math.abs(d)) : nf(Math.abs(d), i.unid === "gini" ? 3 : 1)}${i.unid === "pct" || i.unid === "pctpib" ? " p.p." : ""}`; }
         else { d = v1 / v0 - 1; txt = `${d >= 0 ? "+" : "−"}${nf(Math.abs(d) * 100, 0)}%`; }
       }
       const bom = i.mais ? Math.sign(d) * i.mais : 0, parc = i.parcial?.[a1] ? ` (até ${i.parcial[a1].slice(5)}/${a1})` : "";
@@ -1541,7 +1541,7 @@
     };
     const blocos = TEMAS.map(t => { const is = GV.indicadores.filter(i => i.tema === t); return is.length ? `<section class="ind-g"><h2>${esc(t)}</h2><div class="eco-g">${is.map(cartao).join("")}</div></section>` : ""; }).join("");
     main.innerHTML = `<div class="explica" style="margin-bottom:12px"><p>Os grandes números do <b>Brasil</b>, ano a ano, desde 1995, primeiro ano depois da implantação do real. <b>Toque num indicador</b> para abrir o gráfico grande com o governo de cada período e a comparação por governo.</p></div>
-      ${blocos}<p class="nota">Verde: melhorou; vermelho: piorou; branco: sem sentido de melhor ou pior (juros, dólar, importações). Fontes: Banco Mundial e Banco Central (SGS); atualizado em ${esc(GV.atualizado)}. Veja também o painel dos <a href="#governos">Governos</a>.</p>`;
+      ${blocos}<p class="nota">Verde: melhorou; vermelho: piorou; branco: sem sentido de melhor ou pior (juros, dólar, importações). Fontes: Banco Mundial, Banco Central (SGS), IBGE (PNAD Contínua) e ANP (preços de combustíveis); atualizado em ${esc(GV.atualizado)}. Veja também o painel dos <a href="#governos">Governos</a>.</p>`;
   }
   function governosAba(){
     if (!GV){ carregaGov(); main.innerHTML = `<section class="panel"><p class="sub">${GVfalhou ? "Os dados dos governos ainda não foram coletados (Action “Atualizar painel dos governos”)." : "Carregando os governos…"}</p></section>`; return; }
